@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.docker
+docker/Dockerfile
+docker/DockerfileDev
+docker-compose.yml
+.dockerignore
+
+# Node.js
+node_modules
+npm-debug.log
+dist
+.nuxt
+.output
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+assets/fonts
