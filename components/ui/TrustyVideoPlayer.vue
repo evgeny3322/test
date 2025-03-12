@@ -15,7 +15,7 @@
     <div v-if="isMouseOnVideo" class="play-button" @click="togglePlay">
       <svg
         v-if="!isPlaying"
-        class="icon bacdrop-opacity-5"
+        class="icon backdrop-opacity-5"
         xmlns="http://www.w3.org/2000/svg"
         width="40"
         height="46"
@@ -31,7 +31,7 @@
         v-else
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        class="icon bacdrop-opacity-5"
+        class="icon backdrop-opacity-5"
       >
         <rect x="6" y="3" width="4" height="18" fill="black" />
         <rect x="14" y="3" width="4" height="18" fill="black" />
@@ -69,9 +69,10 @@ const onEnded = () => {
 
 <style scoped>
 .video-player {
+  width: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  flex-direction: column;
 }
 
 .play-button {
@@ -93,5 +94,18 @@ const onEnded = () => {
 .icon {
   width: 30px;
   height: 30px;
+}
+
+@media screen {
+  @media (max-width: 768px) {
+    .play-button {
+      width: 40px;
+      height: 40px;
+    }
+    .icon {
+      width: 15px;
+      height: 15px;
+    }
+  }
 }
 </style>

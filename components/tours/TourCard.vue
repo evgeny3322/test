@@ -38,7 +38,6 @@ const props = defineProps({
     type: Object,
   },
 });
-console.log(props);
 interface Tour {
   title: string;
   video?: string;

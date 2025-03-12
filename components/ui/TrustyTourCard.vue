@@ -5,24 +5,19 @@
     <div
       class="w-full h-full min-h-[19rem] z-1 flex flex-col justify-center items-start self-start"
     >
-      <h1 class="text-2xl font-normal leading-[1.875rem]">
+      <h1 class="text-26 font-medium leading-[1.875rem]">
         {{ props.tour?.title }}
       </h1>
-      <p class="text-lg mb-4">
+      <p class="text-lg font-medium mb-4">
         {{ props.tour?.semi_title }}
       </p>
-      <p class="text-grey-large text-base line-clamp-3 text-sm mt-auto leading-[1.225rem]">
+      <p class="text-grey-large text-14 line-clamp-3 mt-auto leading-[1.225rem]">
         {{ props.tour?.description }}
       </p>
       <div class="flex flex-wrap gap-[0.375em] items-center mt-4 w-full h-auto">
-        <span
-          v-for="(block, index) in tour.buttons"
-          :key="index"
-          class="text-[0.625rem] bg-grey-light-2 backdrop-blur-xs px-3 py-[0.40rem] rounded-full"
-          @click="navigateTo('/tours/' + tour._id)"
-        >
+        <trusty-chip v-for="(block, index) in tour.buttons" :key="index">
           {{ block.value }}
-        </span>
+        </trusty-chip>
       </div>
     </div>
     <NuxtImg
@@ -37,6 +32,7 @@
 <script setup lang="ts">
 import type { Tour } from '@/types/toursTypes';
 import { navigateTo } from 'nuxt/app';
+import TrustyChip from '@/components/ui/TrustyChip.vue';
 
 const props = defineProps<{
   tour: Tour;

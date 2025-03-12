@@ -1,12 +1,14 @@
 <template>
   <div class="field">
-    <label v-if="label" class="field-label">{{ label }}</label>
+    <label v-if="label" class="field-label" v-html="label" />
     <div class="input-wrapper">
       <vue-tel-input
         v-if="type === 'tel'"
         v-bind="props"
         v-model="model"
         class="field-input"
+        @country-changed="(country) => emit('country-changed', country)"
+        :class="[inputClass, { '!border-red-500 border': error }]"
         :placeholder="placeholder"
       />
       <input
@@ -14,6 +16,7 @@
         v-bind="props"
         v-model="model"
         class="field-input"
+        :class="[inputClass, { '!border-red-500 border': error }]"
         :type="inputType"
         :placeholder="placeholder"
       />
@@ -31,21 +34,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, watch } from 'vue';
+import { ref, computed, defineProps, defineEmits } from 'vue';
 import { VueTelInput } from 'vue-tel-input';
 import 'vue-tel-input/vue-tel-input.css';
 import EyeIcon from '@/components/icons/EyeIcon.vue';
 import EyeClosedIcon from '@/components/icons/EyeOffIcon.vue';
 
 const props = defineProps<{
-  modelValue: string;
   label?: string;
   type?: string;
   placeholder?: string;
+  inputClass?: string;
+  error?: boolean;
 }>();
 
-const emit = defineEmits(['update:modelValue']);
-const model = ref(props.modelValue);
+const emit = defineEmits(['country-changed']);
+const model = defineModel();
 const showPassword = ref(false);
 
 const inputType = computed(() => {
@@ -56,10 +60,6 @@ const inputType = computed(() => {
 const togglePassword = () => {
   showPassword.value = !showPassword.value;
 };
-
-watch(model, (newValue: string) => {
-  emit('update:modelValue', newValue);
-});
 </script>
 
 <style>
@@ -82,6 +82,7 @@ watch(model, (newValue: string) => {
 }
 
 .field-input {
+  max-height: 64px;
   flex: 1;
   width: 100%;
   color: #ffffff;

@@ -19,15 +19,15 @@
       <!--
         Компонент выбора значения (TrustyComplete)
         - options: список вариантов для выбора
-        - model-value: текущее выбранное значение
-        - @change: событие при изменении значения
+        - v-model: использование двусторонней привязки данных с defineModel
         - placeholder: текст-подсказка (если передан)
       -->
       <trusty-complete
         :options="filter.options"
-        :model-value="modelValues[filter.name]"
+        :model-value="values[filter.name]"
         :placeholder="filter.placeholder"
         @change="handleChange(filter.name, $event)"
+        select-class="p-[13px] h-[50px]"
       />
     </div>
 
@@ -44,11 +44,11 @@
 <script setup lang="ts">
 import TrustyComplete from '@/components/ui/TrustyComplete.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
-import { PropType, ref, watch } from 'vue';
+import { PropType, watch } from 'vue';
 
 // Тип для варианта выбора в фильтре
 export interface FilterOption {
-  value: string | number; // Значение варианта (используется для отправки на сервер, уберите если не пригодится)
+  value: string | number; // Значение варианта (используется для отправки на сервер)
   label: string; // Отображаемый текст варианта (показывается пользователю)
 }
 
@@ -61,7 +61,6 @@ export interface FilterConfig {
   defaultValue?: string | number; // Значение по умолчанию (необязательно)
 }
 
-// Определяем входные параметры (props) компонента
 const props = defineProps({
   // Массив с конфигурацией фильтров
   filters: {
@@ -87,31 +86,28 @@ const props = defineProps({
     default: true, // По умолчанию показываем кнопку
   },
 
-  // Начальные значения фильтров в формате { имя_фильтра: значение }
   initialValues: {
     type: Object as PropType<Record<string, string | number>>,
     default: () => ({}), // По умолчанию пустой объект
   },
 });
 
-// Определяем события, которые компонент может отправлять
-const emit = defineEmits([
-  'update:values', // Событие при изменении любого значения фильтра
-  'submit', // Событие при нажатии кнопки поиска
-]);
+const values = defineModel<Record<string, string | number>>('values', {
+  default: () => ({}),
+});
 
-// Объект для хранения текущих значений фильтров
-const modelValues = ref<Record<string, string | number>>({});
+// Определяем событие для кнопки поиска
+const emit = defineEmits(['submit']);
 
 // Следим за изменениями начальных значений (initialValues)
 watch(
   () => props.initialValues,
   (newValues) => {
-    // Копируем все значения из initialValues в modelValues
-    Object.assign(modelValues.value, newValues);
+    // Копируем все значения из initialValues в values
+    Object.assign(values.value, newValues);
   },
   { immediate: true }
-); // immediate: true запускает обработчик сразу при создании компонента
+);
 
 // Следим за изменениями конфигурации фильтров
 watch(
@@ -120,28 +116,22 @@ watch(
     // Проходим по всем фильтрам
     newFilters.forEach((filter) => {
       // Если у фильтра есть defaultValue и значение для этого фильтра еще не установлено
-      if (filter.defaultValue !== undefined && modelValues.value[filter.name] === undefined) {
+      if (filter.defaultValue !== undefined && values.value[filter.name] === undefined) {
         // Устанавливаем значение по умолчанию
-        modelValues.value[filter.name] = filter.defaultValue;
+        values.value[filter.name] = filter.defaultValue;
       }
     });
   },
   { immediate: true }
-); // immediate: true запускает обработчик сразу при создании компонента
+);
 
 // Обработчик изменения значения в фильтре
 const handleChange = (name: string, value: string | number) => {
-  // Обновляем значение в нашем объекте
-  modelValues.value[name] = value;
-
-  // Отправляем событие с копией всех текущих значений
-  // {...modelValues.value} создает новый объект (копию), чтобы избежать проблем с реактивностью
-  emit('update:values', { ...modelValues.value });
+  values.value[name] = value;
 };
 
 // Обработчик нажатия на кнопку поиска
 const handleSubmit = () => {
-  // Отправляем событие с копией всех текущих значений
-  emit('submit', { ...modelValues.value });
+  emit('submit', { ...values.value });
 };
 </script>

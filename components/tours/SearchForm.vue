@@ -1,10 +1,11 @@
 <template>
   <trusty-filter
+    class="w-full px-[8.5%] mb-8"
+    :showLabels="false"
     :filters="filterConfigs"
     :initial-values="initialFilterValues"
-    @update:values="handleFilterChange"
+    v-model:values="currentFilters"
     @submit="handleSearch"
-    button-text="Search"
   />
 </template>
 <script setup lang="ts">

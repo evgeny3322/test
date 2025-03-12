@@ -9,21 +9,12 @@ dist
 # Node dependencies
 node_modules
 
-# Package-lock files
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# Logs
-logs
-*.log
-
 # Misc
 .DS_Store
 .fleet
 .idea
 
 # Local env files
-.env
-.env.*
-!.env.example
+#.env
+#.env.*
+#!.env.example

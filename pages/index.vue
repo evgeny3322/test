@@ -11,9 +11,9 @@
         >
       </div>
       <trusty-filter
+        v-model:values="currentFilters"
         :filters="filterConfigs"
         :initial-values="initialFilterValues"
-        @update:values="handleFilterChange"
         @submit="handleSearch"
         button-text="Search"
       />

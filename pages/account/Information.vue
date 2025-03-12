@@ -1,11 +1,11 @@
 <template>
   <div class="grid grid-cols-12 gap-x-7">
-    <div class="bg-[#262626] p-8 rounded-main-sm flex flex-col gap-y-6 col-span-8">
-      <trusty-field model-value="" label="First Name" />
+    <div class="bg-tertiary-black p-8 rounded-main-sm flex flex-col gap-y-6 col-span-8">
+      <trusty-field model-value="" label="First Name" type="password" />
       <trusty-field model-value="" label="Last Name" />
       <trusty-field model-value="" label="E-mail Address" type="email" />
       <trusty-field model-value="" label="Mobile Phone Number" type="tel" />
-      <trusty-button class="!py-5 mt-2"> Edit </trusty-button>
+      <trusty-button class="!py-5 mt-2"> Edit</trusty-button>
     </div>
     <div class="col-span-4 flex flex-col gap-y-7 justify-between">
       <div class="bg-[#151515] p-6 rounded-main-sm h-full">

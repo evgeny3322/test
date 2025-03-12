@@ -1,15 +1,65 @@
 <template>
   <div class="block-container">
-    <div class="bg-grey-light-1 rounded-main-sm p-8 grid grid-cols-12">
-      <div class="col-span-8 mr-[30px]">
+    <div class="bg-grey-light-1 rounded-main-sm p-5 lg:p-8 grid grid-cols-12">
+      <div class="col-span-12 lg:col-span-8 lg:mr-[30px]">
         <ClientOnly>
+          <div v-if="$device.isMobileOrTablet" class="mb-6">
+            <swiper-container
+              @slideChange="onSlideChange"
+              :style="{
+                '--swiper-navigation-color': '#fff',
+                '--swiper-navigation-size': '20px',
+                '--swiper-pagination-color': '#fff',
+                '--swiper-pagination-bullet-size': '8px',
+                '--swiper-pagination-bullet-width': '8px',
+                '--swiper-pagination-bullet-height': '8px',
+                '--swiper-pagination-bullet-inactive-color': '#fff',
+                '--swiper-pagination-bullet-opacity': '1',
+              }"
+              :loop="true"
+              :spaceBetween="10"
+              grab-cursor
+              class="mb-6"
+              :pagination="{ el: '.swiper-pagination', clickable: true }"
+              :autoplay="{
+                delay: 5000,
+                disableOnInteraction: false,
+              }"
+            >
+              <swiper-slide
+                class="overflow-hidden rounded-[14px] w-full max-h-[220px] md:max-h-[320px]"
+                v-for="slide in slides"
+                :key="slide.id"
+              >
+                <div class="bg-[#00000080] absolute top-0 left-0 w-full h-full"></div>
+                <video-player
+                  class="max-h-[220px] md:max-h-[320px]"
+                  v-if="slide.videoUrl"
+                  :src="slide.videoUrl"
+                />
+                <NuxtImg
+                  v-if="!slide.videoUrl"
+                  class="!rounded-[14px]"
+                  alt="slide"
+                  :src="slide.image"
+                />
+              </swiper-slide>
+            </swiper-container>
+            <div class="swiper-pagination"></div>
+          </div>
           <Swiper
+            v-if="$device.isDesktop"
             :style="{
               '--swiper-navigation-color': '#fff',
               '--swiper-pagination-color': '#fff',
             }"
             :loop="true"
             :spaceBetween="10"
+            :autoplay="{
+              delay: 5000,
+              disableOnInteraction: false,
+            }"
+            :pagination="true"
             grab-cursor
             :thumbs="{ swiper: thumbsSwiperRef }"
             :modules="modules"
@@ -21,19 +71,23 @@
               :key="slide.id"
             >
               <video-player v-if="slide.videoUrl" :src="slide.videoUrl" />
-              <img v-if="!slide.videoUrl" class="!rounded-[14px]" alt="slide" :src="slide.image" />
+              <NuxtImg
+                v-if="!slide.videoUrl"
+                class="!rounded-[14px]"
+                alt="slide"
+                :src="slide.image"
+              />
             </SwiperSlide>
           </Swiper>
 
           <!-- Нижний слайдер (превью) -->
-          <div class="relative mt-[30px] px-15">
+          <div v-if="$device.isDesktop" class="relative mt-[30px] px-15">
             <button class="swiper-button-prev-custom" ref="prevBtn">
               <arrow-slide-icon class="rotate-180" />
             </button>
             <button class="swiper-button-next-custom" ref="nextBtn">
               <arrow-slide-icon />
             </button>
-
             <Swiper
               @swiper="setThumbsSwiper"
               grab-cursor
@@ -49,25 +103,24 @@
               :modules="modules"
               class="mySwiper"
             >
-              <SwiperSlide v-for="slide in slides" :key="slide.id">
-                <img class="!rounded-[14px]" alt="slide" :src="slide.image" />
+              <SwiperSlide
+                v-for="slide in slides"
+                :key="slide.id"
+                class="overflow-hidden !rounded-[14px]"
+              >
+                <div class="bg-[#00000080] absolute top-0 left-0 w-full h-full"></div>
+                <NuxtImg class="!rounded-[14px]" alt="slide" :src="slide.image" />
               </SwiperSlide>
             </Swiper>
           </div>
         </ClientOnly>
       </div>
-      <div class="col-span-4 space-y-6">
+      <div class="col-span-12 lg:col-span-4 space-y-6">
         <div class="flex flex-row space-x-[6px]">
-          <div
-            v-for="i in 2"
-            :key="i"
-            class="rounded-[99px] bg-[#FFFFFF33] px-3 py-1 text-10 leading-24 backdrop-blur-[4px]"
-          >
-            mini card
-          </div>
+          <trusty-chip v-for="i in 2" :key="i"> mini card</trusty-chip>
         </div>
-        <p class="text-64 font-medium leading-56">Great Rome</p>
-        <span class="text-16 leading-22 text-grey-light-6"
+        <p class="text-36 leading-30 lg:text-64 font-medium lg:leading-56">Great Rome</p>
+        <span class="text-14 lg:text-16 leading-22 text-grey-light-6"
           >The words of the Romantic poet Lord Byron, written more than two centuries ago, still
           worthily represent one of the most beautiful countries of the world. And we at Inspiritaly
           are here to drive you through this magic that inspired world-known poets and artists, in a
@@ -79,70 +132,92 @@
     <trusty-selector-block :data="lunchData" :participants="3" />
     <trusty-selector-block :data="segmentData" :mandatory="false" :participants="3" />
     <trusty-selector-block :data="driveData" :mandatory="false" :participants="3" />
-    <div class="bg-grey-light-1 rounded-main-sm grid grid-cols-12 gap-x-8 mt-[4.5%] p-8">
-      <div class="col-span-4">
-        <p class="text-40 leading-36 font-medium">Additional drive time</p>
+    <div
+      class="bg-grey-light-1 rounded-main-sm grid grid-cols-12 gap-y-6 lg:gap-x-8 mt-[4.5%] p-5 lg:p-8"
+    >
+      <div class="col-span-12 lg:col-span-4">
+        <p class="text-26 leading-30 lg:text-40 lg:leading-36 font-medium">Additional drive time</p>
       </div>
       <div
-        class="col-span-8 bg-[#181818] rounded-main-sm p-[18px] flex flex-row justify-between px-6 py-5"
+        class="col-span-12 lg:col-span-8 bg-[#181818] rounded-main-sm p-[18px] flex flex-col lg:flex-row lg:justify-between px-6 py-5 gap-y-6"
       >
         <div
-          class="bg-[#282828] rounded-main-sm flex flex-row justify-between items-center px-6 py-5 gap-x-20"
+          class="bg-[#282828] rounded-main-sm flex flex-row justify-between items-center px-6 py-3 lg:py-5 lg:gap-x-20"
         >
-          <span @click="descDriveTime" class="cursor-pointer text-40 leading-20 select-none"
+          <span
+            @click="descDriveTime"
+            class="cursor-pointer text-28 lg:text-40 leading-20 select-none"
             >-</span
           >
           <span class="text-20 leading-20">{{ driveTime }}</span>
-          <span @click="incDriveTime" class="cursor-pointer text-40 leading-20 select-none">+</span>
+          <span
+            @click="incDriveTime"
+            class="cursor-pointer text-28 lg:text-40 leading-20 select-none"
+            >+</span
+          >
         </div>
-        <button class="bg-main-black rounded-[99px] py-4 px-6 font-semibold text-26 leading-30">
+        <button
+          class="bg-main-black rounded-[99px] py-4 px-6 font-semibold text-18 lg:text-26 leading-30"
+        >
           <span class="px-8">{{ calculateDriveTimePrice() }} EUR</span>
         </button>
       </div>
     </div>
     <div class="border-b-1 border-[#313131] my-[4.5%]"></div>
-    <div class="bg-[#FFFFFF] rounded-[12px] p-6 flex flex-row justify-between mt-4 gap-x-5">
+    <div
+      class="bg-[#FFFFFF] rounded-[12px] p-6 flex flex-col lg:flex-row lg:justify-between mt-4 gap-y-2 lg:gap-x-5"
+    >
       <div class="flex flex-col gap-y-[6px]">
-        <span class="text-13 leading-24 text-[#B3B3B3]">Select date</span>
-        <p class="text-26 leading-30 text-main-black font-semibold">{{ tourDate }}</p>
+        <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Select date</span>
+        <p class="text-18 lg:text-26 leading-30 text-main-black font-semibold title">
+          {{ tourDate }}
+        </p>
       </div>
+      <div class="border-b-1 border-[#F2F2F2] lg:hidden"></div>
       <div class="flex flex-col gap-y-[6px]">
-        <span class="text-13 leading-24 text-[#B3B3B3]">Amount of participants</span>
-        <div class="flex flex-row justify-between px-4 font-semibold">
+        <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Amount of participants</span>
+        <div class="flex flex-row gap-x-6 lg:justify-between lg:gap-x-0 px-4 font-semibold">
           <p
             @click="decreaseParticipants"
-            class="text-26 leading-30 text-main-black cursor-pointer select-none"
+            class="text-18 lg:text-26 leading-30 text-main-black cursor-pointer select-none"
           >
             -
           </p>
-          <p class="text-26 leading-30 text-main-black font-mono">{{ participants }}</p>
+          <p class="text-18 lg:text-26 leading-30 text-main-black font-semibold title">
+            {{ participants }}
+          </p>
           <p
             @click="increaseParticipants"
-            class="text-26 leading-30 text-main-black cursor-pointer select-none"
+            class="text-18 lg:text-26 leading-30 text-main-black cursor-pointer select-none"
           >
             +
           </p>
         </div>
       </div>
+      <div class="border-b-1 border-[#F2F2F2] lg:hidden"></div>
       <div class="flex flex-col gap-y-[6px]">
-        <span class="text-13 leading-24 text-[#B3B3B3]">Total duration</span>
-        <p class="text-26 leading-30 text-main-black font-semibold font-mono">
+        <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Total duration</span>
+        <p class="text-18 lg:text-26 leading-30 text-main-black font-semibold title">
           {{ totalDuration }} h
         </p>
       </div>
+      <div class="border-b-1 border-[#F2F2F2] lg:hidden"></div>
       <div class="flex flex-col gap-y-[6px]">
-        <span class="text-13 leading-24 text-[#B3B3B3]">Total price</span>
-        <p class="text-26 leading-30 text-main-black font-semibold font-mono">
+        <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Total price</span>
+        <p class="text-18 lg:text-26 leading-30 text-main-black !font-semibold">
           {{ totalPrice }} EUR
         </p>
       </div>
+      <div class="border-b-1 border-[#F2F2F2] lg:hidden"></div>
       <div class="flex flex-col gap-y-[6px]">
-        <span class="text-13 leading-24 text-[#B3B3B3]">Price per participant</span>
-        <p class="text-26 leading-30 text-main-black font-semibold font-mono">
+        <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Price per participant</span>
+        <p class="text-18 lg:text-26 leading-30 text-main-black font-semibold">
           {{ pricePerParticipant }} EUR/P
         </p>
       </div>
-      <trusty-button type="black" @click="bookTour" class="select-none"> Book Now </trusty-button>
+      <trusty-button color="black" @click="bookTour" class="select-none mt-2 lg:mt-0">
+        Book Now
+      </trusty-button>
     </div>
   </div>
 </template>
@@ -161,8 +236,14 @@ import ArrowSlideIcon from '@/components/icons/ArrowSlideIcon.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
 import TrustySelectorBlock from '@/components/ui/TrustySelectorBlock.vue';
 import VideoPlayer from '@/components/ui/TrustyVideoPlayer.vue';
+import TrustyChip from '@/components/ui/TrustyChip.vue';
 
 const thumbsSwiperRef = ref<SwiperType | null>(null);
+
+const activeIndex = ref(0);
+const onSlideChange = (swiper: any) => {
+  activeIndex.value = swiper.activeIndex;
+};
 
 const nextBtn = ref<HTMLElement | null>(null);
 const prevBtn = ref<HTMLElement | null>(null);
@@ -358,6 +439,26 @@ onMounted(() => {
 </script>
 
 <style>
+.swiper-pagination {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.swiper-pagination-bullet {
+  width: 8px !important;
+  height: 8px !important;
+  background-color: #ffffff66 !important;
+  opacity: 1 !important;
+  transition: all 0.3s ease;
+  border-radius: 100%;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #ffffff !important;
+}
+
 .swiper-button-prev-custom,
 .swiper-button-next-custom {
   position: absolute;
@@ -392,9 +493,17 @@ onMounted(() => {
   object-fit: cover;
   width: 100%;
 }
+
 .mySwiper2 .swiper-slide video {
   max-height: 390px;
   object-fit: cover;
   width: 100%;
+}
+
+.custom-swiper-pagination {
+  position: relative;
+  bottom: -10px;
+  text-align: center;
+  z-index: 10;
 }
 </style>

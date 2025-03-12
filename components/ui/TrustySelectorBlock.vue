@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-grey-light-1 p-8 grid grid-cols-12 mt-[4.5%] gap-x-16 rounded-main-sm relative overflow-hidden"
+    class="bg-grey-light-1 p-5 lg:p-8 grid grid-cols-12 mt-[4.5%] lg:gap-x-16 rounded-main-sm relative overflow-hidden"
   >
     <NuxtImg
       v-if="activeCardIndex !== null"
@@ -11,47 +11,49 @@
       v-if="activeCardIndex !== null"
       class="absolute w-full h-full bg-[#00000099] backdrop-blur-[5px] -z-9"
     ></div>
-    <div class="col-span-4 flex flex-col gap-y-6">
-      <p class="text-40 leading-36 font-medium">{{ data.title }}</p>
-      <span class="text-16 leading-22 text-grey-light-6">{{ data.description }}</span>
+    <div class="col-span-12 lg:col-span-4 flex flex-col gap-y-6 mb-6 lg:mb-0">
+      <p class="text-26 leading-30 lg:text-40 lg:leading-36 font-medium text-white">
+        {{ data.title }}
+      </p>
+      <span class="text-14 lg:text-16 leading-22 text-grey-light-6">{{ data.description }}</span>
     </div>
-    <div class="col-span-8 flex flex-col gap-y-6">
+    <div class="col-span-12 lg:col-span-8 flex flex-col gap-y-6">
       <div
         v-if="!mandatory"
-        class="bg-grey-dark p-5 rounded-main-sm grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4"
+        class="bg-grey-dark p-5 rounded-main-sm grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4 gap-y-4"
         :class="{ '!bg-[#313131] border-1 border-grey-light-3': activeCardIndex === null }"
         @click="setActiveCard(null)"
       >
-        <div class="col-span-8 w-full">
+        <div class="col-span-12 lg:col-span-8 w-full">
           <p class="font-medium text-20 leading-20">No needed</p>
         </div>
-        <div class="col-span-4 w-full px-[10px]">
+        <div class="col-span-12 lg:col-span-4 w-full lg:px-[10px]">
           <button
-            class="bg-main-black rounded-[99px] py-4 px-6 w-full font-semibold text-26 leading-30"
+            class="bg-main-black rounded-[99px] py-4 px-6 w-full font-semibold text-white text-26 leading-30"
           >
             0 EUR
           </button>
         </div>
       </div>
       <div
-        class="bg-grey-dark p-5 rounded-main-sm grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4"
+        class="bg-grey-dark p-4 lg:p-5 rounded-main-sm grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4"
         v-for="(card, index) in data.cards"
         @click="setActiveCard(index)"
         :class="{ '!bg-[#313131] border-1 border-grey-light-3': activeCardIndex === index }"
       >
-        <div class="col-span-8 flex flex-row gap-x-4 w-full">
+        <div class="col-span-12 lg:col-span-8 flex flex-col lg:flex-row gap-y-4 gap-x-4 w-full">
           <NuxtImg
-            class="w-full h-full max-w-[185px] max-h-[121px] rounded-[10px] object-cover"
+            class="w-full h-full lg:max-w-[185px] max-h-[121px] rounded-[10px] object-cover"
             :src="card.image"
           />
           <div class="flex flex-col gap-y-[10px]">
-            <p class="font-medium text-20 leading-30">{{ card.title }}</p>
+            <p class="font-medium text-16 lg:text-20 leading-30">{{ card.title }}</p>
             <span class="text-12 leading-17 text-grey-light-6">{{ card.description }}</span>
           </div>
         </div>
-        <div class="col-span-4 w-full px-[10px]">
+        <div class="col-span-12 lg:col-span-4 w-full px-[10px] mt-[10px] lg:mt-0">
           <button
-            class="bg-main-black rounded-[99px] py-4 px-6 w-full font-semibold text-26 leading-30"
+            class="bg-main-black rounded-[99px] py-4 px-6 w-full font-semibold text-18 lg:text-26 leading-30 text-white cursor-pointer"
           >
             {{ getPriceText(card, index) }}
           </button>

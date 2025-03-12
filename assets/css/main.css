@@ -16,6 +16,13 @@
 }
 
 @font-face {
+  font-family: 'Inter Medium';
+  font-display: swap;
+  font-weight: 500;
+  src: url('../fonts/Inter-Medium.ttf') format('truetype');
+}
+
+@font-face {
   font-weight: 600;
   font-family: 'Inter SemiBold';
   font-display: swap;
@@ -37,7 +44,7 @@
 }
 
 body {
-  @apply m-0 box-border font-['Inter'] font-normal antialiased bg-secondary-black dark:text-white;
+  @apply m-0 box-border font-['Inter'] font-normal antialiased bg-secondary-black text-[#FFFFFF];
 }
 
 html,

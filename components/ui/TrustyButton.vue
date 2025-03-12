@@ -1,6 +1,6 @@
 <template>
   <button
-    :class="`btn btn-${props.type} btn-${props.size} btn-${props.theme}`"
+    :class="`btn btn-${props.variant} btn-${props.size} btn-${props.color}`"
     :disabled="props.disabled"
     :title="props.title"
   >
@@ -10,9 +10,10 @@
 
 <script setup lang="ts">
 const props = defineProps({
-  type: {
+  variant: {
     type: String,
     default: 'primary',
+    validator: (value: string) => ['primary', 'outlined'].includes(value),
   },
   size: {
     type: String,
@@ -23,10 +24,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  theme: {
+  color: {
     type: String,
     default: 'light',
-    validator: (value: string) => ['light', 'dark'].includes(value),
+    validator: (value: string) => ['light', 'dark', 'black', 'white'].includes(value),
   },
   disabled: {
     type: Boolean,
@@ -41,9 +42,9 @@ const props = defineProps({
   padding: 13px 28px;
   cursor: pointer;
   border: none;
+  transition: opacity 0.3s ease-in-out;
   &:hover {
     opacity: 0.8;
-    transition: opacity 0.3s ease-in-out;
   }
 
   &.btn-small {
@@ -71,25 +72,26 @@ const props = defineProps({
     color: #fff;
   }
 
-  &.btn-outlined {
-    border: 1px solid #737373;
-    color: #ffffff;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
+  &.btn-black {
+    background-color: #000;
+    color: #fff;
+  }
+
+  &.btn-white {
+    background-color: #fff;
+    color: #000;
   }
 
   &.btn-primary {
-    background-color: #ffffff;
-    color: #000000;
     font-weight: 500;
     font-size: 16px;
     line-height: 24px;
   }
 
-  &.btn-black {
-    background-color: #000000;
-    color: #ffffff;
+  &.btn-outlined {
+    border: 1px solid #737373;
+    background: transparent;
+    color: inherit;
     font-weight: 500;
     font-size: 16px;
     line-height: 24px;

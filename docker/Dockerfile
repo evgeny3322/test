@@ -10,7 +10,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Copy the rest of the application
-COPY .. .
+COPY . .
 
 # Build the application
 RUN npm run build
@@ -38,4 +38,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Run the application
-CMD ["node", ".output/server/index.mjs"]"]
+CMD ["node", ".output/server/index.mjs"]

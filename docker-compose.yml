@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/DockerfileDev
+      dockerfile: docker/Dockerfile
     container_name: inspiritaly-app
     ports:
       - '3000:3000'
