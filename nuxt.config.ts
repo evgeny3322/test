@@ -20,4 +20,10 @@ export default defineNuxtConfig({
     strict: true,
     typeCheck: true,
   },
+
+  runtimeConfig: {
+    public: {
+      apiUrl: process.env.VITE_APP_API_URL || 'https://dev-api.inspiritaly.trustyone.dev/',
+    },
+  },
 });

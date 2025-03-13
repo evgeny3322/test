@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import TourCard from '@/components/ui/TrustyTourCard.vue';
 import VideoSwiper from '@/components/tours/VideoSwiper.vue';
-import type { Tour } from '@/types/toursTypes';
+import type { Tour } from '@/types/tours';
 import SearchForm from '@/components/tours/SearchForm.vue';
 
 const tours: Tour[] = [

@@ -45,7 +45,7 @@ import { useSwiper } from '@/.nuxt/imports';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import TrustyButton from '../ui/TrustyButton.vue';
-import type { Tour } from '@/types/toursTypes';
+import type { Tour } from '@/types/tours';
 
 const props = defineProps<{
   tours: Tour[];

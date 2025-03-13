@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Tour } from '@/types/toursTypes';
+import type { Tour } from '@/types/tours';
 import { navigateTo } from 'nuxt/app';
 import TrustyChip from '@/components/ui/TrustyChip.vue';
 

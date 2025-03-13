@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1c0e96-29a4-440b-af70-617801cded57" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-    </list>
+    <list default="true" id="2c1c0e96-29a4-440b-af70-617801cded57" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,6 +55,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\evgen\WebstormProjects\job\inspiritaly-frontend" />
       <recent name="C:\Users\evgen\WebstormProjects\job\inspiritaly-frontend\components\ui" />
       <recent name="C:\Users\evgen\WebstormProjects\job\inspiritaly-frontend\docker" />
     </key>
@@ -104,6 +103,9 @@
       <workItem from="1741769121159" duration="2064000" />
       <workItem from="1741775294184" duration="589000" />
       <workItem from="1741854624713" duration="751000" />
+      <workItem from="1741861056874" duration="5072000" />
+      <workItem from="1741867474156" duration="1059000" />
+      <workItem from="1741870348380" duration="1922000" />
     </task>
     <servers />
   </component>
