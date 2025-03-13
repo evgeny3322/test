@@ -3,7 +3,7 @@
     <div class="flex flex-col mx-auto">
       <div class="flex flex-col lg:flex-row justify-between items-start">
         <p class="title text-23 leading-18 cursor-pointer">InspirItaly</p>
-        <div v-if="isMobile" class="flex flex-row items-center gap-x-[18px] my-[30px]">
+        <div class="flex flex-row items-center gap-x-[18px] my-[30px] lg:hidden">
           <component
             class="w-[24px] h-[24px] cursor-pointer"
             v-for="(social, index) in socialIcons"
@@ -17,7 +17,7 @@
         <div class="flex flex-col gap-y-2 mb-7.5 lg:mb-0">
           <p class="text">Our Location</p>
           <span class="description"
-            >Via Ambrogio Traversari, 64/Rosso <br v-if="isDesktop" />
+            >Via Ambrogio Traversari, 64/Rosso <br class="hidden lg:block" />
             Florence, Italy, 50126</span
           >
         </div>
@@ -33,8 +33,7 @@
         </div>
       </div>
       <div
-        v-if="isDesktop"
-        class="flex flex-row items-center gap-x-5 my-7.5 justify-end lg:my-0 lg:mt-7.5"
+        class="hidden lg:flex flex-row items-center gap-x-5 my-7.5 justify-end lg:my-0 lg:mt-7.5"
       >
         <component
           class="w-[24px] h-[24px] cursor-pointer"

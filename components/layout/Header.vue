@@ -1,35 +1,27 @@
 <template>
   <div class="flex flex-row justify-between items-center w-full py-6">
     <p @click="router.push('/')" class="title text-23 leading-24 cursor-pointer">InspirItaly</p>
-    <template v-if="isDesktop">
-      <div class="flex flex-row gap-x-10">
-        <p
-          @click="handleSetActiveNav(item)"
-          v-for="item in navItems"
-          :key="item"
-          :class="{ '!text-[#FFFFFF]': item === activeNav }"
-          class="whitespace-nowrap cursor-pointer font-semibold text-[#939393] text-14"
-        >
-          {{ item }}
-        </p>
+    <div class="flex-row gap-x-10 hidden lg:flex">
+      <p
+        @click="handleSetActiveNav(item)"
+        v-for="item in navItems"
+        :key="item"
+        :class="{ '!text-[#FFFFFF]': item === activeNav }"
+        class="whitespace-nowrap cursor-pointer font-semibold text-[#939393] text-14"
+      >
+        {{ item }}
+      </p>
+    </div>
+    <div class="flex flex-row items-center gap-x-3 lg:gap-x-[22px]">
+      <p class="font-semibold cursor-pointer text-14">Login</p>
+      <trusty-button class="!py-2">
+        <p class="whitespace-nowrap font-semibold text-14">Sign Up</p>
+      </trusty-button>
+      <LanguageSwitcher />
+      <div class="flex items-center justify-center lg:hidden cursor-pointer">
+        <burger-icon />
       </div>
-      <div class="flex flex-row items-center gap-x-[22px]">
-        <p class="font-semibold cursor-pointer text-14">Login</p>
-        <trusty-button class="!py-2">
-          <p class="whitespace-nowrap font-semibold text-14">Sign Up</p>
-        </trusty-button>
-        <LanguageSwitcher />
-      </div>
-    </template>
-
-    <template v-else>
-      <div class="flex items-center gap-4">
-        <LanguageSwitcher />
-        <div class="bg-[#FFFFFF1A] w-10 h-10 flex items-center justify-center cursor-pointer">
-          <burger-icon />
-        </div>
-      </div>
-    </template>
+    </div>
   </div>
 </template>
 

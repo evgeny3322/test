@@ -3,7 +3,7 @@
     <div class="bg-grey-light-1 rounded-main-sm p-5 lg:p-8 grid grid-cols-12">
       <div class="col-span-12 lg:col-span-8 lg:mr-[30px]">
         <ClientOnly>
-          <div v-if="$device.isMobileOrTablet" class="mb-6">
+          <div class="mb-6 block lg:hidden">
             <swiper-container
               @slideChange="onSlideChange"
               :style="{
@@ -27,19 +27,19 @@
               }"
             >
               <swiper-slide
-                class="overflow-hidden rounded-[14px] w-full max-h-[220px] md:max-h-[320px]"
+                class="overflow-hidden rounded-[14px] w-full max-h-[220px] sm:max-h-[320px]"
                 v-for="slide in slides"
                 :key="slide.id"
               >
                 <div class="bg-[#00000080] absolute top-0 left-0 w-full h-full"></div>
                 <video-player
-                  class="max-h-[220px] md:max-h-[320px]"
+                  class="max-h-[220px] sm:max-h-[320px]"
                   v-if="slide.videoUrl"
                   :src="slide.videoUrl"
                 />
                 <NuxtImg
                   v-if="!slide.videoUrl"
-                  class="!rounded-[14px]"
+                  class="!rounded-[14px] object-cover"
                   alt="slide"
                   :src="slide.image"
                 />
@@ -47,71 +47,72 @@
             </swiper-container>
             <div class="swiper-pagination"></div>
           </div>
-          <Swiper
-            v-if="$device.isDesktop"
-            :style="{
-              '--swiper-navigation-color': '#fff',
-              '--swiper-pagination-color': '#fff',
-            }"
-            :loop="true"
-            :spaceBetween="10"
-            :autoplay="{
-              delay: 5000,
-              disableOnInteraction: false,
-            }"
-            :pagination="true"
-            grab-cursor
-            :thumbs="{ swiper: thumbsSwiperRef }"
-            :modules="modules"
-            class="mySwiper2"
-          >
-            <SwiperSlide
-              class="overflow-hidden rounded-[14px]"
-              v-for="slide in slides"
-              :key="slide.id"
-            >
-              <video-player v-if="slide.videoUrl" :src="slide.videoUrl" />
-              <NuxtImg
-                v-if="!slide.videoUrl"
-                class="!rounded-[14px]"
-                alt="slide"
-                :src="slide.image"
-              />
-            </SwiperSlide>
-          </Swiper>
-
-          <!-- Нижний слайдер (превью) -->
-          <div v-if="$device.isDesktop" class="relative mt-[30px] px-15">
-            <button class="swiper-button-prev-custom" ref="prevBtn">
-              <arrow-slide-icon class="rotate-180" />
-            </button>
-            <button class="swiper-button-next-custom" ref="nextBtn">
-              <arrow-slide-icon />
-            </button>
+          <div class="hidden lg:block">
             <Swiper
-              @swiper="setThumbsSwiper"
-              grab-cursor
-              :loop="true"
-              :spaceBetween="30"
-              :slidesPerView="4"
-              :freeMode="true"
-              :watchSlidesProgress="true"
-              :navigation="{
-                nextEl: nextBtn,
-                prevEl: prevBtn,
+              :style="{
+                '--swiper-navigation-color': '#fff',
+                '--swiper-pagination-color': '#fff',
               }"
+              :loop="true"
+              :spaceBetween="10"
+              :autoplay="{
+                delay: 5000,
+                disableOnInteraction: false,
+              }"
+              :pagination="true"
+              grab-cursor
+              :thumbs="{ swiper: thumbsSwiperRef }"
               :modules="modules"
-              class="mySwiper"
+              class="mySwiper2"
             >
               <SwiperSlide
+                class="overflow-hidden rounded-[14px]"
                 v-for="slide in slides"
                 :key="slide.id"
-                class="overflow-hidden !rounded-[14px]"
               >
-                <div class="bg-[#00000080] absolute top-0 left-0 w-full h-full"></div>
-                <NuxtImg class="!rounded-[14px]" alt="slide" :src="slide.image" />
+                <video-player v-if="slide.videoUrl" :src="slide.videoUrl" />
+                <NuxtImg
+                  v-if="!slide.videoUrl"
+                  class="!rounded-[14px]"
+                  alt="slide"
+                  :src="slide.image"
+                />
               </SwiperSlide>
             </Swiper>
+
+            <!-- Нижний слайдер (превью) -->
+            <div class="relative mt-[30px] px-15">
+              <button class="swiper-button-prev-custom" ref="prevBtn">
+                <arrow-slide-icon class="rotate-180" />
+              </button>
+              <button class="swiper-button-next-custom" ref="nextBtn">
+                <arrow-slide-icon />
+              </button>
+              <Swiper
+                @swiper="setThumbsSwiper"
+                grab-cursor
+                :loop="true"
+                :spaceBetween="30"
+                :slidesPerView="4"
+                :freeMode="true"
+                :watchSlidesProgress="true"
+                :navigation="{
+                  nextEl: nextBtn,
+                  prevEl: prevBtn,
+                }"
+                :modules="modules"
+                class="mySwiper"
+              >
+                <SwiperSlide
+                  v-for="slide in slides"
+                  :key="slide.id"
+                  class="overflow-hidden !rounded-[14px]"
+                >
+                  <div class="bg-[#00000080] absolute top-0 left-0 w-full h-full"></div>
+                  <NuxtImg class="!rounded-[14px]" alt="slide" :src="slide.image" />
+                </SwiperSlide>
+              </Swiper>
+            </div>
           </div>
         </ClientOnly>
       </div>

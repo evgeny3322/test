@@ -24,7 +24,8 @@
       -->
       <trusty-complete
         :options="filter.options"
-        :model-value="values[filter.name]"
+        v-model="values[filter.name]"
+        itemClass="p-[6px]"
         :placeholder="filter.placeholder"
         @change="handleChange(filter.name, $event)"
         select-class="p-[13px] h-[50px]"

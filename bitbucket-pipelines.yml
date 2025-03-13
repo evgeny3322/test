@@ -1,0 +1,147 @@
+image: node:20-alpine
+
+definitions:
+  caches:
+    npm: ~/.npm
+    dist: dist
+    output: .output
+
+  steps:
+    - step: &build-test
+        name: Build and Test
+        caches:
+          - npm
+        script:
+          - npm ci
+          - npm run lint
+          - npm run test:run
+          - npm run build
+        artifacts:
+          - dist/**
+          - .output/**
+          - build.env
+
+    - step: &deploy-feature-branch
+        name: Deploy Feature Branch
+        script:
+          - export $(cat build.env | xargs)
+          - apk add --no-cache openssh-client
+          - pipe: atlassian/ssh-run:0.7.1
+            variables:
+              SSH_USER: $SSH_USER
+              SERVER: $SSH_HOST
+              MODE: 'command'
+              COMMAND: |
+                mkdir -p $FRONTEND_DIRECTORY/$DIR_NAME
+          - pipe: atlassian/scp-deploy:1.4.0
+            variables:
+              USER: $SSH_USER
+              SERVER: $SSH_HOST
+              REMOTE_PATH: $FRONTEND_DIRECTORY/$DIR_NAME
+              LOCAL_PATH: '.output/'
+          - pipe: atlassian/ssh-run:0.7.1
+            variables:
+              SSH_USER: $SSH_USER
+              SERVER: $SSH_HOST
+              MODE: 'command'
+              COMMAND: |
+                cd $CADDY_DIRECTORY
+                bash makefrontdomain.sh $DOMAIN_NAME $DIR_NAME
+
+    - step: &deploy-to-staging
+        name: Deploy to Staging
+        deployment: staging
+        caches:
+          - output
+        script:
+          - apk add --no-cache openssh-client
+          - pipe: atlassian/ssh-run:0.7.1
+            variables:
+              SSH_USER: $SSH_USER
+              SERVER: $SSH_HOST
+              MODE: 'command'
+              COMMAND: |
+                mkdir -p $FRONTEND_DIRECTORY/dev
+                cd $FRONTEND_DIRECTORY
+                bash prepare_deploy_frontend_dev.sh
+          - pipe: atlassian/scp-deploy:1.4.0
+            variables:
+              USER: $SSH_USER
+              SERVER: $SSH_HOST
+              REMOTE_PATH: $FRONTEND_DIRECTORY/dev
+              LOCAL_PATH: '.output/'
+          - pipe: atlassian/ssh-run:0.7.1
+            variables:
+              SSH_USER: $SSH_USER
+              SERVER: $SSH_HOST
+              MODE: 'command'
+              COMMAND: |
+                cd $FRONTEND_DIRECTORY/dev
+                pm2 restart inspiritaly-frontend-dev || pm2 start npm --name inspiritaly-frontend-dev -- start
+
+    - step: &deploy-to-production
+        name: Deploy to Production
+        deployment: production
+        caches:
+          - output
+        script:
+          - apk add --no-cache openssh-client
+          - pipe: atlassian/ssh-run:0.7.1
+            variables:
+              SSH_USER: $SSH_USER_PROD
+              SERVER: $SSH_HOST_PROD
+              MODE: 'command'
+              COMMAND: |
+                mkdir -p $FRONTEND_DIRECTORY/inspiritaly
+          - pipe: atlassian/scp-deploy:1.4.0
+            variables:
+              USER: $SSH_USER_PROD
+              SERVER: $SSH_HOST_PROD
+              REMOTE_PATH: $FRONTEND_DIRECTORY/inspiritaly
+              LOCAL_PATH: '.output/'
+          - pipe: atlassian/ssh-run:0.7.1
+            variables:
+              SSH_USER: $SSH_USER_PROD
+              SERVER: $SSH_HOST_PROD
+              MODE: 'command'
+              COMMAND: |
+                cd $FRONTEND_DIRECTORY/inspiritaly
+                pm2 restart inspiritaly-frontend || pm2 start npm --name inspiritaly-frontend -- start
+
+pipelines:
+  pull-requests:
+    '{feature/*}':
+      - step:
+          name: 'Find task from branch name'
+          script:
+            - export TICKET_NAME=$(echo "$BITBUCKET_BRANCH" | grep --only-matching --extended-regexp '([A-Z]+)-[0-9]+')
+            - echo TICKET_NAME="$TICKET_NAME" >> build.env
+            - export DIR_NAME=$(echo "$TICKET_NAME" | awk '{print tolower($0)}')
+            - echo DIR_NAME="$DIR_NAME" >> build.env
+            - export DOMAIN_NAME=$(echo "$TICKET_NAME-front"."$PROJECT_FAMILY"."$DOMAIN_FAMILY" | awk '{print tolower($0)}')
+            - echo DOMAIN_NAME="$DOMAIN_NAME" >> build.env
+            - export APP_URL=$(echo "https://$TICKET_NAME-front"."$PROJECT_FAMILY"."$DOMAIN_FAMILY" | awk '{print tolower($0)}')
+            - echo APP_URL="$APP_URL" >> build.env
+            - printenv
+          artifacts:
+            - build.env
+      - step: *build-test
+      - step: *deploy-feature-branch
+
+  branches:
+    dev:
+      - step: *build-test
+      - step: *deploy-to-staging
+
+    master:
+      - step: *build-test
+      - step: *deploy-to-production
+
+  custom:
+    deploy-to-staging:
+      - step: *build-test
+      - step: *deploy-to-staging
+
+    deploy-to-production:
+      - step: *build-test
+      - step: *deploy-to-production

@@ -35,6 +35,7 @@ import TrustyTourCard from '@/components/ui/TrustyTourCard.vue';
 import TrustyFilter from '@/components/ui/TrustyFilter.vue';
 import type { Tour } from '@/types/toursTypes';
 import { navigateTo, useRouter } from 'nuxt/app';
+import TrustyPreloader from '@/components/ui/TrustyPreloader.vue';
 
 const filterConfigs = [
   {

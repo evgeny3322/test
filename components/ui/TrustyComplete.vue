@@ -39,11 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue';
+import { ref, computed, defineProps, defineEmits, defineModel } from 'vue';
 import ArrowDownOutlinedIcon from '@/components/icons/ArrowDownOutlinedIcon.vue';
 
+const modelValue = defineModel('modelValue');
+
 const props = defineProps<{
-  modelValue: string | number;
   options: any[];
   placeholder?: string;
   label?: string;
@@ -55,12 +56,12 @@ const props = defineProps<{
   variant?: 'default' | 'outlined';
 }>();
 
-const emit = defineEmits(['update:modelValue', 'change']);
+const emit = defineEmits(['change']);
 
 const isOpen = ref(false);
 
 const selectedLabel = computed(() => {
-  const selected = props.options.find((opt) => opt.value === props.modelValue);
+  const selected = props.options.find((opt) => opt.value === modelValue.value);
   return selected ? selected.label : '';
 });
 
@@ -69,7 +70,7 @@ const toggleDropdown = () => {
 };
 
 const selectOption = (option: { value: string | number; label: string }) => {
-  emit('update:modelValue', option.value);
+  modelValue.value = option.value;
   emit('change', option.value);
   isOpen.value = false;
 };

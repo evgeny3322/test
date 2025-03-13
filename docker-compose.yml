@@ -1,11 +1,12 @@
 version: '3'
 
 services:
-  app:
+  # Main frontend application service
+  frontend:
     build:
       context: .
-      dockerfile: docker/Dockerfile
-    container_name: inspiritaly-app
+      dockerfile: docker/DockerfileDev
+    container_name: inspiritaly-frontend
     ports:
       - '3000:3000'
     volumes:
@@ -15,3 +16,28 @@ services:
       - HOST=0.0.0.0
       - PORT=3000
       - NODE_ENV=development
+    restart: unless-stopped
+    networks:
+      - app-network
+    command: npm run dev
+
+  # Production build service (commented out by default)
+  # Use this for testing production builds locally
+  # frontend-prod:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile
+  #   container_name: inspiritaly-frontend-prod
+  #   ports:
+  #     - '3001:3000'
+  #   environment:
+  #     - HOST=0.0.0.0
+  #     - PORT=3000
+  #     - NODE_ENV=production
+  #   restart: unless-stopped
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+    driver: bridge

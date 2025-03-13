@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-12 gap-x-7">
     <div class="bg-tertiary-black p-8 rounded-main-sm flex flex-col gap-y-6 col-span-8">
-      <trusty-field model-value="" label="First Name" type="password" />
+      <trusty-field model-value="" label="First Name" />
       <trusty-field model-value="" label="Last Name" />
       <trusty-field model-value="" label="E-mail Address" type="email" />
       <trusty-field model-value="" label="Mobile Phone Number" type="tel" />

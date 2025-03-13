@@ -34,11 +34,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue';
+import { ref, computed, defineProps, defineEmits, defineModel } from 'vue';
 import { VueTelInput } from 'vue-tel-input';
 import 'vue-tel-input/vue-tel-input.css';
 import EyeIcon from '@/components/icons/EyeIcon.vue';
 import EyeClosedIcon from '@/components/icons/EyeOffIcon.vue';
+
+const model = defineModel();
 
 const props = defineProps<{
   label?: string;
@@ -49,7 +51,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['country-changed']);
-const model = defineModel();
 const showPassword = ref(false);
 
 const inputType = computed(() => {
