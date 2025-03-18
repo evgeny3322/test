@@ -1,27 +1,31 @@
 <template>
   <div class="block-container flex flex-col justify-between h-full">
-    <div class="grid grid-cols-12 gap-x-20">
-      <div class="col-span-3 flex flex-col">
-        <div class="flex flex-col gap-y-[6px]">
+    <div class="grid grid-cols-12 lg:gap-x-20 overflow-x-auto lg:overflow-visible scrollbar-hide">
+      <div class="col-span-12 lg:col-span-3 flex flex-col">
+        <div
+          class="flex flex-row overflow-x-scroll lg:overflow-visible h-full lg:h-max w-full lg:flex-col gap-x-3 gap-y-[6px] scrollbar-hide"
+        >
           <p
             @click="setActiveItem(index)"
             v-for="(item, index) in navItems"
             :key="index"
-            class="font-medium text-18 title px-6 py-3 cursor-pointer"
+            class="font-medium text-14 lg:text-18 title px-6 py-3 cursor-pointer text-nowrap lg:text-wrap"
             :class="{ 'rounded-main-sm bg-[#FFFFFF0D]': activeNavIndex === index }"
           >
             {{ item.name }}
           </p>
         </div>
-        <div class="mt-[340px] h-full flex flex-col justify-between">
-          <p class="px-[13px] text-grey-light-4 font-medium title text-18 cursor-pointer">
+        <div class="lg:mt-[340px] lg:mb-0 my-8 h-full flex flex-col justify-between">
+          <p
+            class="lg:px-[13px] mb-6 lg:mb-0 text-grey-light-4 font-medium title text-14 lg:text-18 cursor-pointer"
+          >
             Log Out
           </p>
           <template v-if="activeNavIndex === 1">
-            <div class="col-span-4 flex flex-col gap-y-7 justify-between">
+            <div class="col-span-12 lg:col-span-4 flex flex-col gap-y-3 lg:gap-y-7 justify-between">
               <div class="bg-[#151515] p-6 rounded-main-sm h-full">
-                <p class="title text-18 font-medium mb-3">Information</p>
-                <span class="text-grey-light-4 text-14"
+                <p class="title text-14 lg:text-18 font-medium mb-3">Information</p>
+                <span class="text-grey-light-4 text-12 lg:text-14"
                   >At least 8 characters, at least one capital and small letter, number and special
                   character.At least 8 characters, at least one capital and small letter, number and
                   special character.</span
@@ -44,7 +48,7 @@
                     :pagination="true"
                     :navigation="true"
                     :autoplay="{
-                      delay: 3000,
+                      delay: 5000,
                       disableOnInteraction: false,
                     }"
                   >
@@ -55,23 +59,27 @@
                     >
                       <div class="relative">
                         <NuxtImg
-                          class="!rounded-[14px] max-h-[347px] w-full object-cover"
+                          class="!rounded-[14px] max-h-[114px] lg:max-h-[347px] w-full object-cover"
                           alt="slide"
                           :src="slide.src"
                         />
                         <div class="absolute top-0 h-full w-full bg-[#00000033] z-10"></div>
                         <div
-                          class="absolute top-0 h-full w-full p-5 z-11 flex flex-col justify-between"
+                          class="absolute top-0 h-full w-full px-8 py-2 lg:p-5 z-11 flex flex-col justify-between"
                         >
                           <div>
-                            <p class="font-medium text-26 leading-30 mb-[6px]">{{ slide.title }}</p>
-                            <span class="font-medium text-18 leading-24">{{ slide.price }}</span>
-                          </div>
-                          <div class="mb-[14px]">
-                            <span class="text-grey-light-7">{{
-                              slide.desc.length > 50 ? slide.desc.slice(0, 50) + '...' : slide.desc
+                            <p class="font-medium text-20 lg:text-26 leading-30 lg:mb-[6px]">
+                              {{ slide.title }}
+                            </p>
+                            <span class="font-medium text-12 lg:text-18 leading-24">{{
+                              slide.price
                             }}</span>
-                            <div class="flex flex-row mt-4 gap-x-[6px]">
+                          </div>
+                          <div class="mb-auto lg:mb-[14px]">
+                            <template class="hidden lg:block">
+                              <span class="text-grey-light-7 line-clamp-2">{{ slide.desc }}</span>
+                            </template>
+                            <div class="flex flex-row lg:mt-4 gap-x-[6px]">
                               <trusty-chip v-for="chip in slide.chips">{{
                                 chip.value
                               }}</trusty-chip>
@@ -87,7 +95,7 @@
           </template>
         </div>
       </div>
-      <div class="col-span-9">
+      <div class="col-span-12 lg:col-span-9">
         <component :is="navItems[activeNavIndex].component" />
       </div>
     </div>
@@ -104,7 +112,7 @@ interface NavItem {
   component: ReturnType<typeof defineAsyncComponent>;
 }
 
-const activeNavIndex = ref<number>(0);
+const activeNavIndex = ref<number>(1);
 
 const slides = ref([
   {
@@ -164,3 +172,14 @@ const setActiveItem = (index: number) => {
   activeNavIndex.value = index;
 };
 </script>
+
+<style>
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

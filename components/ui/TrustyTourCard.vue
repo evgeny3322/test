@@ -6,24 +6,31 @@
       class="w-full h-full min-h-[19rem] z-1 flex flex-col justify-center items-start self-start"
     >
       <h1 class="text-26 font-medium leading-[1.875rem]">
-        {{ props.tour?.title }}
+        {{ props.tour?.name }}
       </h1>
       <p class="text-lg font-medium mb-4">
-        {{ props.tour?.semi_title }}
-      </p>
-      <p class="text-grey-large text-14 line-clamp-3 mt-auto leading-[1.225rem]">
         {{ props.tour?.description }}
       </p>
+      <p class="text-grey-large text-14 line-clamp-3 mt-auto leading-[1.225rem]">
+        <!--        TODO поменять на нормальное описание когда исправят на бэке-->
+        <!--        {{ props.tour?.internal_description }}-->
+      </p>
       <div class="flex flex-wrap gap-[0.375em] items-center mt-4 w-full h-auto">
-        <trusty-chip v-for="(block, index) in tour.buttons" :key="index">
-          {{ block.value }}
+        <trusty-chip>
+          {{ props.tour?.area?.name }}
+        </trusty-chip>
+        <trusty-chip>
+          {{ props.tour?.duration }}
+        </trusty-chip>
+        <trusty-chip>
+          {{ props.tour?.max_participants }}
         </trusty-chip>
       </div>
     </div>
     <NuxtImg
       width="300"
       class="absolute brightness-80 object-cover w-full h-full"
-      :src="props.tour?.image"
+      :src="props.tour?.media[0]"
       alt="Tour"
     />
   </div>

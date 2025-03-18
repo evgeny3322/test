@@ -1,13 +1,67 @@
 export interface Tour {
-  title: string;
-  video?: string;
-  image?: string;
-  semi_title?: string;
+  id: number;
+  name: string;
   description: string;
-  buttons?: Blocks[];
-  _id: string;
+  internal_description: string;
+  duration: string;
+  min_cost: number | null;
+  max_cost: number | null;
+  max_participants: number;
+  area: Area;
+  segments: Segment[];
+  media: any[];
 }
-interface Blocks {
-  value: string;
-  _id: string;
+export interface ToursApiResponse {
+  data: Tour[];
+  links?: object;
+  meta?: object;
+}
+export interface TourApiResponse {
+  data: Tour;
+}
+export interface Area {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export interface Segment {
+  id: number;
+  name: string;
+  description: string;
+  duration: string;
+  type: string;
+  order: number;
+  addons: Addon[];
+}
+
+export interface Addon {
+  id: number;
+  name: string;
+  description: string;
+  internal_description: string;
+  max_participants: number;
+  base_cost: number[];
+  cost_type: 'group_diff' | 'group_fix';
+  resource: Resource;
+  code: string;
+  area: Area;
+  duration: string;
+  period: string;
+  media: any[];
+  segmentType?: string;
+}
+
+export interface Resource {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export interface TourFilters {
+  area_id?: number;
+  max_participants?: number;
+  duration?: string;
+  min_cost?: number;
+  max_cost?: number;
 }

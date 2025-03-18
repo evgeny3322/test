@@ -1,5 +1,5 @@
 <template>
-  <div :class="['relative w-full cursor-pointer', containerClass]">
+  <div :id="componentId" :class="['relative w-full cursor-pointer', containerClass]">
     <label v-if="label" class="block mb-2 text-sm font-medium text-grey-light-6" v-html="label" />
     <div
       :class="[
@@ -39,8 +39,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, defineModel } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import ArrowDownOutlinedIcon from '@/components/icons/ArrowDownOutlinedIcon.vue';
+import { useDropdownStore } from '@/store/dropdownStore';
 
 const modelValue = defineModel('modelValue');
 
@@ -54,11 +55,18 @@ const props = defineProps<{
   itemClass?: string;
   ulClass?: string;
   variant?: 'default' | 'outlined';
+  id?: string;
 }>();
 
 const emit = defineEmits(['change']);
 
-const isOpen = ref(false);
+const dropdownStore = useDropdownStore();
+
+const componentId = computed(
+  () => props.id || `dropdown-${Math.random().toString(36).substring(2, 9)}`
+);
+
+const isOpen = computed(() => dropdownStore.isDropdownOpen(componentId.value));
 
 const selectedLabel = computed(() => {
   const selected = props.options.find((opt) => opt.value === modelValue.value);
@@ -66,13 +74,13 @@ const selectedLabel = computed(() => {
 });
 
 const toggleDropdown = () => {
-  isOpen.value = !isOpen.value;
+  dropdownStore.toggleDropdown(componentId.value);
 };
 
 const selectOption = (option: { value: string | number; label: string }) => {
   modelValue.value = option.value;
   emit('change', option.value);
-  isOpen.value = false;
+  dropdownStore.closeDropdown();
 };
 
 const variantClass = computed(() =>
@@ -80,14 +88,28 @@ const variantClass = computed(() =>
     ? 'border-[#FFFFFF4A] bg-transparent text-white'
     : 'bg-[#323232] border-[#484848]'
 );
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (!isOpen.value) return;
+
+  const element = event.target as HTMLElement;
+  const dropdown = document.getElementById(componentId.value);
+
+  if (dropdown && !dropdown.contains(element)) {
+    dropdownStore.closeDropdown();
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <style scoped>
-.field-label {
-  font-size: 14px;
-  color: #ffffff99;
-  margin-bottom: 8px;
-}
 ul::-webkit-scrollbar {
   width: 8px;
 }

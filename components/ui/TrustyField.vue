@@ -7,7 +7,7 @@
         v-bind="props"
         v-model="model"
         class="field-input"
-        @country-changed="(country) => emit('country-changed', country)"
+        @country-changed="(country: VueTelInputCountryObject) => emit('country-changed', country)"
         :class="[inputClass, { '!border-red-500 border': error }]"
         :placeholder="placeholder"
       />
@@ -35,10 +35,12 @@
 
 <script setup lang="ts">
 import { ref, computed, defineProps, defineEmits, defineModel } from 'vue';
+//@ts-ignore
 import { VueTelInput } from 'vue-tel-input';
 import 'vue-tel-input/vue-tel-input.css';
 import EyeIcon from '@/components/icons/EyeIcon.vue';
 import EyeClosedIcon from '@/components/icons/EyeOffIcon.vue';
+import { VueTelInputCountryObject } from '@/types/type';
 
 const model = defineModel();
 

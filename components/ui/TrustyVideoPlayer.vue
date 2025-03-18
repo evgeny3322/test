@@ -7,15 +7,17 @@
     <video
       ref="video"
       :src="src"
+      :poster="src"
       @ended="onEnded"
       :controls="controls"
       v-if="src"
       :class="{ 'opacity-50': isMouseOnVideo }"
+      class="h-full object-cover"
     />
     <div v-if="isMouseOnVideo" class="play-button" @click="togglePlay">
       <svg
         v-if="!isPlaying"
-        class="icon backdrop-opacity-5"
+        class="icon bacdrop-opacity-5"
         xmlns="http://www.w3.org/2000/svg"
         width="40"
         height="46"
@@ -31,7 +33,7 @@
         v-else
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        class="icon backdrop-opacity-5"
+        class="icon bacdrop-opacity-5"
       >
         <rect x="6" y="3" width="4" height="18" fill="black" />
         <rect x="14" y="3" width="4" height="18" fill="black" />
@@ -39,7 +41,6 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, defineProps } from 'vue';
 const isMouseOnVideo = ref(true);
@@ -47,10 +48,8 @@ const props = defineProps<{
   src?: string;
   controls?: boolean;
 }>();
-
 const video = ref<HTMLVideoElement | null>(null);
 const isPlaying = ref(false);
-
 const togglePlay = () => {
   if (video.value) {
     if (isPlaying.value) {
@@ -61,20 +60,16 @@ const togglePlay = () => {
     isPlaying.value = !isPlaying.value;
   }
 };
-
 const onEnded = () => {
   isPlaying.value = false;
 };
 </script>
-
 <style scoped>
 .video-player {
-  width: 100%;
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
 }
-
 .play-button {
   position: absolute;
   top: 50%;
@@ -90,22 +85,8 @@ const onEnded = () => {
   cursor: pointer;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
-
 .icon {
   width: 30px;
   height: 30px;
-}
-
-@media screen {
-  @media (max-width: 768px) {
-    .play-button {
-      width: 40px;
-      height: 40px;
-    }
-    .icon {
-      width: 15px;
-      height: 15px;
-    }
-  }
 }
 </style>

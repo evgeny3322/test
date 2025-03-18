@@ -79,6 +79,6 @@ body > .skiptranslate,
     @apply mx-auto w-full max-w-[1170px] xl:max-w-[1920px];
   }
   .rounded-main-sm {
-    @apply rounded-[16px];
+    @apply rounded-[6px];
   }
 }

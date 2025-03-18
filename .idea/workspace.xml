@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1c0e96-29a4-440b-af70-617801cded57" name="Changes" comment="" />
+    <list default="true" id="2c1c0e96-29a4-440b-af70-617801cded57" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/components/layout/Header.vue" beforeDir="false" afterPath="$PROJECT_DIR$/components/layout/Header.vue" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,6 +108,13 @@
       <workItem from="1741861056874" duration="5072000" />
       <workItem from="1741867474156" duration="1059000" />
       <workItem from="1741870348380" duration="1922000" />
+      <workItem from="1741874402915" duration="739000" />
+      <workItem from="1741885049703" duration="547000" />
+      <workItem from="1741941659545" duration="7223000" />
+      <workItem from="1741949679840" duration="426000" />
+      <workItem from="1742201813948" duration="1585000" />
+      <workItem from="1742221656514" duration="3224000" />
+      <workItem from="1742289652887" duration="1553000" />
     </task>
     <servers />
   </component>

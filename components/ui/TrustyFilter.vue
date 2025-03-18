@@ -2,13 +2,7 @@
   <div
     class="mt-9 bg-secondary-black p-6 rounded-[12px] flex flex-col lg:flex-row space-y-4 lg:space-x-6 lg:space-y-0 lg:justify-between lg:items-end"
   >
-    <!-- Цикл по всем фильтрам из конфигурации -->
-    <div v-for="(filter, index) in filters" :key="index" class="flex flex-col w-full">
-      <!--
-        Лейбл фильтра - отображается только если:
-        1) Включен показ лейблов (showLabels=true)
-        2) У фильтра есть лейбл (filter.label существует)
-      -->
+    <div v-for="(filter, index) in filterConfigs" :key="index" class="flex flex-col w-full">
       <span
         v-if="showLabels && filter.label"
         class="text-[#B3B3B3] font-medium leading-6 text-[13px] mb-[6px]"
@@ -16,12 +10,6 @@
         {{ filter.label }}
       </span>
 
-      <!--
-        Компонент выбора значения (TrustyComplete)
-        - options: список вариантов для выбора
-        - v-model: использование двусторонней привязки данных с defineModel
-        - placeholder: текст-подсказка (если передан)
-      -->
       <trusty-complete
         :options="filter.options"
         v-model="values[filter.name]"
@@ -29,13 +17,10 @@
         :placeholder="filter.placeholder"
         @change="handleChange(filter.name, $event)"
         select-class="p-[13px] h-[50px]"
+        :id="`filter-${filter.name}`"
       />
     </div>
 
-    <!--
-      Кнопка поиска/применения фильтра
-      Отображается только если showButton=true
-    -->
     <trusty-button v-if="showButton" @click="handleSubmit" class="text-nowrap">
       {{ buttonText }}
     </trusty-button>
@@ -45,94 +30,90 @@
 <script setup lang="ts">
 import TrustyComplete from '@/components/ui/TrustyComplete.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
-import { PropType, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useAreasStore } from '@/store/areasStore';
 
-// Тип для варианта выбора в фильтре
-export interface FilterOption {
-  value: string | number; // Значение варианта (используется для отправки на сервер)
-  label: string; // Отображаемый текст варианта (показывается пользователю)
-}
-
-// Тип для конфигурации одного фильтра
-export interface FilterConfig {
-  name: string; // Уникальное имя фильтра (например, 'area', 'price')
-  label?: string; // Текст лейбла (необязательно)
-  placeholder?: string; // Текст-подсказка внутри поля (необязательно)
-  options: FilterOption[]; // Список вариантов для выбора
-  defaultValue?: string | number; // Значение по умолчанию (необязательно)
-}
-
-const props = defineProps({
-  // Массив с конфигурацией фильтров
-  filters: {
-    type: Array as PropType<FilterConfig[]>,
-    required: true, // Обязательный параметр
-  },
-
-  // Текст кнопки
-  buttonText: {
-    type: String,
-    default: 'Search', // Значение по умолчанию
-  },
-
-  // Показывать ли лейблы полей
-  showLabels: {
-    type: Boolean,
-    default: true, // По умолчанию показываем лейблы
-  },
-
-  // Показывать ли кнопку поиска
-  showButton: {
-    type: Boolean,
-    default: true, // По умолчанию показываем кнопку
-  },
-
-  initialValues: {
-    type: Object as PropType<Record<string, string | number>>,
-    default: () => ({}), // По умолчанию пустой объект
-  },
-});
-
-const values = defineModel<Record<string, string | number>>('values', {
-  default: () => ({}),
-});
-
-// Определяем событие для кнопки поиска
 const emit = defineEmits(['submit']);
+const areasStore = useAreasStore();
+const areas = ref<any[]>([]);
 
-// Следим за изменениями начальных значений (initialValues)
-watch(
-  () => props.initialValues,
-  (newValues) => {
-    // Копируем все значения из initialValues в values
-    Object.assign(values.value, newValues);
+const showLabels = ref(true);
+const showButton = ref(true);
+const buttonText = ref('Search');
+
+const values = ref<Record<string, string | number | null>>({});
+
+const filterConfigs = ref<any>([
+  {
+    name: 'area_id',
+    label: 'Area',
+    options: [],
   },
-  { immediate: true }
-);
-
-// Следим за изменениями конфигурации фильтров
-watch(
-  () => props.filters,
-  (newFilters) => {
-    // Проходим по всем фильтрам
-    newFilters.forEach((filter) => {
-      // Если у фильтра есть defaultValue и значение для этого фильтра еще не установлено
-      if (filter.defaultValue !== undefined && values.value[filter.name] === undefined) {
-        // Устанавливаем значение по умолчанию
-        values.value[filter.name] = filter.defaultValue;
-      }
-    });
+  {
+    name: 'max_participants',
+    label: 'Number of people',
+    options: [
+      { value: 1, label: '1 People' },
+      { value: 2, label: '2 People' },
+      { value: 3, label: '3 People' },
+      { value: 4, label: '4 People' },
+      { value: 5, label: '5 People' },
+      { value: 6, label: '6 People' },
+      { value: 7, label: '7 People' },
+      { value: 8, label: '8 People' },
+    ],
   },
-  { immediate: true }
-);
+  {
+    name: 'duration',
+    label: 'Duration',
+    options: [
+      { value: '2', label: '2 hours' },
+      { value: '4', label: '4 hours' },
+      { value: '6', label: '6 hours' },
+      { value: '8', label: '8 hours' },
+    ],
+  },
+  {
+    name: 'price',
+    label: 'Price',
+    options: [
+      { value: { min: 500, max: 1500 }, label: '500-1500 EUR' },
+      { value: { min: 1500, max: 2500 }, label: '1500-2500 EUR' },
+      { value: { min: 500 }, label: '2500+ EUR' },
+    ],
+  },
+]);
 
-// Обработчик изменения значения в фильтре
+const fetchAreasData = async () => {
+  areas.value = (await areasStore.fetchAreas()) || [];
+  updateFilterConfigs();
+};
+
+const updateFilterConfigs = () => {
+  filterConfigs.value[0].options =
+    areas.value.map((area) => ({ value: area.id, label: area.name })) || [];
+};
+
 const handleChange = (name: string, value: string | number) => {
   values.value[name] = value;
 };
 
-// Обработчик нажатия на кнопку поиска
 const handleSubmit = () => {
-  emit('submit', { ...values.value });
+  const formattedValues = {
+    area_id: values.value.area_id || null,
+    max_participants: values.value.max_participants || null,
+    duration: values.value.duration || '',
+    min_cost:
+      values.value.price && typeof values.value.price === 'object' && 'min' in values.value.price
+        ? (values.value.price as { min: number }).min
+        : null,
+    max_cost:
+      values.value.price && typeof values.value.price === 'object' && 'max' in values.value.price
+        ? (values.value.price as { max: number }).max
+        : null,
+  };
+  emit('submit', formattedValues);
 };
+
+onMounted(fetchAreasData);
 </script>

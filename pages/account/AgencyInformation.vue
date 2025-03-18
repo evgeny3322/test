@@ -1,28 +1,38 @@
 <template>
-  <div class="bg-tertiary-black p-8 grid grid-row-13 grid-cols-12 gap-4 items-end rounded-main-sm">
+  <div
+    class="bg-tertiary-black px-6 py-8 lg:p-8 grid grid-row-28 lg:grid-row-13 grid-cols-12 gap-4 items-end rounded-main-sm"
+  >
     <trusty-complete
-      class="col-span-2"
+      class="col-span-12 lg:col-span-2"
       variant="outlined"
       selectClass="p-[22px] h-[64px]"
       :options="options"
       v-model="agency.title"
     />
-    <trusty-field class="col-span-5" v-model="agency.first_name" label="Contact Person" />
-    <trusty-field class="col-span-5" v-model="agency.last_name" />
-    <trusty-field class="col-span-6" v-model="agency.company_name" label="Company name" />
-    <trusty-field class="col-span-6" v-model="agency.email" />
-    <trusty-field class="col-span-6" v-model="agency.iata_code" />
     <trusty-field
-      class="col-span-6"
+      class="col-span-12 lg:col-span-5"
+      v-model="agency.first_name"
+      label="Contact Person"
+    />
+    <trusty-field class="col-span-12 lg:col-span-5" v-model="agency.last_name" />
+    <trusty-field
+      class="lg:col-span-6 col-span-12"
+      v-model="agency.company_name"
+      label="Company name"
+    />
+    <trusty-field class="lg:col-span-6 col-span-12" v-model="agency.email" />
+    <trusty-field class="lg:col-span-6 col-span-12" v-model="agency.iata_code" />
+    <trusty-field
+      class="lg:col-span-6 col-span-12"
       v-model="agency.alternative_industry_code"
       label="Alternative Industry Code"
     />
-    <trusty-field class="col-span-3" v-model="agency.vat" />
-    <trusty-field class="col-span-3" v-model="agency.fiscal_code" />
-    <trusty-field class="col-span-3" v-model="agency.tax_id_code" />
-    <trusty-field class="col-span-3" v-model="agency.sdi_code" />
+    <trusty-field class="col-span-12 lg:col-span-3" v-model="agency.vat" />
+    <trusty-field class="col-span-12 lg:col-span-3" v-model="agency.fiscal_code" />
+    <trusty-field class="col-span-12 lg:col-span-3" v-model="agency.tax_id_code" />
+    <trusty-field class="col-span-12 lg:col-span-3" v-model="agency.sdi_code" />
     <trusty-complete
-      class="col-span-4"
+      class="col-span-12 lg:col-span-4"
       variant="outlined"
       selectClass="p-[22px] h-[64px]"
       :options="options"
@@ -30,7 +40,7 @@
       :label="`Country <span style='color:red'>*</span>`"
     />
     <trusty-complete
-      class="col-span-4"
+      class="col-span-12 lg:col-span-4"
       variant="outlined"
       selectClass="p-[22px] h-[64px]"
       :options="options"
@@ -38,7 +48,7 @@
       :label="`Region/State/Province<span style='color:red'>*</span>`"
     />
     <trusty-complete
-      class="col-span-4"
+      class="col-span-12 lg:col-span-4"
       variant="outlined"
       selectClass="p-[22px] h-[64px]"
       :options="options"
@@ -46,49 +56,61 @@
       :label="`City<span style='color:red'>*</span>`"
     />
     <trusty-field
-      class="col-span-3"
+      class="col-span-12 lg:col-span-3"
       v-model="agency.cap_zip"
       :label="`CAP/ZIP<span style='color:red'>*</span>`"
     />
     <trusty-field
-      class="col-span-6"
+      class="lg:col-span-6 col-span-12"
       v-model="agency.address"
       :label="`Address<span style='color:red'>*</span>`"
     />
-    <trusty-field class="col-span-3" v-model="agency.internal_number" label="Internal number" />
+    <trusty-field
+      class="col-span-12 lg:col-span-3"
+      v-model="agency.internal_number"
+      label="Internal number"
+    />
     <trusty-field
       type="tel"
-      class="col-span-6"
+      class="lg:col-span-6 col-span-12"
       v-model="agency.company_main_phone"
       :label="`Company Main Phone<span style='color:red'>*</span>`"
     />
     <trusty-field
-      class="col-span-6"
+      class="lg:col-span-6 col-span-12"
       v-model="agency.company_main_email"
       :label="`Company Main email<span style='color:red'>*</span>`"
     />
     <trusty-field
       type="tel"
-      class="col-span-6"
+      class="lg:col-span-6 col-span-12"
       v-model="agency.operations_phone"
       label="Operations Phone"
     />
-    <trusty-field class="col-span-6" v-model="agency.operations_email" label="Operations email" />
+    <trusty-field
+      class="lg:col-span-6 col-span-12"
+      v-model="agency.operations_email"
+      label="Operations email"
+    />
     <trusty-field
       type="tel"
-      class="col-span-6"
+      class="lg:col-span-6 col-span-12"
       v-model="agency.operations_phone"
       label="Operations Phone"
     />
-    <trusty-field class="col-span-6" v-model="agency.booking_phone" label="Booking Phone" />
+    <trusty-field
+      class="lg:col-span-6 col-span-12"
+      v-model="agency.booking_phone"
+      label="Booking Phone"
+    />
     <trusty-field
       type="tel"
-      class="col-span-6"
+      class="lg:col-span-6 col-span-12"
       v-model="agency.administration_phone"
       label="Administration Phone"
     />
     <trusty-field
-      class="col-span-6"
+      class="lg:col-span-6 col-span-12"
       v-model="agency.administration_email"
       label="Administration email"
     />

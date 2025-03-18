@@ -4,7 +4,7 @@
   >
     <NuxtImg
       v-if="activeCardIndex !== null"
-      :src="data.cards[activeCardIndex].image"
+      :src="data.addons[activeCardIndex].media[0]"
       class="absolute h-full w-full -z-10 object-cover"
     />
     <div
@@ -13,7 +13,7 @@
     ></div>
     <div class="col-span-12 lg:col-span-4 flex flex-col gap-y-6 mb-6 lg:mb-0">
       <p class="text-26 leading-30 lg:text-40 lg:leading-36 font-medium text-white">
-        {{ data.title }}
+        {{ data.name }}
       </p>
       <span class="text-14 lg:text-16 leading-22 text-grey-light-6">{{ data.description }}</span>
     </div>
@@ -36,18 +36,19 @@
         </div>
       </div>
       <div
+        v-for="(card, index) in filteredAddons"
+        :key="card.id"
         class="bg-grey-dark p-4 lg:p-5 rounded-main-sm grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4"
-        v-for="(card, index) in data.cards"
         @click="setActiveCard(index)"
         :class="{ '!bg-[#313131] border-1 border-grey-light-3': activeCardIndex === index }"
       >
         <div class="col-span-12 lg:col-span-8 flex flex-col lg:flex-row gap-y-4 gap-x-4 w-full">
           <NuxtImg
             class="w-full h-full lg:max-w-[185px] max-h-[121px] rounded-[10px] object-cover"
-            :src="card.image"
+            :src="card.media[0]"
           />
           <div class="flex flex-col gap-y-[10px]">
-            <p class="font-medium text-16 lg:text-20 leading-30">{{ card.title }}</p>
+            <p class="font-medium text-16 lg:text-20 leading-30">{{ card.name }}</p>
             <span class="text-12 leading-17 text-grey-light-6">{{ card.description }}</span>
           </div>
         </div>
@@ -64,23 +65,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, toRefs } from 'vue';
-
-interface Card {
-  title: string;
-  description: string;
-  image: string;
-  cost: number[];
-  max_participants: number;
-}
+import { ref, computed, toRefs, defineEmits, onMounted } from 'vue';
+import { Addon, Segment } from '@/types/tours';
 
 const props = withDefaults(
   defineProps<{
-    data: {
-      title: string;
-      description: string;
-      cards: Card[];
-    };
+    data: Segment;
     mandatory?: boolean;
     participants: number;
   }>(),
@@ -89,35 +79,76 @@ const props = withDefaults(
   }
 );
 
-const { data, mandatory } = toRefs(props);
-const activeCardIndex = ref<number | null>(0);
+const emit = defineEmits<{
+  (event: 'addon-selected', addon: Addon, segmentIndex: number, segmentType: string): void;
+}>();
 
-const calculatePrice = (card: Card) => {
-  if (props.participants > card.max_participants) {
-    console.warn(
-      `Participants (${props.participants}) exceed max allowed (${card.max_participants})`
-    );
+const { data, mandatory } = toRefs(props);
+const activeCardIndex = ref<number | null>(null);
+
+const filteredAddons = computed(() => {
+  return data.value.addons.filter((addon) => addon.max_participants >= props.participants);
+});
+
+const calculatePrice = (addon: Addon) => {
+  if (
+    !addon.base_cost ||
+    !Array.isArray(addon.base_cost) ||
+    props.participants > addon.max_participants
+  ) {
+    console.warn(`Invalid cost data or too many participants for addon: ${addon.name}`);
     return 0;
   }
-  return card.cost[props.participants - 1] * props.participants;
+
+  const baseCost = addon.base_cost[props.participants - 1] ?? addon.base_cost[0]; // Безопасный доступ
+  if (baseCost === undefined) {
+    console.warn(`No base cost found for ${props.participants} participants`);
+    return 0;
+  }
+
+  return Math.round(baseCost * props.participants);
 };
 
-const getPriceText = (card: Card, index: number) => {
-  const selectedPrice =
-    activeCardIndex.value !== null ? calculatePrice(data.value.cards[activeCardIndex.value]) : 0;
+const getPriceText = (card: Addon, index: number) => {
   const currentPrice = calculatePrice(card);
+  const selectedPrice =
+    activeCardIndex.value !== null
+      ? calculatePrice(filteredAddons.value[activeCardIndex.value])
+      : 0;
+
+  if (selectedPrice === 0) return `${currentPrice} EUR`;
+
   const priceDifference = currentPrice - selectedPrice;
 
-  if (index === activeCardIndex.value) {
+  if (priceDifference === 0) {
     return `${currentPrice} EUR`;
-  } else {
-    return priceDifference < 0 ? `- ${Math.abs(priceDifference)} EUR` : `+ ${priceDifference} EUR`;
   }
+
+  const sign = priceDifference < 0 ? '-' : '+';
+  console.log(`Price difference: ${priceDifference}`);
+  return `${sign} ${Math.abs(priceDifference)} EUR`;
 };
 
 const setActiveCard = (index: number | null) => {
+  console.log(`Setting active card: ${index}`);
   activeCardIndex.value = index;
+  if (index !== null) {
+    const selectedAddon = data.value.addons[index];
+    console.log(`Selected addon for segment ${data.value.id}:`, selectedAddon);
+    emit('addon-selected', selectedAddon, data.value.id, data.value.type);
+  }
 };
+
+onMounted(() => {
+  if (mandatory.value && filteredAddons.value.length > 0) {
+    const cheapestIndex = filteredAddons.value.reduce(
+      (minIdx, addon, idx, arr) =>
+        calculatePrice(addon) < calculatePrice(arr[minIdx]) ? idx : minIdx,
+      0
+    );
+    setActiveCard(cheapestIndex);
+  }
+});
 </script>
 
 <style scoped></style>

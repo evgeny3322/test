@@ -13,11 +13,11 @@
       </p>
     </div>
     <div class="flex flex-row items-center gap-x-3 lg:gap-x-[22px]">
-      <p class="font-semibold cursor-pointer text-14">Login</p>
+      <p class="hidden lg:block font-semibold cursor-pointer text-14">Login</p>
       <trusty-button class="!py-2">
         <p class="whitespace-nowrap font-semibold text-14">Sign Up</p>
       </trusty-button>
-      <LanguageSwitcher />
+      <LanguageSwitcher class="hidden lg:block" />
       <div class="flex items-center justify-center lg:hidden cursor-pointer">
         <burger-icon />
       </div>
@@ -34,7 +34,6 @@ import { useDevice } from '@/.nuxt/imports';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.vue';
 
 const router = useRouter();
-const { isMobile, isDesktop } = useDevice();
 
 const navItems = ref<string[]>(['Best tours', 'ALL Tours', 'Contact Us']);
 

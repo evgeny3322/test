@@ -23,7 +23,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiUrl: process.env.VITE_APP_API_URL || 'https://dev-api.inspiritaly.trustyone.dev/',
+      apiUrl: process.env.VITE_APP_API_URL,
     },
   },
 });
