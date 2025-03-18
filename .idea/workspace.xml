@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2c1c0e96-29a4-440b-af70-617801cded57" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/components/layout/Footer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/components/layout/Footer.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/layout/Header.vue" beforeDir="false" afterPath="$PROJECT_DIR$/components/layout/Header.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,7 +44,7 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/evgen/WebstormProjects/job/dli-frontend&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/evgen/OneDrive/Рабочий стол&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -57,6 +58,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\evgen\WebstormProjects\job\inspiritaly-frontend\pages" />
       <recent name="C:\Users\evgen\WebstormProjects\job\inspiritaly-frontend" />
       <recent name="C:\Users\evgen\WebstormProjects\job\inspiritaly-frontend\components\ui" />
       <recent name="C:\Users\evgen\WebstormProjects\job\inspiritaly-frontend\docker" />
@@ -114,7 +116,8 @@
       <workItem from="1741949679840" duration="426000" />
       <workItem from="1742201813948" duration="1585000" />
       <workItem from="1742221656514" duration="3224000" />
-      <workItem from="1742289652887" duration="1553000" />
+      <workItem from="1742289652887" duration="6088000" />
+      <workItem from="1742298293361" duration="504000" />
     </task>
     <servers />
   </component>

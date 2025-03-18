@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-[7%] pb-[2%] 2xl:pt-[4%]">
+    <div id="footer" class="pt-[7%] pb-[2%] 2xl:pt-[4%]">
     <div class="flex flex-col mx-auto">
       <div class="flex flex-col lg:flex-row justify-between items-start">
         <p class="title text-23 leading-18 cursor-pointer">InspirItaly</p>
@@ -69,9 +69,7 @@ import DiscoverIcon from '@/components/icons/DiscoverIcon.vue';
 import { markRaw, ref } from 'vue';
 import { useDevice } from '@/.nuxt/imports';
 
-const { isDesktop, isMobile } = useDevice();
-
-const navItems = ref<string[]>(['Home', 'Best tours', 'Features', 'About us']);
+const navItems = ref<string[]>(['Home', 'Best tours', 'About us']);
 
 const socialIcons = ref<{ icon: any; link: string }[]>([
   {
