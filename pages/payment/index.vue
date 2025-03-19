@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-row justify-between items-center w-full py-6 px-[9.5%]">
-    <div class="flex w-full flex-col bg-grey-light-1 p-8 rounded-[1rem]">
+  <div class="flex flex-row justify-between items-center w-full py-6 md:px-[9.5%]">
+    <div class="flex w-full flex-col bg-grey-light-1 md:p-8 p-6 rounded-[1rem]">
       <div class="flex w-full">
         <h1 class="font-normal text-[2.5rem] leading-[90%]">Payment</h1>
         <span class="ml-auto font-semi-bold text-[3rem] leading-[110%]">1 100 EUR</span>
@@ -11,28 +11,30 @@
           v-for="pay in payment"
           class="flex flex-col bg-under-line p-6 rounded-[1rem] border border-grey-light-29"
         >
-          <div class="w-full flex flex-row gap-8">
+          <div class="w-full flex xl:flex-row flex-col gap-8">
             <NuxtImg
               :src="pay.img"
               alt="Payment icon"
-              class="overflow-hidden rounded-[1rem] min-w-[17.813rem] h-[16.313rem] object-cover"
+              class="overflow-hidden rounded-[1rem] md:min-w-[17.813rem] md:h-[16.313rem] h-[10.375rem] object-cover"
             />
             <div class="flex flex-col w-full">
               <h2 class="text-[1.75rem] font-normal leading-[110%] pb-[1.375rem]">Tour Chianti</h2>
-              <div class="flex flex-row gap-[3.75rem] font-normal text-[1.125rem]">
+              <div
+                class="flex md:flex-row flex-col md:gap-[3.75rem] gap-6 font-normal text-[1.125rem]"
+              >
                 <ul>
                   <li class="text-grey-light-4">Area:</li>
-                  <li class="pb-8">{{ pay.area }}</li>
+                  <li class="md:pb-8 pb-6">{{ pay.area }}</li>
                   <li class="text-grey-light-4">Date:</li>
-                  <li class="pb-8">{{ pay.date }}</li>
+                  <li class="md:pb-8 pb-6">{{ pay.date }}</li>
                   <li class="text-grey-light-4">Number of participants::</li>
                   <li>{{ pay.participants_number }} People</li>
                 </ul>
                 <ul>
                   <li class="text-grey-light-4">Total duration::</li>
-                  <li class="pb-8">{{ pay.total_duration }} Hours</li>
+                  <li class="md:pb-8 pb-6">{{ pay.total_duration }} Hours</li>
                   <li class="text-grey-light-4">Total price:</li>
-                  <li class="pb-8">{{ pay.total_price }} Eur</li>
+                  <li class="md:pb-8 pb-6">{{ pay.total_price }} Eur</li>
                   <li class="text-grey-light-4">Transportation::</li>
                   <li>{{ pay.transportation }}</li>
                 </ul>
@@ -50,11 +52,11 @@
               v-for="service in pay.services"
               class="flex flex-col w-full gap-6 mt-8 p-[1.125rem] bg-grey-dark rounded-[1rem]"
             >
-              <div class="flex flex-row gap-4">
+              <div class="flex xl:flex-row flex-col gap-4">
                 <NuxtImg
                   :src="service.img"
                   alt="Payment icon"
-                  class="overflow-hidden rounded-[1rem] min-w-[19.063rem] h-[7.563rem] object-cover"
+                  class="overflow-hidden rounded-[1rem] xl:min-w-[19.063rem] h-[7.563rem] object-cover"
                 />
                 <div class="flex flex-col gap-[0.625rem]">
                   <h3 class="font-normal leading-[1.875rem] text-[1.25rem]">{{ service.title }}</h3>
@@ -63,8 +65,9 @@
                   }}</span>
                 </div>
                 <TrustyButton
-                  class="min-w-[12.563rem] h-[3.688rem] self-center md:ml-[2.563rem]"
+                  class="min-w-[12.563rem] h-[3.688rem] md:!text-[1.625rem] max-xl:w-full self-center xl:ml-[2.563rem]"
                   type="black"
+                  color="black"
                   >{{ service.price }} EUR</TrustyButton
                 >
               </div>
@@ -73,39 +76,82 @@
         </div>
       </div>
       <hr class="my-8 border-under-line" />
+      <!-- Payment form -->
       <div>
-        <form id="payment-form" class="payment_form form mt-[-38px]">
+        <form
+          id="payment-form"
+          class="payment_form form mt-[-38px] bg-grey-dark p-[1.125rem] rounded-[1rem]"
+        >
+          <div class="flex xl:flex-row flex-col w-full gap-4">
+            <trusty-field
+              class="w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
+              model-value=""
+              placeholder="First name"
+            />
+            <trusty-field
+              class="w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
+              model-value=""
+              placeholder="Last name"
+            />
+            <trusty-field
+              class="w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
+              model-value=""
+              placeholder="example@gmail.com"
+            />
+            <trusty-field
+              class="w-full !*:h-[4rem] bg-grey-light-1 rounded-[1rem]"
+              type="tel"
+              model-value=""
+              placeholder="44 44 44 44"
+            />
+          </div>
+          <label
+            class="relative mt-[28px] flex gap-4 justify-center xl:items-center items-start w-full cursor-pointer"
+          >
+            <input type="checkbox" value="" class="peer sr-only" true-value="1" false-value="0" />
+            <div
+              class="bg-grey-light-1 peer-checked:bg-main peer h-6 w-[39px] min-w-[3.5rem] rounded-full after:absolute after:left-[2px] after:top-[2px] md:after:left-[4px] md:after:top-[4px] xl:after:top-[13px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-[160%] peer-checked:after:border-white peer-checked:after:bg-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 md:h-[31px] md:w-[56px] md:after:h-[24px] md:after:w-[24px] md:peer-checked:after:translate-x-[100%]"
+            ></div>
+            <span class="account_toggler_text text-grey-light-6"
+              >Create Personal Account After Payment, it will facilitate you a lot if you book other
+              services, and it requires no further data entry, only 1 click! Please
+              <a href="" class="underline text-white">Login</a> if you already have an account</span
+            >
+          </label>
           <div id="payment-element">
             <!--Stripe.js injects the Payment Element-->
           </div>
-          <label class="relative mt-[28px] inline-flex w-full cursor-pointer items-start">
-            <input type="checkbox" value="" class="peer sr-only" true-value="1" false-value="0" />
-            <div
-              class="bg-toggler_gray peer-checked:bg-main peer h-6 w-[39px] min-w-[39px] rounded-full after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-[80%] peer-checked:after:border-white peer-checked:after:bg-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 md:h-[31px] md:w-[51px] md:after:h-[27px] md:after:w-[27px] md:peer-checked:after:translate-x-[70%]"
-            ></div>
-            <span class="account_toggler_text"
-              >Create Personal Account After Payment, it will facilitate you a lot if you book other
-              services, and it requires no further data entry, only 1 click!</span
-            >
-          </label>
-          <textarea
-            ref="textarea"
-            maxlength="230"
-            class="input ym-record-keys mb-0 mt-[30px] w-full resize-none overflow-hidden"
-            rows="1"
-            placeholder="Here you can leave any notes…"
-          ></textarea>
           <!-- <p v-if="noteError" class="ml-1 mt-2 inline-block text-sm font-extralight text-[#df1b41]">
           {{ noteError }}
         </p> -->
 
-          <div class="next_step_button_wrapper mt-[40px]">
-            <button class="btn btn-primary" id="submit" data-testid="paymentPage-submit">
+          <div
+            class="next_step_button_wrapper mt-[40px] flex xl:h-[4rem] mt-[30px] gap-6 justify-center item-center xl:flex-row flex-col"
+          >
+            <textarea
+              ref="textarea"
+              maxlength="230"
+              class="input text-[0.875rem] md:text-[1.125rem] ym-record-keys mb-0 w-full resize-none overflow-hidden h-[4rem] p-5 border-1 border-grey-light-29 bg-grey-light-1 rounded-[1rem]"
+              rows="1"
+              placeholder="Here you can leave any notes…"
+            ></textarea>
+            <trusty-button
+              class="btn w-full xl:w-1/4 btn-primary"
+              id="submit"
+              data-testid="paymentPage-submit"
+            >
               Pay now
-            </button>
+            </trusty-button>
           </div>
           <p id="payment-message" class="payment_timer_text hidden"></p>
         </form>
+      </div>
+      <div
+        class="inline-flex gap-1 flex-wrap xl:text-[1.125rem] text-[0.75rem] pt-8 justify-center items-center text-grey-light-6"
+      >
+        <span>This offer will expire within the next </span>
+        <Timer class="text-white" v-if="stripe" :minutes="4" :seconds="30" @e="" />
+        <span>after which the price might be different</span>
       </div>
     </div>
   </div>
@@ -113,8 +159,10 @@
 <script setup lang="ts">
 import TrustyAccordion from '@/components/payment/Accordion.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
+import TrustyField from '@/components/ui/TrustyField.vue';
 import { ref, onMounted } from 'vue';
 import { loadStripe, Stripe, StripeElements } from '@stripe/stripe-js';
+import Timer from '@/components/payment/Timer.vue';
 const stripe = ref<Stripe | null>(null);
 const elements = ref<StripeElements | null>(null);
 onMounted(async () => {
@@ -127,10 +175,10 @@ onMounted(async () => {
         rules: {
           '.Input': {
             color: '#2B2D32',
-            border: '1px solid #878787',
+            border: '1px solid #FFFFFF4A',
             borderRadius: '53px',
             padding: '22px 20px',
-            backgroundColor: '#E8EDE880',
+            backgroundColor: '#313131 !important',
           },
           '.Input::placeholder': {
             color: '#878787',
@@ -167,14 +215,14 @@ onMounted(async () => {
       dark: {
         rules: {
           '.Input': {
-            color: '#FFFFFF',
-            border: '1px solid #3D4043',
-            borderRadius: '53px',
+            color: '#FFFFFF99',
+            border: '1px solid #FFFFFF4A',
+            borderRadius: '1rem',
             padding: '22px 20px',
-            backgroundColor: '#2B2D32',
+            backgroundColor: '#313131',
           },
           '.Input::placeholder': {
-            color: '#878787',
+            color: '#FFFFFF4A',
           },
           '.Input:hover': {
             border: 'inputHover.value',

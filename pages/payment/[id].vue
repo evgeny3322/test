@@ -1,39 +1,42 @@
 <template>
-  <div class="flex flex-row justify-between items-center w-full py-6 px-[9.5%]">
-    <div class="flex w-full flex-col bg-grey-light-1 p-8 rounded-[1rem]">
+  <div class="flex flex-row justify-between items-center w-full py-6 md:px-[9.5%]">
+    <div class="flex w-full flex-col bg-grey-light-1 md:p-8 p-6 rounded-[1rem]">
       <div class="flex w-full">
         <h1 class="max-w-[16.563rem] font-normal text-[2.5rem] leading-[90%]">
           Thanks for your Request!
         </h1>
       </div>
       <hr class="my-8 border-under-line" />
+      <hr class="mb-8 md:block hidden border-under-line" />
       <div class="w-full flex flex-col gap-8">
         <div
           v-for="pay in payment"
           class="flex flex-col bg-under-line p-6 rounded-[1rem] border border-grey-light-29"
         >
-          <div class="w-full flex flex-row gap-8">
+          <div class="w-full flex xl:flex-row flex-col gap-8">
             <NuxtImg
               :src="pay.img"
               alt="Payment icon"
-              class="overflow-hidden rounded-[1rem] min-w-[17.813rem] h-[16.313rem] object-cover"
+              class="overflow-hidden rounded-[1rem] md:min-w-[17.813rem] md:h-[16.313rem] h-[10.375rem] object-cover"
             />
             <div class="flex flex-col w-full">
               <h2 class="text-[1.75rem] font-normal leading-[110%] pb-[1.375rem]">Tour Chianti</h2>
-              <div class="flex flex-row gap-[3.75rem] font-normal text-[1.125rem]">
+              <div
+                class="flex md:flex-row flex-col md:gap-[3.75rem] gap-6 font-normal text-[1.125rem]"
+              >
                 <ul>
                   <li class="text-grey-light-4">Area:</li>
-                  <li class="pb-8">{{ pay.area }}</li>
+                  <li class="md:pb-8 pb-6">{{ pay.area }}</li>
                   <li class="text-grey-light-4">Date:</li>
-                  <li class="pb-8">{{ pay.date }}</li>
+                  <li class="md:pb-8 pb-6">{{ pay.date }}</li>
                   <li class="text-grey-light-4">Number of participants::</li>
                   <li>{{ pay.participants_number }} People</li>
                 </ul>
                 <ul>
                   <li class="text-grey-light-4">Total duration::</li>
-                  <li class="pb-8">{{ pay.total_duration }} Hours</li>
+                  <li class="md:pb-8 pb-6">{{ pay.total_duration }} Hours</li>
                   <li class="text-grey-light-4">Total price:</li>
-                  <li class="pb-8">{{ pay.total_price }} Eur</li>
+                  <li class="md:pb-8 pb-6">{{ pay.total_price }} Eur</li>
                   <li class="text-grey-light-4">Transportation::</li>
                   <li>{{ pay.transportation }}</li>
                 </ul>
@@ -48,10 +51,11 @@
       </div>
       <hr class="my-8 border-under-line" />
       <span class="mb-8"
-        >For your future convenience, create a personal account with one button press.</span
+        >Your account successfully created, please proceed to the My Account section where you can
+        find your Tours History page and other functions.</span
       >
       <div class="flex flex-col w-full bg-grey-dark rounded-[1rem]">
-        <div class="flex w-full gap-4 p-[1.125rem]">
+        <div class="flex xl:flex-row flex-col w-full gap-4 p-[1.125rem]">
           <trusty-field
             class="w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
             model-value=""
@@ -68,19 +72,19 @@
             placeholder="example@gmail.com"
           />
         </div>
-        <div class="flex w-full gap-4 p-[1.125rem]">
+        <div class="flex xl:flex-row flex-col w-full gap-4 px-[1.125rem] pb-[1.125rem]">
           <trusty-field
-            class="w-1/2 h-[4rem] bg-grey-light-1 rounded-[1rem]"
+            class="xl:w-1/2 w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
             model-value=""
             placeholder="Italy"
           />
           <trusty-field
-            class="w-1/2 !*:h-[4rem] bg-grey-light-1 rounded-[1rem]"
+            class="xl:w-1/2 w-full !*:h-[4rem] bg-grey-light-1 rounded-[1rem]"
             type="tel"
             model-value=""
             placeholder="44 44 44 44"
           />
-          <trusty-button class="w-full h-[4rem] bg-grey-light-1 rounded-[1rem]">
+          <trusty-button class="w-full !font-semibold h-[4rem] bg-grey-light-1 rounded-[1rem]">
             <span>Confirm account creation</span>
           </trusty-button>
         </div>

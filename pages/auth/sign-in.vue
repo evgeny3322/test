@@ -14,6 +14,7 @@
           label="E-mail Address"
           placeholder="E-mail Address"
           inputClass="!bg-[#313131] text-18"
+          :error="!!authErrors.email"
         />
         <!-- Password -->
         <TrustyField
@@ -22,68 +23,115 @@
           label="Password"
           placeholder="Password"
           inputClass="!bg-[#313131] text-18"
+          :error="!!authErrors.password"
         />
+
+        <!-- Error message -->
+        <p v-if="loginError" class="text-red-500 text-sm">{{ loginError }}</p>
+
         <!-- Recover Password -->
         <p class="text-white/60 cursor-pointer hover:text-white duration-200">Recover password</p>
 
         <!-- Submit Button -->
-
-        <TrustyButton title="Sign in" size="large">
-          <p class="text-18 font-medium">Sign in</p>
+        <TrustyButton title="Sign in" size="large" :disabled="authStore.loading">
+          <PreloaderAnimIcon class="size-6" theme="black" v-if="authStore.loading" />
+          <p v-else class="text-18 font-medium">Sign in</p>
         </TrustyButton>
+
+        <!-- Register link -->
+        <p class="text-center text-white/60">
+          Don't have an account?
+          <span
+            @click="router.push('/auth/sign-up')"
+            class="text-white cursor-pointer hover:underline"
+          >
+            Register
+          </span>
+        </p>
       </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useAuthStore } from '@/store/authStore'; // Pinia Store
+import { ref, reactive } from 'vue';
+import { useAuthStore } from '@/store/authStore';
 import TrustyField from '@/components/ui/TrustyField.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
+import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
 import { useRouter } from 'vue-router';
 import * as yup from 'yup';
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
-const authErrors = ref({}) as { [key: string]: any };
-const authStore = useAuthStore();
+const authErrors = reactive({
+  email: false,
+  password: false
+});
+
+const loginError = ref('');
 
 const authValidateRules = yup.object({
   email: yup
     .string()
-    .email()
-    .required()
+    .email('Please enter a valid email address')
+    .required('Email is required')
     .test(
       'email-dot',
-      'The email address must contain a dot (.) in the second part (after the @ symbol), as addresses without a dot will not be accepted',
+      'The email address must contain a dot (.) after the @ symbol',
       (value) => {
-        return value.includes('.');
+        return value.includes('.') && value.indexOf('.') > value.indexOf('@');
       }
     ),
-  password: yup.string().required().min(8),
+  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
 });
 
+const validateForm = async () => {
+  try {
+    await authValidateRules.validate(
+      { email: email.value, password: password.value },
+      { abortEarly: false }
+    );
+    return true;
+  } catch (err) {
+    if (err instanceof yup.ValidationError) {
+      authErrors.email = false;
+      authErrors.password = false;
+
+      err.inner.forEach((error) => {
+        if (error.path === 'email') {
+          authErrors.email = true;
+          loginError.value = error.message;
+        }
+        if (error.path === 'password') {
+          authErrors.password = true;
+          loginError.value = error.message;
+        }
+      });
+    }
+    return false;
+  }
+};
+
 const handleSubmit = async () => {
-  const authValidate = await authValidateRules
-    .validate({ email: email.value, password: password.value }, { abortEarly: false })
-    .then((values) => values)
-    .catch((errors) => {
-      authErrors.value = errors;
-      return false;
-    });
+  loginError.value = '';
 
-  if (!authValidate) return;
+  const isValid = await validateForm();
+  if (!isValid) return;
 
-  // router.push('')
+  try {
+    const success = await authStore.login(email.value, password.value);
 
-  // try {
-  //   await authStore.login(email.value, password.value);
-  // } catch (error) {
-  //   console.error('Ошибка входа', error);
-  // }
+    if (success) {
+      router.push('/account');
+    } else {
+      loginError.value = 'Invalid email or password';
+    }
+  } catch (error: any) {
+    loginError.value = error?.message || 'An error occurred during login';
+  }
 };
 </script>
-@/store/authStore

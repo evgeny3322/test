@@ -18,6 +18,9 @@
         class="bg-[#262626] p-6 w-[552px] flex flex-col gap-8 rounded-2xl"
         autocomplete="off"
       >
+        <!-- Error message -->
+        <p v-if="registrationError" class="text-red-500 text-sm text-center">{{ registrationError }}</p>
+
         <!-- password -->
         <div class="relative">
           <TrustyField
@@ -57,15 +60,15 @@
         </div>
         <!-- Radio Buttons -->
         <div class="flex flex-col gap-4">
-          <TrustyRadio v-model="radio" name="accountType" value="private" text="Private" />
+          <TrustyRadio v-model="accountType" name="accountType" value="private" text="Private" />
           <TrustyRadio
-            v-model="radio"
+            v-model="accountType"
             name="accountType"
-            value="request for agency"
+            value="request_for_agency"
             text="Agency"
           />
         </div>
-        <div v-if="radio == 'request for agency'" class="flex flex-col gap-6">
+        <div v-if="accountType == 'request_for_agency'" class="flex flex-col gap-6">
           <div class="flex gap-6">
             <TrustyField
               v-model="agencyData.company_name"
@@ -151,8 +154,9 @@
         </div>
 
         <!-- Submit Button -->
-        <TrustyButton title="Next" size="large">
-          <p class="text-18 font-medium">Next</p>
+        <TrustyButton title="Complete Registration" size="large" :disabled="authStore.loading">
+          <PreloaderAnimIcon class="size-6" theme="black" v-if="authStore.loading" />
+          <p v-else class="text-18 font-medium">Complete Registration</p>
         </TrustyButton>
       </form>
     </div>
@@ -160,27 +164,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref } from 'vue';
-import { useAuthStore } from '@/store/authStore'; // Pinia Store
+import { ref, Ref, reactive, computed } from 'vue';
+import { useAuthStore } from '@/store/authStore';
 import TrustyField from '@/components/ui/TrustyField.vue';
 import TrustyComplete from '@/components/ui/TrustyComplete.vue';
 import TrustyRadio from '@/components/ui/TrustyRadio.vue';
 import ArrowDownOutlinedIcon from '@/components/icons/ArrowDownOutlinedIcon.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
+import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
 import { useRouter } from 'vue-router';
 import { VueTelInputCountryObject } from '@/types/type';
 import { countries } from '@/constants';
 import * as yup from 'yup';
 
 const router = useRouter();
-
-const agencyData = ref({}) as { [key: string]: any };
-const passwords = ref({ password: '', password_confirmation: '' });
-const passwordsError = ref(null) as Ref<yup.ValidationError | null>;
-const agencyErrors = ref({}) as Ref<{ [key: string]: any }>;
-const officePhoneCode = ref('');
-const radio = ref('private');
 const authStore = useAuthStore();
+
+const agencyData = reactive({
+  company_name: '',
+  invoice_vat: '',
+  invoice_country: '',
+  invoice_state: '',
+  invoice_city: '',
+  invoice_address: '',
+  office_phone: '',
+  company_email: '',
+  invoice_zip: '',
+});
+
+const passwords = reactive({
+  password: '',
+  password_confirmation: ''
+});
+
+const passwordsError = ref(null) as Ref<yup.ValidationError | null>;
+const agencyErrors:any = reactive({});
+const officePhoneCode = ref('');
+const accountType = ref('private');
+const registrationError:any = ref('');
+
+// Computed property to check if we can proceed
+const canProceed = computed(() => {
+  return authStore.registerInfo?.email && authStore.registerInfo?.hash;
+});
+
+// Redirect if there's no registration info or required hash
+if (process.client && !canProceed.value) {
+  router.push('/auth/sign-up');
+}
 
 const countryChanged = (country: VueTelInputCountryObject) => {
   officePhoneCode.value = country.dialCode;
@@ -232,12 +263,15 @@ type AgencyData = yup.InferType<typeof validateAgency> & { office_phone_code: st
 type CombinedData = PasswordData & Partial<AgencyData>;
 
 const changeModel = (fieldName: string) => {
-  agencyErrors.value[fieldName] = false;
+  agencyErrors[fieldName] = false;
 };
 
 const handleSubmit = async () => {
+  registrationError.value = '';
+
+  // Validate passwords
   const passwordsValidate = await validatePasswords
-    .validate(passwords.value)
+    .validate(passwords)
     .then(() => {
       passwordsError.value = null;
       return true;
@@ -249,36 +283,57 @@ const handleSubmit = async () => {
 
   if (!passwordsValidate) return;
 
-  let data: CombinedData = {
-    password: passwords.value.password,
-    password_confirmation: passwords.value.password_confirmation,
+  // Prepare data for API
+  let data: any = {
+    password: passwords.password,
+    password_confirmation: passwords.password_confirmation,
+    type: accountType.value,
+    hash: authStore.registerInfo?.hash,
+    email: authStore.registerInfo?.email,
   };
 
-  if (radio.value != 'private') {
+  // Validate and add agency data if needed
+  if (accountType.value !== 'private') {
     const agencyValidate = await validateAgency
-      .validate(agencyData.value, { abortEarly: false })
+      .validate(agencyData, { abortEarly: false })
       .then((values) => values)
       .catch((errors: yup.ValidationError) => {
         errors.inner.forEach((error) => {
           if (error.path) {
-            agencyErrors.value[error.path] = true;
+            agencyErrors[error.path] = true;
           }
         });
         return false;
       });
-    if (typeof agencyValidate == 'object' && agencyValidate) {
-      data = { ...data, ...agencyValidate };
-      data.office_phone_code = officePhoneCode.value;
-    } else return;
+
+    if (typeof agencyValidate === 'object' && agencyValidate) {
+      data = {
+        ...data,
+        ...agencyValidate,
+        countryCode: officePhoneCode.value
+      };
+    } else {
+      return;
+    }
   }
 
-  // router.push('/auth/finalize-registration')
+  try {
+    const response = await authStore.setPassword(data);
 
-  // try {
-  //   await authStore.login(email.value, password.value);
-  // } catch (error) {
-  //   console.error('Ошибка входа', error);
-  // }
+    if (response && response.data && response.data.status === 'success') {
+      // After successful registration, we can login the user
+      await authStore.login(authStore.registerInfo!.email, passwords.password);
+
+      // Redirect to account or dashboard
+      router.push('/account');
+    } else {
+      if (typeof response !== 'boolean') {
+        registrationError.value = response?.data?.message || 'Registration failed. Please try again.';
+      }
+    }
+  } catch (error: any) {
+    registrationError.value = error?.message || 'An error occurred during registration';
+  }
 };
 </script>
 
@@ -297,4 +352,3 @@ const handleSubmit = async () => {
   cursor: help;
 }
 </style>
-@/store/authStore

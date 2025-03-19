@@ -13,15 +13,32 @@
       </p>
     </div>
     <div class="flex flex-row items-center gap-x-3 lg:gap-x-[22px]">
-      <p
-        class="hidden lg:block font-semibold cursor-pointer text-14"
-        @click="router.push('/auth/sign-in')"
-      >
-        Login
-      </p>
-      <trusty-button class="!py-2" @click="router.push('/auth/sign-up')">
-        <p class="whitespace-nowrap font-semibold text-14">Sign Up</p>
-      </trusty-button>
+      <!-- Show if user is logged in -->
+      <AuthCheck authenticated>
+        <p
+          class="hidden lg:block font-semibold cursor-pointer text-14"
+          @click="handleUserAccount"
+        >
+          {{ authStore.user?.name || 'Account' }}
+        </p>
+        <trusty-button class="!py-2" @click="handleLogout">
+          <p class="whitespace-nowrap font-semibold text-14">Logout</p>
+        </trusty-button>
+      </AuthCheck>
+
+      <!-- Show if user is not logged in -->
+      <AuthCheck :authenticated="false">
+        <p
+          class="hidden lg:block font-semibold cursor-pointer text-14"
+          @click="router.push('/auth/sign-in')"
+        >
+          Login
+        </p>
+        <trusty-button class="!py-2" @click="router.push('/auth/sign-up')">
+          <p class="whitespace-nowrap font-semibold text-14">Sign Up</p>
+        </trusty-button>
+      </AuthCheck>
+
       <LanguageSwitcher class="hidden lg:block" />
       <div
         class="flex items-center justify-center lg:hidden cursor-pointer"
@@ -80,18 +97,37 @@
           </p>
           <LanguageSwitcher />
           <div class="mt-auto flex flex-col w-full gap-3">
-            <trusty-button
-              @click="router.push('/auth/sign-in')"
-              class="h-[2rem] flex items-center justify-center !bg-thirdary-black !text-white !border !border-fourthary-black"
-            >
-              Login
-            </trusty-button>
-            <trusty-button
-              @click="router.push('/auth/sign-up')"
-              class="h-[2rem] flex items-center justify-center"
-            >
-              Sign up
-            </trusty-button>
+            <!-- Show if user is logged in -->
+            <AuthCheck authenticated>
+              <trusty-button
+                @click="handleUserAccount"
+                class="h-[2rem] flex items-center justify-center !bg-thirdary-black !text-white !border !border-fourthary-black"
+              >
+                My Account
+              </trusty-button>
+              <trusty-button
+                @click="handleLogout"
+                class="h-[2rem] flex items-center justify-center"
+              >
+                Logout
+              </trusty-button>
+            </AuthCheck>
+
+            <!-- Show if user is not logged in -->
+            <AuthCheck :authenticated="false">
+              <trusty-button
+                @click="router.push('/auth/sign-in'); showMobileMenu = false;"
+                class="h-[2rem] flex items-center justify-center !bg-thirdary-black !text-white !border !border-fourthary-black"
+              >
+                Login
+              </trusty-button>
+              <trusty-button
+                @click="router.push('/auth/sign-up'); showMobileMenu = false;"
+                class="h-[2rem] flex items-center justify-center"
+              >
+                Sign up
+              </trusty-button>
+            </AuthCheck>
           </div>
         </div>
       </div>
@@ -105,9 +141,12 @@ import TrustyButton from '@/components/ui/TrustyButton.vue';
 import { useRouter } from 'nuxt/app';
 import BurgerIcon from '@/components/icons/BurgerIcon.vue';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.vue';
+import AuthCheck from '@/components/auth/AuthCheck.vue';
+import { useAuthStore } from '@/store/authStore';
 
 const router = useRouter();
 const showMobileMenu = ref(false);
+const authStore = useAuthStore();
 
 interface NavItem {
   name: string;
@@ -184,5 +223,16 @@ const toggleMobileMenu = () => {
 const goToHome = () => {
   router.push('/');
   activeNav.value = 'Best tours';
+};
+
+const handleUserAccount = () => {
+  router.push('/account');
+  showMobileMenu.value = false;
+};
+
+const handleLogout = async () => {
+  await authStore.logout();
+  router.push('/');
+  showMobileMenu.value = false;
 };
 </script>

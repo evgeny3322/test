@@ -18,17 +18,38 @@ interface AppRuntimeConfig {
   };
 }
 
+const AUTH_TOKEN_KEY = 'auth-token';
+
 export const createApiClient = (): AxiosInstance => {
   const config = useRuntimeConfig() as unknown as AppRuntimeConfig;
   const baseURL = config.public.apiUrl;
 
-  return axios.create({
+  const instance = axios.create({
     baseURL,
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
   });
+
+  if (process.client) {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (token) {
+      instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+  }
+
+  instance.interceptors.request.use((config) => {
+    if (process.client) {
+      const token = localStorage.getItem(AUTH_TOKEN_KEY);
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+    return config;
+  });
+
+  return instance;
 };
 
 // API для аутентификации
@@ -46,7 +67,7 @@ export const authAPI = {
   },
 
   sendVerificationCode(
-    data: sendVerificationCodeInterface
+    data: sendVerificationCodeInterface,
   ): Promise<AxiosResponse<ResponseInterface>> {
     return createApiClient().post('/auth/send_code', data);
   },
@@ -60,6 +81,10 @@ export const authAPI = {
 
   resendVerificationCode(email: string): Promise<AxiosResponse<ResponseInterface>> {
     return createApiClient().post('/auth/resend_code', { email });
+  },
+
+  setPassword(data: any): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().post('/auth/set_password', data);
   },
 };
 

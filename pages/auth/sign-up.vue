@@ -29,7 +29,7 @@
             :error="signUpValidatedErrors?.last_name"
             @update:modelValue="changeModel('last_name')"
           />
-          <!-- Password -->
+          <!-- Email -->
           <TrustyField
             v-model="email"
             label="E-mail Address"
@@ -51,13 +51,24 @@
           />
         </div>
 
-        <p class="text-red-400">{{ errorResponse }}</p>
+        <p v-if="errorResponse" class="text-red-400">{{ errorResponse }}</p>
 
         <!-- Submit Button -->
-        <TrustyButton title="Next" size="large" class="grid place-items-center" :disabled="loading">
-          <PreloaderAnimIcon class="size-6" theme="black" v-if="loading" />
-          <p class="text-18 font-medium" v-if="!loading">Next</p>
+        <TrustyButton title="Next" size="large" class="grid place-items-center" :disabled="loading.value">
+          <PreloaderAnimIcon class="size-6" theme="black" v-if="loading.value" />
+          <p class="text-18 font-medium" v-else>Next</p>
         </TrustyButton>
+
+        <!-- Sign In Link -->
+        <p class="text-center text-white/60">
+          Already have an account?
+          <span
+            @click="router.push('/auth/sign-in')"
+            class="text-white cursor-pointer hover:underline"
+          >
+            Sign In
+          </span>
+        </p>
       </form>
     </div>
   </div>
@@ -97,17 +108,17 @@ const changeModel = (fieldName: string) => {
 };
 
 const signUpValidateRules = yup.object({
-  name: yup.string().required().max(255).min(2),
-  last_name: yup.string().required().max(255).min(2),
+  name: yup.string().required('First name is required').max(255).min(2, 'First name must be at least 2 characters'),
+  last_name: yup.string().required('Last name is required').max(255).min(2, 'Last name must be at least 2 characters'),
   email: yup
     .string()
-    .email()
-    .required()
+    .email('Please enter a valid email address')
+    .required('Email is required')
     .test(
       'email-dot',
-      'The email address must contain a dot (.) in the second part (after the @ symbol), as addresses without a dot will not be accepted',
+      'The email address must contain a dot (.) in the second part (after the @ symbol)',
       (value) => {
-        return value.includes('.');
+        return value.includes('.') && value.indexOf('.') > value.indexOf('@');
       }
     ),
   phone: yup.string(),
@@ -115,6 +126,10 @@ const signUpValidateRules = yup.object({
 });
 
 const handleSubmit = async () => {
+  errorResponse.value = '';
+  signUpValidatedErrors.value = {};
+
+  // Validate the form
   const signUpValidated = await signUpValidateRules
     .validate(
       {
@@ -131,41 +146,37 @@ const handleSubmit = async () => {
       errors.inner.forEach((error) => {
         if (error.path) {
           signUpValidatedErrors.value[error.path] = true;
+          errorResponse.value = error.message;
         }
       });
 
       return false;
     });
 
-  if (typeof signUpValidated == 'boolean') return;
+  if (typeof signUpValidated === 'boolean') return;
 
   try {
-    await authStore
-      .sendCode(signUpValidated)
-      .then((response) => {
-        if ([203, 429].includes(response.status)) {
-          errorResponse.value = response.data.message;
-        }
-        if ([200, 208].includes(response.status)) {
-          authStore.deleteRegisterInfo();
-          authStore.updateRegisterInfo({
-            step: 2,
-            name: signUpValidated.name,
-            last_name: signUpValidated.last_name,
-            phone: signUpValidated?.phone || '',
-            country_code: signUpValidated?.country_code || '',
-            email: signUpValidated.email,
-          });
-          router.push('/auth/email-verification');
-        } else {
-          errorResponse.value = 'Failed. Try again later';
-        }
-      })
-      .catch((error) => {
-        errorResponse.value = 'Failed. Try again later';
+    const response = await authStore.sendCode(signUpValidated);
+
+    if ([203, 429].includes(response.status)) {
+      errorResponse.value = response.data.message;
+    } else if ([200, 208].includes(response.status)) {
+      authStore.registerInfo({
+        step: 2,
+        name: signUpValidated.name,
+        last_name: signUpValidated.last_name,
+        phone: signUpValidated?.phone || '',
+        country_code: signUpValidated?.country_code || '',
+        email: signUpValidated.email,
       });
+
+      router.push('/auth/email-verification');
+    } else {
+      errorResponse.value = 'Failed. Try again later';
+    }
   } catch (error) {
-    console.error('Ошибка входа', error);
+    console.error('Ошибка регистрации:', error);
+    errorResponse.value = 'Failed. Try again later';
   }
 };
 </script>

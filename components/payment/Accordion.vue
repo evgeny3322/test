@@ -9,7 +9,7 @@
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         data-v-inspector="components/ui/TrustyComplete.vue:8:7"
-        class="duration-300"
+        class="duration-300 max-md:ml-auto stroke-2"
         :class="{ 'rotate-180': isShow, 'rotate-0': !isShow }"
         data-v-e7d25b7a=""
       >
