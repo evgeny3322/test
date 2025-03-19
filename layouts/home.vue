@@ -3,7 +3,7 @@
     <Header class="px-[9.5%] main-container" />
     <div class="flex-grow flex">
       <div class="w-full">
-        <slot />
+        <NuxtPage :key="$route.fullPath" />
       </div>
     </div>
     <Footer class="px-[9.5%] main-container" />

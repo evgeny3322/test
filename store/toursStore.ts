@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { toursAPI } from '@/services/api';
+import { ref, computed, onMounted } from 'vue';
+import { toursAPI } from '@/utils/api';
 import { Tour, TourFilters } from '@/types/tours';
 
 export const useToursStore = defineStore('tours', () => {
@@ -8,16 +8,8 @@ export const useToursStore = defineStore('tours', () => {
   const error = ref<string | null>(null);
   const toursFilter = ref<TourFilters | null>(null);
 
-  if (process.client) {
-    const savedFilter = localStorage.getItem('toursFilter');
-    toursFilter.value = savedFilter ? JSON.parse(savedFilter) : null;
-  }
-
   const updateToursFilter = (filters: TourFilters) => {
     toursFilter.value = filters;
-    if (process.client) {
-      localStorage.setItem('toursFilter', JSON.stringify(filters));
-    }
   };
 
   const fetchTours = async (filters: TourFilters = {}) => {

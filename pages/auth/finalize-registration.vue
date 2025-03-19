@@ -1,6 +1,17 @@
 <template>
-  <div class="my-[62px] flex flex-col gap-[62px]">
-    <h1 class="text-40 font-medium text-center text-white">Finalize Registration</h1>
+  <div
+    class="my-[41px] md:my-[62px] flex flex-col md:gap-[62px] min-h-[calc(100vh-88px-41px)] md:min-h-auto justify-between"
+  >
+    <div class="relative">
+      <div
+        class="px-[9.5%] absolute -top-9 md:inset-0 md:ml-4 flex items-center gap-4 cursor-pointer"
+        @click="goBack()"
+      >
+        <ArrowDownOutlinedIcon class="rotate-90 stroke-[1.5px] h-3 w-[18px]" />
+        <p>Go Back</p>
+      </div>
+      <h1 class="text-40 font-medium text-center text-white">Finalize Registration</h1>
+    </div>
     <div class="flex justify-center">
       <form
         @submit.prevent="handleSubmit"
@@ -150,10 +161,11 @@
 
 <script setup lang="ts">
 import { ref, Ref } from 'vue';
-import { useAuthStore } from '@/store/useAuthStore'; // Pinia Store
+import { useAuthStore } from '@/store/authStore'; // Pinia Store
 import TrustyField from '@/components/ui/TrustyField.vue';
 import TrustyComplete from '@/components/ui/TrustyComplete.vue';
 import TrustyRadio from '@/components/ui/TrustyRadio.vue';
+import ArrowDownOutlinedIcon from '@/components/icons/ArrowDownOutlinedIcon.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
 import { useRouter } from 'vue-router';
 import { VueTelInputCountryObject } from '@/types/type';
@@ -172,6 +184,10 @@ const authStore = useAuthStore();
 
 const countryChanged = (country: VueTelInputCountryObject) => {
   officePhoneCode.value = country.dialCode;
+};
+
+const goBack = () => {
+  router.push('/auth/email-verification');
 };
 
 const validatePasswords = yup.object({
@@ -243,7 +259,7 @@ const handleSubmit = async () => {
       .validate(agencyData.value, { abortEarly: false })
       .then((values) => values)
       .catch((errors: yup.ValidationError) => {
-        errors.inner.forEach((error, index) => {
+        errors.inner.forEach((error) => {
           if (error.path) {
             agencyErrors.value[error.path] = true;
           }
@@ -281,3 +297,4 @@ const handleSubmit = async () => {
   cursor: help;
 }
 </style>
+@/store/authStore

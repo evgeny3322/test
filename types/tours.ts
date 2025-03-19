@@ -2,7 +2,8 @@ export interface Tour {
   id: number;
   name: string;
   description: string;
-  internal_description: string;
+  featured: number;
+  short_description: string;
   duration: string;
   min_cost: number | null;
   max_cost: number | null;
@@ -30,7 +31,12 @@ export interface Segment {
   name: string;
   description: string;
   duration: string;
-  type: string;
+  type: {
+    id: number;
+    name: string;
+    description: string;
+    mandatory: number;
+  };
   order: number;
   addons: Addon[];
 }
@@ -41,7 +47,7 @@ export interface Addon {
   description: string;
   internal_description: string;
   max_participants: number;
-  base_cost: number[];
+  price: number[];
   cost_type: 'group_diff' | 'group_fix';
   resource: Resource;
   code: string;

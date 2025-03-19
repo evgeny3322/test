@@ -65,42 +65,75 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, toRefs, defineEmits, onMounted } from 'vue';
+import { ref, computed, toRefs, defineEmits, onMounted, watch } from 'vue';
 import { Addon, Segment } from '@/types/tours';
 
-const props = withDefaults(
-  defineProps<{
-    data: Segment;
-    mandatory?: boolean;
-    participants: number;
-  }>(),
-  {
-    mandatory: true,
-  }
-);
-
-const emit = defineEmits<{
-  (event: 'addon-selected', addon: Addon, segmentIndex: number, segmentType: string): void;
+const props = defineProps<{
+  data: Segment;
+  participants: number;
 }>();
 
-const { data, mandatory } = toRefs(props);
+const emit = defineEmits<{
+  (event: 'addon-selected', addon: Addon, segmentIndex: number, segment: Segment): void;
+  (event: 'addon-removed', addonId: number): void;
+  (event: 'addon-unavailable', segmentId: number, addonId: number): void;
+}>();
+
+const { data } = toRefs(props);
 const activeCardIndex = ref<number | null>(null);
 
+const mandatory = computed(() => {
+  return data.value.type.mandatory;
+});
 const filteredAddons = computed(() => {
   return data.value.addons.filter((addon) => addon.max_participants >= props.participants);
 });
 
+watch(
+  () => props.participants,
+  (newParticipants) => {
+    data.value.addons.forEach((addon, index) => {
+      if (addon.max_participants < newParticipants) {
+        console.log(
+          `Addon ${addon.name} (ID: ${addon.id}) in segment ${data.value.id} is no longer available`
+        );
+        emit('addon-unavailable', data.value.id, addon.id);
+
+        if (activeCardIndex.value === index) {
+          console.log(`Removing active addon (ID: ${addon.id}) as it's no longer available`);
+          activeCardIndex.value = null;
+        }
+      }
+    });
+
+    if (activeCardIndex.value === null && filteredAddons.value.length > 0) {
+      const cheapestIndex = filteredAddons.value.reduce(
+        (minIdx, addon, idx, arr) =>
+          calculatePrice(addon) < calculatePrice(arr[minIdx]) ? idx : minIdx,
+        0
+      );
+      setActiveCard(cheapestIndex);
+    }
+  },
+  { deep: true }
+);
+
 const calculatePrice = (addon: Addon) => {
-  if (
-    !addon.base_cost ||
-    !Array.isArray(addon.base_cost) ||
-    props.participants > addon.max_participants
-  ) {
-    console.warn(`Invalid cost data or too many participants for addon: ${addon.name}`);
+  if (!addon || !addon.price || !Array.isArray(addon.price)) {
+    console.warn(`Invalid cost data for addon: ${addon?.name || 'Unknown addon'}`);
     return 0;
   }
 
-  const baseCost = addon.base_cost[props.participants - 1] ?? addon.base_cost[0]; // Безопасный доступ
+  if (props.participants > addon.max_participants) {
+    console.warn(
+      `Too many participants (${props.participants}) for addon: ${addon.name} (max: ${addon.max_participants})`
+    );
+    return 0;
+  }
+
+  const priceIndex = props.participants - 1;
+  const baseCost = priceIndex < addon.price.length ? addon.price[priceIndex] : addon.price.at(-1);
+
   if (baseCost === undefined) {
     console.warn(`No base cost found for ${props.participants} participants`);
     return 0;
@@ -135,7 +168,10 @@ const setActiveCard = (index: number | null) => {
   if (index !== null) {
     const selectedAddon = data.value.addons[index];
     console.log(`Selected addon for segment ${data.value.id}:`, selectedAddon);
-    emit('addon-selected', selectedAddon, data.value.id, data.value.type);
+    emit('addon-selected', selectedAddon, data.value.id, data.value);
+  } else {
+    console.log(`Removing addon for segment ${data.value.id}`);
+    emit('addon-removed', data.value.id);
   }
 };
 

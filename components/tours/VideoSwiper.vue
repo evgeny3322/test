@@ -34,7 +34,9 @@
             <p class="text-grey-large text-base line-clamp-5 text-sm leading-[1.225rem]">
               {{ tour.description }}
             </p>
-            <TrustyButton class="md:max-w-[15.75rem] mt-5"> View Details </TrustyButton>
+            <TrustyButton class="md:max-w-[15.75rem] mt-5" @click="navigateToTour(tour.id)">
+              View Details
+            </TrustyButton>
           </div>
         </div>
       </swiper-slide>
@@ -45,19 +47,24 @@
 import TrustyVideoPlayer from '../ui/TrustyVideoPlayer.vue';
 import { ref } from 'vue';
 import { useSwiper } from '@/.nuxt/imports';
-// Import Swiper styles
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 import TrustyButton from '../ui/TrustyButton.vue';
 import { Tour } from '@/types/tours';
 import TrustyChip from '@/components/ui/TrustyChip.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const props = defineProps<{
   tours: Tour[];
 }>();
+
 const randomIndex = ref(Math.floor(Math.random() * props.tours?.length));
 const randomIndexValue: number = randomIndex.value;
 const videoSlider = ref(null);
 const init = ref(false);
+
 const swiper = useSwiper(videoSlider, {
   loop: true,
   autoplay: {
@@ -73,6 +80,12 @@ const swiper = useSwiper(videoSlider, {
     },
   },
 });
+
+const navigateToTour = (id: number) => {
+  if (id) {
+    router.push(`/tours/${id}`);
+  }
+};
 </script>
 <style>
 .videoSlider::part(pagination) {

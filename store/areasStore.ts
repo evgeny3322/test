@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { areasAPI } from '@/services/api';
+import { areasAPI } from '@/utils/api';
 import type { Area, AreasResponse } from '@/types/areas';
 
 export const useAreasStore = defineStore('areas', () => {

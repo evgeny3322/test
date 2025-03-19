@@ -37,6 +37,10 @@ const radioId = `trustyRadio_${props.name}_${props.value}`;
 <style scoped lang="scss">
 label {
   box-sizing: border-box;
+  position: relative;
+  display: grid;
+  place-items: center;
+
   &::after {
     content: '';
     position: absolute;
@@ -45,9 +49,6 @@ label {
     height: 15px;
     border-radius: 50%;
     background-color: white;
-    top: 49%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
 }
 

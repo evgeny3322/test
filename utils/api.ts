@@ -8,7 +8,9 @@ import {
   RegistrationData,
 } from '@/types/user';
 import { TourApiResponse, TourFilters, ToursApiResponse } from '@/types/tours';
+import { sendVerificationCodeInterface } from '@/types/auth';
 import { Area, AreasResponse } from '@/types/areas';
+import { ResponseInterface } from '@/types/type';
 
 interface AppRuntimeConfig {
   public: {
@@ -43,37 +45,46 @@ export const authAPI = {
     return createApiClient().post<AuthResponse>('/auth/register', userData);
   },
 
-  sendVerificationCode(email: string): Promise<AxiosResponse> {
-    return createApiClient().post('/auth/send-verification', { email });
+  sendVerificationCode(
+    data: sendVerificationCodeInterface
+  ): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().post('/auth/send_code', data);
   },
 
-  verifyEmail(verificationData: EmailVerificationData): Promise<AxiosResponse> {
-    return createApiClient().post('/auth/verify-email', verificationData);
+  acceptVerificationCode(data: {
+    email: string;
+    code: string | number;
+  }): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().post('/auth/accept_code', data);
+  },
+
+  resendVerificationCode(email: string): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().post('/auth/resend_code', { email });
   },
 };
 
 // API для туров
 export const toursAPI = {
   getTourById(id: number): Promise<AxiosResponse<TourApiResponse>> {
-    return createApiClient().get<TourApiResponse>(`/v1/tours/${id}`);
+    return createApiClient().get<TourApiResponse>(`/tours/${id}`);
   },
 
   getTours(filters: TourFilters): Promise<AxiosResponse<ToursApiResponse>> {
-    return createApiClient().get<ToursApiResponse>('/v1/tours', { params: filters });
+    return createApiClient().get<ToursApiResponse>('/tours', { params: filters });
   },
   getDiscount() {
-    return createApiClient().get('/v1/baseDiscounts');
+    return createApiClient().get('/baseDiscounts');
   },
 };
 
 //API для областей
 export const areasAPI = {
   getAreas(): Promise<AxiosResponse<AreasResponse>> {
-    return createApiClient().get<AreasResponse>('/v1/areas');
+    return createApiClient().get<AreasResponse>('/areas');
   },
 
   getAreaById(id: number): Promise<AxiosResponse<Area>> {
-    return createApiClient().get<Area>(`/v1/areas/${id}`);
+    return createApiClient().get<Area>(`/areas/${id}`);
   },
 };
 

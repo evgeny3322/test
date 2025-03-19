@@ -2,21 +2,23 @@
   <div class="field">
     <label v-if="label" class="field-label" v-html="label" />
     <div class="input-wrapper">
+      <!-- :disable="disabled" -->
       <vue-tel-input
         v-if="type === 'tel'"
         v-bind="props"
         v-model="model"
         class="field-input"
         @country-changed="(country: VueTelInputCountryObject) => emit('country-changed', country)"
-        :class="[inputClass, { '!border-red-500 border': error }]"
+        :class="[inputClass, { '!border-red-500 border': error }, { '!text-gray-400': disabled }]"
         :placeholder="placeholder"
       />
+      <!-- :disabled="disabled" -->
       <input
         v-else
         v-bind="props"
         v-model="model"
         class="field-input"
-        :class="[inputClass, { '!border-red-500 border': error }]"
+        :class="[inputClass, { '!border-red-500 border': error }, { '!text-gray-400': disabled }]"
         :type="inputType"
         :placeholder="placeholder"
       />
@@ -34,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, defineModel } from 'vue';
+import { ref, computed, defineProps, defineEmits, defineModel, watch } from 'vue';
 //@ts-ignore
 import { VueTelInput } from 'vue-tel-input';
 import 'vue-tel-input/vue-tel-input.css';
@@ -47,6 +49,7 @@ const model = defineModel();
 const props = defineProps<{
   label?: string;
   type?: string;
+  disabled?: boolean;
   placeholder?: string;
   inputClass?: string;
   error?: boolean;

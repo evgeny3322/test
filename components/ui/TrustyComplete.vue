@@ -20,7 +20,7 @@
     </div>
     <ul
       v-if="isOpen"
-      class="absolute p-[13px] left-0 mt-2 w-full bg-[#323232] border-none rounded-lg shadow-md z-10 overflow-hidden space-y-[10px] overflow-y-scroll max-h-[200px]"
+      class="absolute p-[13px] left-0 mt-2 w-full bg-[#323232] border-none rounded-md shadow-md z-10 overflow-hidden space-y-[10px] overflow-y-scroll max-h-[200px]"
       :class="ulClass"
     >
       <li

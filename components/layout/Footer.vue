@@ -1,5 +1,5 @@
 <template>
-    <div id="footer" class="pt-[7%] pb-[2%] 2xl:pt-[4%]">
+  <div id="footer" class="pt-[7%] pb-[2%] 2xl:pt-[4%]">
     <div class="flex flex-col mx-auto">
       <div class="flex flex-col lg:flex-row justify-between items-start">
         <p class="title text-23 leading-18 cursor-pointer">InspirItaly</p>

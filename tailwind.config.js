@@ -44,9 +44,12 @@ module.exports = {
       colors: {
         'main-black': '#000000',
         'secondary-black': '#0E0E0E',
+        'thirdary-black': '#222222',
+        'fourthary-black': '#404040',
         'tertiary-black': '#262626',
         'main-yellow': '#C4B07C',
         'main-grey': '#737373',
+        'text-grey': '#939393',
         'grey-light-1': 'rgba(255, 255, 255, 0.1)', // (10% прозрачности)
         'grey-light-2': 'rgba(255, 255, 255, 0.2)', // (20% прозрачности)
         'grey-light-3': 'rgba(255, 255, 255, 0.3)', // (30% прозрачности)

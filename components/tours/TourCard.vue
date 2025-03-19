@@ -1,6 +1,7 @@
 <template>
   <div
-    class="w-full relative overflow-hidden min-h-[344px] h-full object-cover flex justify-center items-center bg-gray-200 p-5 rounded-2xl shadow hover:shadow-lg transition duration-500 ease-in transform"
+    class="w-full relative overflow-hidden min-h-[344px] h-full object-cover flex justify-center items-center bg-gray-200 p-5 rounded-2xl shadow hover:shadow-lg transition duration-500 ease-in transform cursor-pointer"
+    @click="goToTourDetail"
   >
     <div class="w-full h-full z-1 flex flex-col justify-center items-start self-start">
       <h1 class="text-2xl font-normal leading-[1.875rem]">
@@ -17,7 +18,6 @@
           v-for="(block, index) in tour.buttons"
           :key="index"
           class="text-[0.625rem] bg-grey-light-2 backdrop-blur-xs px-3 py-[0.40rem] rounded-full shadow hover:shadow-lg transition duration-500 ease-in transform"
-          @click="$router.push('/tours/' + tour._id)"
         >
           {{ block.value }}
         </button>
@@ -33,11 +33,23 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const props = defineProps({
   tour: {
     type: Object,
   },
 });
+
+const goToTourDetail = () => {
+  if (props.tour && props.tour._id) {
+    router.push(`/tours/${props.tour._id}`).then(() => {
+      window.scrollTo(0, 0);
+    });
+  }
+};
+
 interface Tour {
   title: string;
   video?: string;

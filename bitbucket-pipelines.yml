@@ -1,81 +1,81 @@
 image: atlassian/default-image:latest
 
 pipelines:
-  pull-requests:
-    '{feature/*}':
-      - step:
-          name: 'Set Environment Feature INSP'
-          script:
-            - export VITE_PROJECT_ALIAS=insp
-            - echo VITE_PROJECT_ALIAS="$VITE_PROJECT_ALIAS" >> build-insp.env
-            - export HUSKY_SKIP_INSTALL=1
-            - echo HUSKY_SKIP_INSTALL="$HUSKY_SKIP_INSTALL" >> build-insp.env
-            - export NEED_BACKEND=`git log --format=%B -n 1 $BITBUCKET_COMMIT | grep "#need_backend" | wc -l`
-            - echo $NEED_BACKEND
-            - export TICKET_NAME=$(echo "$BITBUCKET_BRANCH" | grep --only-matching --extended-regexp '([A-Z]+)-[0-9]+')
-            - echo TICKET_NAME="$TICKET_NAME" >> build-insp.env
-            - export VITE_PROJECT_VERSION=$(echo "$TICKET_NAME"_"$BITBUCKET_COMMIT" | awk '{print tolower($0)}')
-            - echo VITE_PROJECT_VERSION="$VITE_PROJECT_VERSION" >> build-insp.env
-            - export DIR_NAME=$(echo "$TICKET_NAME"_"$VITE_PROJECT_ALIAS" | awk '{print tolower($0)}')
-            - echo DIR_NAME="$DIR_NAME" >> build-insp.env
-            - export DOMAIN_NAME=$(echo "$TICKET_NAME"."$VITE_PROJECT_ALIAS"."$DOMAIN_FAMILY" | awk '{print tolower($0)}')
-            - echo DOMAIN_NAME="$DOMAIN_NAME" >> build-insp.env
-            - >
-              if [ $NEED_BACKEND == '1' ]; then
-                export VITE_APP_API_URL=$(echo "https://$TICKET_NAME"-api."$PROJECT_FAMILY"."$DOMAIN_FAMILY/api" | awk '{print tolower($0)}')
-              else
-                export VITE_APP_API_URL=$(echo "https://dev-api.$PROJECT_FAMILY"."$DOMAIN_FAMILY/api" | awk '{print tolower($0)}')
-              fi
-            - echo VITE_APP_API_URL="$VITE_APP_API_URL" >> build-insp.env
-            - export VITE_APP_URL=$(echo "https://$DOMAIN_NAME" | awk '{print tolower($0)}')
-            - echo VITE_APP_URL="$VITE_APP_URL" >> build-insp.env
-            - export FULL_DIR_NAME=$(echo "$DIR_FAMILY$DIR_NAME/dist")
-            - echo FULL_DIR_NAME="$FULL_DIR_NAME" >> build-insp.env
-            - export IN_CONTAINER_DIR_NAME=$(echo "/site/$DIR_NAME/dist")
-            - echo IN_CONTAINER_DIR_NAME="$IN_CONTAINER_DIR_NAME" >> build-insp.env
-            - echo $TICKET_NAME
-            - echo $VITE_PROJECT_VERSION
-            - echo $DIR_NAME
-            - echo $DIR_FAMILY$DIR_NAME
-            - echo $VITE_APP_URL
-            - echo $VITE_APP_API_URL
-            - echo $FULL_DIR_NAME
-          artifacts:
-            - build-insp.env
+  # pull-requests:
+    # '{feature/*}':
+    #   - step:
+    #       name: 'Set Environment Feature INSP'
+    #       script:
+    #         - export VITE_PROJECT_ALIAS=insp
+    #         - echo VITE_PROJECT_ALIAS="$VITE_PROJECT_ALIAS" >> build-insp.env
+    #         - export HUSKY_SKIP_INSTALL=1
+    #         - echo HUSKY_SKIP_INSTALL="$HUSKY_SKIP_INSTALL" >> build-insp.env
+    #         - export NEED_BACKEND=`git log --format=%B -n 1 $BITBUCKET_COMMIT | grep "#need_backend" | wc -l`
+    #         - echo $NEED_BACKEND
+    #         - export TICKET_NAME=$(echo "$BITBUCKET_BRANCH" | grep --only-matching --extended-regexp '([A-Z]+)-[0-9]+')
+    #         - echo TICKET_NAME="$TICKET_NAME" >> build-insp.env
+    #         - export VITE_PROJECT_VERSION=$(echo "$TICKET_NAME"_"$BITBUCKET_COMMIT" | awk '{print tolower($0)}')
+    #         - echo VITE_PROJECT_VERSION="$VITE_PROJECT_VERSION" >> build-insp.env
+    #         - export DIR_NAME=$(echo "$TICKET_NAME"_"$VITE_PROJECT_ALIAS" | awk '{print tolower($0)}')
+    #         - echo DIR_NAME="$DIR_NAME" >> build-insp.env
+    #         - export DOMAIN_NAME=$(echo "$TICKET_NAME"."$VITE_PROJECT_ALIAS"."$DOMAIN_FAMILY" | awk '{print tolower($0)}')
+    #         - echo DOMAIN_NAME="$DOMAIN_NAME" >> build-insp.env
+    #         - >
+    #           if [ $NEED_BACKEND == '1' ]; then
+    #             export VITE_APP_API_URL=$(echo "https://$TICKET_NAME"-api."$PROJECT_FAMILY"."$DOMAIN_FAMILY/api/v1" | awk '{print tolower($0)}')
+    #           else
+    #             export VITE_APP_API_URL=$(echo "https://dev-api.$PROJECT_FAMILY"."$DOMAIN_FAMILY/api/v1" | awk '{print tolower($0)}')
+    #           fi
+    #         - echo VITE_APP_API_URL="$VITE_APP_API_URL" >> build-insp.env
+    #         - export VITE_APP_URL=$(echo "https://$DOMAIN_NAME" | awk '{print tolower($0)}')
+    #         - echo VITE_APP_URL="$VITE_APP_URL" >> build-insp.env
+    #         - export FULL_DIR_NAME=$(echo "$DIR_FAMILY$DIR_NAME/dist")
+    #         - echo FULL_DIR_NAME="$FULL_DIR_NAME" >> build-insp.env
+    #         - export IN_CONTAINER_DIR_NAME=$(echo "/site/$DIR_NAME/dist")
+    #         - echo IN_CONTAINER_DIR_NAME="$IN_CONTAINER_DIR_NAME" >> build-insp.env
+    #         - echo $TICKET_NAME
+    #         - echo $VITE_PROJECT_VERSION
+    #         - echo $DIR_NAME
+    #         - echo $DIR_FAMILY$DIR_NAME
+    #         - echo $VITE_APP_URL
+    #         - echo $VITE_APP_API_URL
+    #         - echo $FULL_DIR_NAME
+    #       artifacts:
+    #         - build-insp.env
 
-      - step:
-          name: Add Host For Domain insp
-          script:
-            - export $(cat build-insp.env | xargs)
-            - pipe: atlassian/ssh-run:0.7.1
-              variables:
-                SSH_USER: $SSH_USER_DEV
-                SERVER: $SSH_HOST_DEV
-                MODE: 'command'
-                COMMAND: |
-                  cd $CADDY_DIRECTORY
-                  bash makedomain.sh $DOMAIN_NAME $DIR_NAME $FULL_DIR_NAME
+    #   - step:
+    #       name: Add Host For Domain insp
+    #       script:
+    #         - export $(cat build-insp.env | xargs)
+    #         - pipe: atlassian/ssh-run:0.7.1
+    #           variables:
+    #             SSH_USER: $SSH_USER_DEV
+    #             SERVER: $SSH_HOST_DEV
+    #             MODE: 'command'
+    #             COMMAND: |
+    #               cd $CADDY_DIRECTORY
+    #               bash makedomain.sh $DOMAIN_NAME $DIR_NAME $FULL_DIR_NAME
 
-      - step:
-          image: node:20.18.1
-          name: 'Build & Deploy Feature Version insp'
-          # deployment: test_insp
-          caches:
-            - node
-          script:
-            - export $(cat build-insp.env | xargs)
-            # - cp robots.txt public/robots.txt
-            - npm install
-            - npm run generate
-            - pipe: atlassian/scp-deploy:1.5.2
-              variables:
-                USER: $SSH_USER_DEV
-                SERVER: $SSH_HOST_DEV
-                REMOTE_PATH: '${FULL_DIR_NAME}'
-                LOCAL_PATH: 'dist/*'
-                # SSH_KEY: '<string>' # Optional.
-                # EXTRA_ARGS: '<string>' # Optional.
-                DEBUG: 'true' # Optional.
+    #   - step:
+    #       image: node:20.18.1
+    #       name: 'Build & Deploy Feature Version insp'
+    #       # deployment: test_insp
+    #       caches:
+    #         - node
+    #       script:
+    #         - export $(cat build-insp.env | xargs)
+    #         # - cp robots.txt public/robots.txt
+    #         - npm install
+    #         - npm run generate
+    #         - pipe: atlassian/scp-deploy:1.5.2
+    #           variables:
+    #             USER: $SSH_USER_DEV
+    #             SERVER: $SSH_HOST_DEV
+    #             REMOTE_PATH: '${FULL_DIR_NAME}'
+    #             LOCAL_PATH: 'dist/*'
+    #             # SSH_KEY: '<string>' # Optional.
+    #             # EXTRA_ARGS: '<string>' # Optional.
+    #             DEBUG: 'true' # Optional.
 
   branches:
     '{dev}':
@@ -88,9 +88,13 @@ pipelines:
             - echo VITE_PROJECT_ALIAS="$VITE_PROJECT_ALIAS" >> build-insp.env
             - export HUSKY_SKIP_INSTALL=1
             - echo HUSKY_SKIP_INSTALL="$HUSKY_SKIP_INSTALL" >> build-insp.env
+            - export VITE_APP_STRIPE_KEY="pk_test_51QFZCWEFcBt0NGMG3Z8dSfot6WiiCdLvdyjtw2rMj8P6Ct6KWLJuaRcvzAywIhB3ox899bpCcOHw3t8YRjSy4wni00iPfOMnzO"
+            - echo VITE_APP_STRIPE_KEY="$VITE_APP_STRIPE_KEY" >> build-insp.env
+            - export VITE_APP_STRIPE_KEY_TEST="sk_test_51QFZCWEFcBt0NGMGPLmLMqe2SO31o9qSeE1IB8k2KFv5c4YllOOLe9fnHfrhRQSfTAzaFPS1buSbehw3CK4tojvG00IXGCfWXy"
+            - echo VITE_APP_STRIPE_KEY_TEST="$VITE_APP_STRIPE_KEY_TEST"
             - export TICKET_NAME=dev
             - echo TICKET_NAME="$TICKET_NAME" >> build-insp.env
-            - export SOURCE_NAME=`git cat-file -p $BITBUCKET_COMMIT | grep parent | awk 'END{print "git branch --remotes --contains " $2 }' | sh | grep feature | grep --only-matching --extended-regexp '([A-Z]+)-([0-9]+)'`
+            - export SOURCE_NAME=`git cat-file -p $BITBUCKET_COMMIT | grep parent | awk 'END{print "git branch --remotes --contains " $2 }' | sh | grep feature | grep --only-matching --extended-regexp '([A-Z]+)-([0-9]+)' | head -n 1`
             - echo SOURCE_NAME="$SOURCE_NAME" >> build-insp.env
             - export VITE_PROJECT_VERSION=$(echo "$TICKET_NAME"_"$BITBUCKET_COMMIT" | awk '{print tolower($0)}')
             - echo VITE_PROJECT_VERSION="$VITE_PROJECT_VERSION" >> build-insp.env
@@ -98,11 +102,11 @@ pipelines:
             - echo DIR_NAME="$DIR_NAME" >> build-insp.env
             - export DOMAIN_NAME=$(echo "$TICKET_NAME"."$VITE_PROJECT_ALIAS"."$DOMAIN_FAMILY" | awk '{print tolower($0)}')
             - echo DOMAIN_NAME="$DOMAIN_NAME" >> build-insp.env
-            - export VITE_APP_API_URL=$(echo "https://$TICKET_NAME"-api."$PROJECT_FAMILY"."$DOMAIN_FAMILY/api" | awk '{print tolower($0)}')
+            - export VITE_APP_API_URL=$(echo "https://$TICKET_NAME"-api."$PROJECT_FAMILY"."$DOMAIN_FAMILY/api/v1" | awk '{print tolower($0)}')
             - echo VITE_APP_API_URL="$VITE_APP_API_URL" >> build-insp.env
             - export VITE_APP_URL=$(echo "https://$DOMAIN_NAME" | awk '{print tolower($0)}')
             - echo VITE_APP_URL="$VITE_APP_URL" >> build-insp.env
-            - export FULL_DIR_NAME=$(echo "$DIR_FAMILY$DIR_NAME/dist")
+            - export FULL_DIR_NAME=$(echo "$DIR_FAMILY$DIR_NAME")
             - echo FULL_DIR_NAME="$FULL_DIR_NAME" >> build-insp.env
             - export IN_CONTAINER_DIR_NAME=$(echo "/site/$DIR_NAME/dist")
             - echo IN_CONTAINER_DIR_NAME="$IN_CONTAINER_DIR_NAME" >> build-insp.env
@@ -137,18 +141,26 @@ pipelines:
             - node
           script:
             - export $(cat build-insp.env | xargs)
-            # - cp robots.txt public/robots.txt
             - npm install
-            - npm run generate
+            - npm run build
+            - mkdir pipeline && tar cvf pipeline/build.tar .output
             - pipe: atlassian/scp-deploy:1.5.2
               variables:
                 USER: $SSH_USER_DEV
                 SERVER: $SSH_HOST_DEV
                 REMOTE_PATH: '${FULL_DIR_NAME}'
-                LOCAL_PATH: 'dist/*'
-                # SSH_KEY: '<string>' # Optional.
-                # EXTRA_ARGS: '<string>' # Optional.
-                # DEBUG: '<boolean>' # Optional.
+                LOCAL_PATH: 'pipeline/*'
+            - pipe: atlassian/ssh-run:0.7.1
+              variables:
+                SSH_USER: $SSH_USER_DEV
+                SERVER: $SSH_HOST_DEV
+                MODE: 'command'
+                COMMAND: |
+                  cd $FULL_DIR_NAME
+                  bash /root/frontend/deploy.sh $FULL_DIR_NAME
+
+
+
 
     # '{master}':
     #   - step:

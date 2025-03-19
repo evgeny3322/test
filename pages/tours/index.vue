@@ -19,26 +19,34 @@
 <script setup lang="ts">
 import TourCard from '@/components/ui/TrustyTourCard.vue';
 import VideoSwiper from '@/components/tours/VideoSwiper.vue';
-import { Tour } from '@/types/tours';
+import type { Tour, TourFilters } from '@/types/tours';
 import TrustyFilter from '@/components/ui/TrustyFilter.vue';
 import { useToursStore } from '@/store/toursStore';
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import { navigateTo } from 'nuxt/app';
+import { storeToRefs } from 'pinia';
 
 const tours = ref<Tour[]>([]);
-
 const toursStore = useToursStore();
+const { toursFilter } = storeToRefs(toursStore);
 
 const handleSearch = async (values: any) => {
   toursStore.updateToursFilter(values);
   console.log(values);
-  // navigateTo('/tours')
+  if (values) {
+    toursStore.updateToursFilter(values);
+  }
 };
 
-const getTours = async () => {
-  tours.value = (await toursStore.fetchTours()) || tours.value;
+const getTours = async (filters: TourFilters = {}) => {
+  tours.value = (await toursStore.fetchTours(filters)) || tours.value;
 };
-onMounted(async () => {
-  await getTours();
+
+watchEffect(() => {
+  if (toursFilter.value) {
+    getTours(toursFilter.value);
+  } else {
+    getTours();
+  }
 });
 </script>

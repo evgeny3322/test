@@ -1,5 +1,7 @@
 <template>
-  <div class="my-[62px] flex flex-col gap-[62px]">
+  <div
+    class="my-[41px] md:my-[62px] flex flex-col md:gap-[62px] min-h-[calc(100vh-88px-41px)] md:min-h-auto justify-between"
+  >
     <h1 class="text-40 font-medium text-center text-white">Sign in</h1>
     <div class="flex justify-center">
       <form
@@ -36,7 +38,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useAuthStore } from '@/store/useAuthStore'; // Pinia Store
+import { useAuthStore } from '@/store/authStore'; // Pinia Store
 import TrustyField from '@/components/ui/TrustyField.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
 import { useRouter } from 'vue-router';
@@ -84,3 +86,4 @@ const handleSubmit = async () => {
   // }
 };
 </script>
+@/store/authStore

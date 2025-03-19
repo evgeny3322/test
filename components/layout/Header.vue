@@ -7,13 +7,18 @@
         v-for="item in navItems"
         :key="item.name"
         :class="{ '!text-[#FFFFFF]': item.name === activeNav }"
-        class="whitespace-nowrap cursor-pointer font-semibold text-[#939393] text-14"
+        class="whitespace-nowrap cursor-pointer font-semibold text-text-grey text-14"
       >
         {{ item.name }}
       </p>
     </div>
     <div class="flex flex-row items-center gap-x-3 lg:gap-x-[22px]">
-      <p class="hidden lg:block font-semibold cursor-pointer text-14" @click="router.push('/auth/sign-in')">Login</p>
+      <p
+        class="hidden lg:block font-semibold cursor-pointer text-14"
+        @click="router.push('/auth/sign-in')"
+      >
+        Login
+      </p>
       <trusty-button class="!py-2" @click="router.push('/auth/sign-up')">
         <p class="whitespace-nowrap font-semibold text-14">Sign Up</p>
       </trusty-button>
@@ -28,36 +33,65 @@
 
     <div
       v-if="showMobileMenu"
-      class="fixed inset-0 bg-black bg-opacity-80 z-50 lg:hidden"
+      class="fixed inset-0 backdrop-blur-[1.25rem] bg-opacity-80 z-50 lg:hidden"
       @click="showMobileMenu = false"
     >
       <div
-        class="bg-[#262626] w-4/5 h-full p-6 flex flex-col"
+        class="bg-secondary-black w-4/5 ml-auto h-full px-[1.813rem] py-[0.875rem] flex flex-col"
         @click.stop
       >
         <div class="flex justify-between items-center mb-8">
           <p class="title text-23 leading-24">InspirItaly</p>
-          <button @click="showMobileMenu = false" class="text-white text-24">×</button>
+          <button @click="showMobileMenu = false" class="cursor-pointer">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M18 6L6 18"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6 6L18 18"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
         </div>
 
-        <div class="flex flex-col gap-y-6">
+        <div class="flex flex-col items-end gap-y-12 h-full">
           <p
             v-for="item in navItems"
             :key="item.name"
             @click="handleMobileNavigation(item)"
             :class="{ 'text-white': item.name === activeNav }"
-            class="font-medium text-18 text-[#939393] cursor-pointer"
+            class="font-bold text-16 text-text-grey leading-6 cursor-pointer"
           >
             {{ item.name }}
           </p>
-
-          <div class="border-b border-gray-700 my-4"></div>
-
-          <p @click="router.push('/auth/sign-in')" class="font-medium text-18 text-[#939393] cursor-pointer">Login</p>
-          <p @click="router.push('/auth/sign-up')" class="font-medium text-18 text-[#939393] cursor-pointer">Sign Up</p>
-
-          <div class="mt-auto">
-            <LanguageSwitcher />
+          <LanguageSwitcher />
+          <div class="mt-auto flex flex-col w-full gap-3">
+            <trusty-button
+              @click="router.push('/auth/sign-in')"
+              class="h-[2rem] flex items-center justify-center !bg-thirdary-black !text-white !border !border-fourthary-black"
+            >
+              Login
+            </trusty-button>
+            <trusty-button
+              @click="router.push('/auth/sign-up')"
+              class="h-[2rem] flex items-center justify-center"
+            >
+              Sign up
+            </trusty-button>
           </div>
         </div>
       </div>
@@ -83,13 +117,13 @@ interface NavItem {
 const navItems = ref<NavItem[]>([
   { name: 'Best tours', path: '/' },
   { name: 'ALL Tours', path: '/tours' },
-  { name: 'Contact Us', path: '#footer' }
+  { name: 'Contact Us', path: '#footer' },
 ]);
 
 const activeNav = ref<string>('Best tours');
 
 const updateActiveNav = (path: string) => {
-  const currentNavItem = navItems.value.find(item => {
+  const currentNavItem = navItems.value.find((item) => {
     if (path === '/' && item.path === '/') return true;
     return path !== '/' && item.path !== '/' && path.startsWith(item.path);
   });
@@ -105,9 +139,12 @@ onMounted(() => {
   updateActiveNav(router.currentRoute.value.path);
 });
 
-watch(() => router.currentRoute.value.path, (newPath) => {
-  updateActiveNav(newPath);
-});
+watch(
+  () => router.currentRoute.value.path,
+  (newPath) => {
+    updateActiveNav(newPath);
+  }
+);
 
 const handleNavigation = (item: NavItem) => {
   activeNav.value = item.name;
