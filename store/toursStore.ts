@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { toursAPI } from '@/utils/api';
-import { Addon, CustomTour, Tour, TourFilters } from '@/types/tours';
+import { CustomTour, Tour, TourFilters } from '@/types/tours';
 
 export const useToursStore = defineStore('tours', () => {
   const loading = ref(false);
@@ -94,5 +94,6 @@ export const useToursStore = defineStore('tours', () => {
     updateToursFilter,
     getHourDiscount,
     updateCustomTour,
+    clearCache,
   };
 });
