@@ -15,14 +15,8 @@
     <div class="flex flex-row items-center gap-x-3 lg:gap-x-[22px]">
       <!-- Show if user is logged in -->
       <AuthCheck authenticated>
-        <p
-          class="hidden lg:block font-semibold cursor-pointer text-14"
-          @click="handleUserAccount"
-        >
-          {{ authStore.user?.name || 'Account' }}
-        </p>
-        <trusty-button class="!py-2" @click="handleLogout">
-          <p class="whitespace-nowrap font-semibold text-14">Logout</p>
+        <trusty-button class="!py-2" @click="handleUserAccount">
+          <p class="whitespace-nowrap font-semibold text-14">My Account</p>
         </trusty-button>
       </AuthCheck>
 
@@ -101,15 +95,9 @@
             <AuthCheck authenticated>
               <trusty-button
                 @click="handleUserAccount"
-                class="h-[2rem] flex items-center justify-center !bg-thirdary-black !text-white !border !border-fourthary-black"
-              >
-                My Account
-              </trusty-button>
-              <trusty-button
-                @click="handleLogout"
                 class="h-[2rem] flex items-center justify-center"
               >
-                Logout
+                My Account
               </trusty-button>
             </AuthCheck>
 
@@ -143,10 +131,12 @@ import BurgerIcon from '@/components/icons/BurgerIcon.vue';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.vue';
 import AuthCheck from '@/components/auth/AuthCheck.vue';
 import { useAuthStore } from '@/store/authStore';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const showMobileMenu = ref(false);
 const authStore = useAuthStore();
+const { isAuthenticated } = storeToRefs(authStore);
 
 interface NavItem {
   name: string;
@@ -176,6 +166,11 @@ const updateActiveNav = (path: string) => {
 
 onMounted(() => {
   updateActiveNav(router.currentRoute.value.path);
+
+  // Make sure auth store is initialized
+  if (!authStore.initialized) {
+    authStore.initAuth();
+  }
 });
 
 watch(

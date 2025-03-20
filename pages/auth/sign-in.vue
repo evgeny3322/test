@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useAuthStore } from '@/store/authStore';
 import TrustyField from '@/components/ui/TrustyField.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
@@ -126,7 +126,9 @@ const handleSubmit = async () => {
     const success = await authStore.login(email.value, password.value);
 
     if (success) {
-      router.push('/account');
+      // Redirect to the intended route or the account page
+      const redirectTo = authStore.getIntendedRoute();
+      router.push(redirectTo);
     } else {
       loginError.value = 'Invalid email or password';
     }

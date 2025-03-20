@@ -13,6 +13,7 @@ import { User } from '@/types/user';
 const REGISTER_INFO_SESSION = 'reg-info';
 const AUTH_TOKEN_KEY = 'auth-token';
 const USER_DATA_KEY = 'user-data';
+const INTENDED_ROUTE_KEY = 'intended-route';
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null);
@@ -21,6 +22,8 @@ export const useAuthStore = defineStore('auth', () => {
   const registerInfo = ref<RegisterInfoInterface | null>(null);
   const isAuthenticated = ref(false);
   const token = ref<string | null>(null);
+  const initialized = ref(false);
+  const intendedRoute = ref<string | null>(null);
 
   // Login function
   const login = async (email: string, password: string) => {
@@ -141,7 +144,26 @@ export const useAuthStore = defineStore('auth', () => {
     if (process.client) {
       localStorage.removeItem(AUTH_TOKEN_KEY);
       localStorage.removeItem(USER_DATA_KEY);
+      localStorage.removeItem(INTENDED_ROUTE_KEY);
     }
+  };
+
+  // Store the route the user was trying to access before being redirected to login
+  const setIntendedRoute = (route: string) => {
+    intendedRoute.value = route;
+    if (process.client) {
+      localStorage.setItem(INTENDED_ROUTE_KEY, route);
+    }
+  };
+
+  // Get the intended route and clear it
+  const getIntendedRoute = () => {
+    const route = intendedRoute.value;
+    intendedRoute.value = null;
+    if (process.client) {
+      localStorage.removeItem(INTENDED_ROUTE_KEY);
+    }
+    return route || '/account';
   };
 
   const updateRegisterInfo = (data: Partial<RegisterInfoInterface>) => {
@@ -184,6 +206,13 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
 
+      // Load intended route
+      const savedIntendedRoute = localStorage.getItem(INTENDED_ROUTE_KEY);
+      if (savedIntendedRoute) {
+        intendedRoute.value = savedIntendedRoute;
+      }
+
+      // Load registration info
       let registerInfoSession = sessionStorage.getItem(REGISTER_INFO_SESSION);
       if (registerInfoSession) {
         try {
@@ -200,10 +229,15 @@ export const useAuthStore = defineStore('auth', () => {
           registerInfo.value = null;
         }
       }
+
+      initialized.value = true;
     }
   };
 
-  initAuth();
+  // Initialize auth state on store creation (client-side only)
+  if (process.client) {
+    initAuth();
+  }
 
   return {
     user,
@@ -212,6 +246,7 @@ export const useAuthStore = defineStore('auth', () => {
     registerInfo,
     isAuthenticated,
     token,
+    initialized,
     login,
     logout,
     register,
@@ -219,5 +254,8 @@ export const useAuthStore = defineStore('auth', () => {
     sendCode,
     updateRegisterInfo,
     deleteRegisterInfo,
+    initAuth,
+    setIntendedRoute,
+    getIntendedRoute,
   };
 });

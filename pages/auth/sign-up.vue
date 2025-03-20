@@ -54,8 +54,8 @@
         <p v-if="errorResponse" class="text-red-400">{{ errorResponse }}</p>
 
         <!-- Submit Button -->
-        <TrustyButton title="Next" size="large" class="grid place-items-center" :disabled="loading.value">
-          <PreloaderAnimIcon class="size-6" theme="black" v-if="loading.value" />
+        <TrustyButton title="Next" size="large" class="grid place-items-center" :disabled="loading">
+          <PreloaderAnimIcon class="size-6" theme="black" v-if="loading" />
           <p class="text-18 font-medium" v-else>Next</p>
         </TrustyButton>
 
@@ -161,7 +161,7 @@ const handleSubmit = async () => {
     if ([203, 429].includes(response.status)) {
       errorResponse.value = response.data.message;
     } else if ([200, 208].includes(response.status)) {
-      authStore.registerInfo({
+      authStore.updateRegisterInfo({
         step: 2,
         name: signUpValidated.name,
         last_name: signUpValidated.last_name,
