@@ -3,6 +3,7 @@
     class="w-full px-[8.5%] mb-8"
     :showLabels="false"
     :disabled="loading"
+    :initial-values="initialFilterValues"
     @submit="handleSearch"
   />
   <div class="w-full flex flex-col gap-[7.5rem] items-center justify-between py-6 px-[5.5%]">
@@ -22,7 +23,7 @@
       </template>
 
       <div v-else class="text-center col-span-full py-12">
-        <p class="text-xl text-gray-300">No featured tours found.</p>
+        <p class="text-xl text-gray-300">No featured tours found matching your criteria.</p>
       </div>
     </div>
   </div>
@@ -30,11 +31,10 @@
 
 <script setup lang="ts">
 import TrustyTourCard from '@/components/ui/TrustyTourCard.vue';
-import VideoSwiper from '@/components/tours/VideoSwiper.vue';
 import type { Tour, TourFilters } from '@/types/tours';
 import TrustyFilter from '@/components/ui/TrustyFilter.vue';
 import { useToursStore } from '@/store/toursStore';
-import { ref, computed, onMounted, watchEffect } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { navigateTo } from 'nuxt/app';
 import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
 import { storeToRefs } from 'pinia';
@@ -45,16 +45,22 @@ const { toursFilter } = storeToRefs(toursStore);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
+const initialFilterValues = {
+  ...(toursFilter.value || {}),
+  featured: 1,
+};
+
 const featuredTours = computed(() => {
   return tours.value;
 });
 
 const handleSearch = async (values: TourFilters) => {
   loading.value = true;
+
   try {
     const filters = { ...values, featured: 1 };
     toursStore.updateToursFilter(filters);
-    await getTours(filters);
+    tours.value = await toursStore.fetchTours(filters);
   } catch (err) {
     error.value = 'Failed to search tours. Please try again.';
     console.error('Search error:', err);
@@ -63,22 +69,17 @@ const handleSearch = async (values: TourFilters) => {
   }
 };
 
-const getTours = async (filters: TourFilters = { featured: 1 }) => {
+onMounted(async () => {
   loading.value = true;
   error.value = null;
 
   try {
-    const updatedFilters = { ...filters, featured: 1 };
-    const fetchedTours = await toursStore.fetchTours(updatedFilters);
+    const filters = {
+      ...(toursFilter.value || {}),
+      featured: 1,
+    };
 
-    if (fetchedTours) {
-      tours.value = fetchedTours;
-    } else {
-      tours.value = [];
-      if (toursStore.error) {
-        error.value = toursStore.error;
-      }
-    }
+    tours.value = await toursStore.fetchTours(filters);
   } catch (err) {
     error.value = 'Failed to load tours. Please try again.';
     console.error('Error fetching tours:', err);
@@ -86,16 +87,5 @@ const getTours = async (filters: TourFilters = { featured: 1 }) => {
   } finally {
     loading.value = false;
   }
-};
-
-watchEffect(() => {
-  if (toursFilter.value) {
-    const filters = { ...toursFilter.value, featured: 1 };
-    getTours(filters);
-  }
-});
-
-onMounted(() => {
-  getTours();
 });
 </script>

@@ -6,7 +6,7 @@
       <div class="flex flex-col gap-y-7 text-center w-full lg:w-[50%] lg:text-start">
         <p class="title text-32 leading-24 lg:text-74 lg:leading-59">Luxury Tours</p>
         <span class="text-16 font-medium"
-          >With TailGrids, business and students thrive together. Business can perfectly match their
+        >With TailGrids, business and students thrive together. Business can perfectly match their
           staffing to changing demand throughout the dayed.</span
         >
       </div>
@@ -55,7 +55,7 @@
 import { computed, nextTick, onMounted, ref } from 'vue';
 import TrustyTourCard from '@/components/ui/TrustyTourCard.vue';
 import TrustyFilter from '@/components/ui/TrustyFilter.vue';
-import type { Tour } from '@/types/tours';
+import type { Tour, TourFilters } from '@/types/tours';
 import { navigateTo } from 'nuxt/app';
 import { useAreasStore } from '@/store/areasStore';
 import { Area } from '@/types/areas';
@@ -104,7 +104,7 @@ const featuredTours = computed(() => {
   return tours.value?.filter((tour) => tour.featured) || [];
 });
 
-const handleSearch = async (values: any) => {
+const handleSearch = async (values: TourFilters) => {
   toursStore.updateToursFilter(values);
   navigateTo('/tours');
 };

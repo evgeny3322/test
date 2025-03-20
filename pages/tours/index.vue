@@ -3,6 +3,7 @@
     class="w-full px-[8.5%] mb-8"
     :showLabels="false"
     :disabled="loading"
+    :initial-values="initialFilterValues"
     @submit="handleSearch"
   />
   <div class="w-full flex flex-col gap-[7.5rem] items-center justify-between py-6 px-[5.5%]">
@@ -27,7 +28,7 @@
       </template>
 
       <div v-else class="text-center col-span-full py-12">
-        <p class="text-xl text-gray-300">No featured tours found.</p>
+        <p class="text-xl text-gray-300">No tours found matching your criteria.</p>
       </div>
     </div>
   </div>
@@ -39,7 +40,7 @@ import VideoSwiper from '@/components/tours/VideoSwiper.vue';
 import type { Tour, TourFilters } from '@/types/tours';
 import TrustyFilter from '@/components/ui/TrustyFilter.vue';
 import { useToursStore } from '@/store/toursStore';
-import { ref, watchEffect, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { navigateTo } from 'nuxt/app';
 import { storeToRefs } from 'pinia';
 import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
@@ -50,11 +51,16 @@ const { toursFilter } = storeToRefs(toursStore);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
-const handleSearch = async (values: any) => {
+const initialFilterValues = toursFilter.value || {};
+
+const handleSearch = async (values: TourFilters) => {
   loading.value = true;
+  error.value = null;
+
   try {
     toursStore.updateToursFilter(values);
-    await getTours(values);
+
+    tours.value = await toursStore.fetchTours(values);
   } catch (err) {
     error.value = 'Failed to search tours. Please try again.';
     console.error('Search error:', err);
@@ -63,38 +69,14 @@ const handleSearch = async (values: any) => {
   }
 };
 
-const getTours = async (filters: TourFilters = {}) => {
-  loading.value = true;
-  error.value = null;
-
+onMounted(async () => {
   try {
-    const fetchedTours = await toursStore.fetchTours(filters);
-    if (fetchedTours) {
-      tours.value = fetchedTours;
-    } else {
-      tours.value = [];
-      if (toursStore.error) {
-        error.value = toursStore.error;
-      }
-    }
+    tours.value = await toursStore.fetchTours(toursFilter.value || {});
   } catch (err) {
     error.value = 'Failed to load tours. Please try again.';
     console.error('Error fetching tours:', err);
-    tours.value = [];
   } finally {
     loading.value = false;
   }
-};
-
-watchEffect(() => {
-  if (toursFilter.value) {
-    getTours(toursFilter.value);
-  } else {
-    getTours();
-  }
-});
-
-onMounted(() => {
-  getTours();
 });
 </script>
