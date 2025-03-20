@@ -109,7 +109,6 @@ const initSwiper = () => {
   const swiperInstance = swiperEl.value as unknown as HTMLElement & { swiper?: any };
 
   if (swiperInstance?.swiper) {
-    console.log('Swiper instance found:', swiperInstance.swiper);
     swiperInstance.swiper.params.navigation.nextEl = nextBtn.value;
     swiperInstance.swiper.params.navigation.prevEl = prevBtn.value;
     swiperInstance.swiper.navigation.init();

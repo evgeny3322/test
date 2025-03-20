@@ -13,15 +13,15 @@
       </p>
     </div>
     <div class="flex flex-row items-center gap-x-3 lg:gap-x-[22px]">
-      <!-- Show if user is logged in -->
-      <AuthCheck authenticated>
+      <!-- Authenticated section -->
+      <template v-if="isAuthenticated">
         <trusty-button class="!py-2" @click="handleUserAccount">
           <p class="whitespace-nowrap font-semibold text-14">My Account</p>
         </trusty-button>
-      </AuthCheck>
+      </template>
 
-      <!-- Show if user is not logged in -->
-      <AuthCheck :authenticated="false">
+      <!-- Unauthenticated section -->
+      <template v-else>
         <p
           class="hidden lg:block font-semibold cursor-pointer text-14"
           @click="router.push('/auth/sign-in')"
@@ -31,7 +31,7 @@
         <trusty-button class="!py-2" @click="router.push('/auth/sign-up')">
           <p class="whitespace-nowrap font-semibold text-14">Sign Up</p>
         </trusty-button>
-      </AuthCheck>
+      </template>
 
       <LanguageSwitcher class="hidden lg:block" />
       <div
@@ -91,18 +91,18 @@
           </p>
           <LanguageSwitcher />
           <div class="mt-auto flex flex-col w-full gap-3">
-            <!-- Show if user is logged in -->
-            <AuthCheck authenticated>
+            <!-- Authenticated section (mobile) -->
+            <template v-if="isAuthenticated">
               <trusty-button
                 @click="handleUserAccount"
                 class="h-[2rem] flex items-center justify-center"
               >
                 My Account
               </trusty-button>
-            </AuthCheck>
+            </template>
 
-            <!-- Show if user is not logged in -->
-            <AuthCheck :authenticated="false">
+            <!-- Unauthenticated section (mobile) -->
+            <template v-else>
               <trusty-button
                 @click="
                   router.push('/auth/sign-in');
@@ -121,7 +121,7 @@
               >
                 Sign up
               </trusty-button>
-            </AuthCheck>
+            </template>
           </div>
         </div>
       </div>
@@ -130,18 +130,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { ref, onMounted, watch, nextTick, computed } from 'vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
 import { useRouter } from 'nuxt/app';
 import BurgerIcon from '@/components/icons/BurgerIcon.vue';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher.vue';
-import AuthCheck from '@/components/auth/AuthCheck.vue';
 import { useAuthStore } from '@/store/authStore';
 import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const showMobileMenu = ref(false);
 const authStore = useAuthStore();
+const { isAuthenticated } = storeToRefs(authStore);
 
 interface NavItem {
   name: string;
@@ -149,8 +149,8 @@ interface NavItem {
 }
 
 const navItems = ref<NavItem[]>([
-  { name: 'Best tours', path: '/' },
   { name: 'ALL Tours', path: '/tours' },
+  { name: 'Best tours', path: '/' },
   { name: 'Contact Us', path: '#footer' },
 ]);
 
@@ -228,5 +228,4 @@ const handleUserAccount = () => {
   router.push('/account');
   showMobileMenu.value = false;
 };
-
 </script>

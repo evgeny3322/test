@@ -15,13 +15,4 @@ const route = useRoute();
 const layout = computed(() => {
   return route.path === '/' ? 'home' : 'default';
 });
-
-watch(
-  () => route.fullPath,
-  (newPath, oldPath) => {
-    if (newPath !== oldPath) {
-      console.log(`Route changed from ${oldPath} to ${newPath}`);
-    }
-  }
-);
 </script>

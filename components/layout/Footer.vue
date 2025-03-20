@@ -69,7 +69,7 @@ import DiscoverIcon from '@/components/icons/DiscoverIcon.vue';
 import { markRaw, ref } from 'vue';
 import { useDevice } from '@/.nuxt/imports';
 
-const navItems = ref<string[]>(['Home', 'Best tours', 'About us']);
+const navItems = ref<string[]>(['Home', 'Best tours']);
 
 const socialIcons = ref<{ icon: any; link: string }[]>([
   {

@@ -78,16 +78,11 @@ const resendCode = async () => {
   startTimer();
   errorResend.value = '';
   if (registerInfo.value) {
-    await authAPI
-      .resendVerificationCode(registerInfo.value.email)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        if (error?.status == 429) {
-          errorResend.value = error.response.data.message;
-        }
-      });
+    await authAPI.resendVerificationCode(registerInfo.value.email).catch((error) => {
+      if (error?.status == 429) {
+        errorResend.value = error.response.data.message;
+      }
+    });
   }
 };
 
@@ -120,7 +115,6 @@ const acceptCode = async () => {
       .acceptVerificationCode(acceptValidated)
       .then((response) => {
         if (response.status == 200) {
-          console.log(response);
           authStore.updateRegisterInfo({ hash: response.data.data.hash, step: 3 });
         }
         router.push('/auth/finalize-registration');

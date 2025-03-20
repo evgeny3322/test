@@ -6,11 +6,6 @@
     >
       <template v-for="(tour, index) in tours" :key="tour.id">
         <TourCard :tour="tour" @click="navigateTo('/tours/' + tour.id)" />
-        <VideoSwiper
-          :tours="tours"
-          v-if="(index + 1) % 8 === 0 && index + 1 < tours.length"
-          class="col-span-full"
-        />
       </template>
     </div>
   </div>
@@ -18,11 +13,10 @@
 
 <script setup lang="ts">
 import TourCard from '@/components/ui/TrustyTourCard.vue';
-import VideoSwiper from '@/components/tours/VideoSwiper.vue';
 import type { Tour, TourFilters } from '@/types/tours';
 import TrustyFilter from '@/components/ui/TrustyFilter.vue';
 import { useToursStore } from '@/store/toursStore';
-import { onMounted, ref, watchEffect } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { navigateTo } from 'nuxt/app';
 import { storeToRefs } from 'pinia';
 
