@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-grey-light-1 p-5 lg:p-8 grid grid-cols-12 mt-[4.5%] lg:gap-x-16 rounded-main-sm relative overflow-hidden"
+    class="bg-grey-light-1 p-5 lg:p-8 grid grid-cols-12 mt-[4.5%] lg:gap-x-16 rounded-2xl relative overflow-hidden"
   >
     <NuxtImg
       v-if="activeCardIndex !== null"
@@ -20,7 +20,7 @@
     <div class="col-span-12 lg:col-span-8 flex flex-col gap-y-6">
       <div
         v-if="!mandatory"
-        class="bg-grey-dark p-5 rounded-main-sm grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4 gap-y-4"
+        class="bg-grey-dark p-5 rounded-2xl grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4 gap-y-4"
         :class="{ '!bg-[#313131] border-1 border-grey-light-3': activeCardIndex === null }"
         @click="setActiveCard(null)"
       >
@@ -38,7 +38,7 @@
       <div
         v-for="(card, index) in filteredAddons"
         :key="card.id"
-        class="bg-grey-dark p-4 lg:p-5 rounded-main-sm grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4"
+        class="bg-grey-dark p-4 lg:p-5 rounded-2xl grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4"
         @click="setActiveCard(index)"
         :class="{ '!bg-[#313131] border-1 border-grey-light-3': activeCardIndex === index }"
       >

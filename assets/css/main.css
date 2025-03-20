@@ -42,7 +42,16 @@
   font-display: swap;
   src: url('../fonts/Inter-ExtraBold.ttf') format('truetype');
 }
-
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  @apply !text-white transition-colors delay-0 duration-[5000s] ease-in-out;
+}
 body {
   @apply m-0 box-border font-['Inter'] font-normal antialiased bg-secondary-black text-[#FFFFFF];
 }
@@ -77,8 +86,5 @@ body > .skiptranslate,
   }
   .main-container {
     @apply mx-auto w-full max-w-[1170px] xl:max-w-[1920px];
-  }
-  .rounded-main-sm {
-    @apply rounded-[6px];
   }
 }

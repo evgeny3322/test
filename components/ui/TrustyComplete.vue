@@ -3,7 +3,7 @@
     <label v-if="label" class="block mb-2 text-sm font-medium text-grey-light-6" v-html="label" />
     <div
       :class="[
-        'flex flex-row justify-between items-center w-full border rounded-main-sm focus:outline-none text-16 leading-24 font-medium',
+        'flex flex-row justify-between items-center w-full border rounded-2xl focus:outline-none text-16 leading-24 font-medium',
         selectClass,
         variantClass,
         { '!border-red-500 border': error },

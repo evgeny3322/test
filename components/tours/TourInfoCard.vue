@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-tertiary-black p-6 rounded-main-sm flex flex-col">
+  <div class="bg-tertiary-black p-6 rounded-2xl flex flex-col">
     <p class="mb-4 text-28">{{ data.title }}</p>
     <div class="border-y-1 border-[#313131] py-4 flex flex-row gap-x-8">
-      <NuxtImg :src="data.img" class="max-w-[167px] max-h-[261px] rounded-main-sm object-cover" />
+      <NuxtImg :src="data.img" class="max-w-[167px] max-h-[261px] rounded-2xl object-cover" />
       <div>
         <p class="text-28">{{ data.title }}</p>
         <div class="mt-5 grid grid-cols-12 grid-rows-3 gap-x-15 gap-y-8">

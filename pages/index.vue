@@ -6,53 +6,41 @@
       <div class="flex flex-col gap-y-7 text-center w-full lg:w-[50%] lg:text-start">
         <p class="title text-32 leading-24 lg:text-74 lg:leading-59">Luxury Tours</p>
         <span class="text-16 font-medium"
-        >With TailGrids, business and students thrive together. Business can perfectly match their
+          >With TailGrids, business and students thrive together. Business can perfectly match their
           staffing to changing demand throughout the dayed.</span
         >
       </div>
-      <trusty-filter :disabled="loading" @submit="handleSearch" />
+      <trusty-filter @submit="handleSearch" />
     </div>
   </div>
   <div class="main-container px-[9.5%] pb-[7%] pt-[5.2%] 2xl:pt-[2%] 2xl:pb-[4%]">
     <p class="title text-40">Best tours</p>
+    <div class="flex flex-col gap-y-6 lg:flex-row lg:gap-y-0 lg:gap-x-[2.6%] mt-[3.5%]">
+      <div class="lg:flex w-full relative">
+        <template v-if="tours?.length && tours?.length > 4">
+          <button class="swiper-button-prev-custom" ref="prevBtn">
+            <arrow-slide-icon class="rotate-180" />
+          </button>
+          <button class="swiper-button-next-custom" ref="nextBtn">
+            <arrow-slide-icon />
+          </button>
+        </template>
 
-    <div v-if="loading" class="w-full text-center py-8">
-      <PreloaderAnimIcon class="mx-auto" theme="white" />
-      <p class="mt-4 text-gray-300">Loading featured tours...</p>
-    </div>
-
-    <div v-else class="flex flex-col gap-y-6 lg:flex-row lg:gap-y-0 lg:gap-x-[2.6%] mt-[3.5%]">
-      <div v-if="featuredTours.length === 0" class="text-center w-full py-12">
-        <p class="text-xl text-gray-300">No featured tours found. Please check back later.</p>
+        <swiper-container ref="swiperEl" init="false" class="w-full hidden lg:block">
+          <swiper-slide v-for="tour in tours" :key="tour.id">
+            <TrustyTourCard v-if="init" :tour="tour" @click="navigateTo(`/tours/${tour.id}`)" />
+          </swiper-slide>
+        </swiper-container>
       </div>
-
-      <template v-else>
-        <div class="lg:flex w-full relative">
-          <template v-if="featuredTours.length > 4">
-            <button class="swiper-button-prev-custom" ref="prevBtn">
-              <arrow-slide-icon class="rotate-180" />
-            </button>
-            <button class="swiper-button-next-custom" ref="nextBtn">
-              <arrow-slide-icon />
-            </button>
-          </template>
-
-          <swiper-container ref="swiperEl" init="false" class="w-full hidden lg:block">
-            <swiper-slide v-for="tour in featuredTours" :key="tour.id">
-              <TrustyTourCard v-if="init" :tour="tour" @click="navigateTo(`/tours/${tour.id}`)" />
-            </swiper-slide>
-          </swiper-container>
-        </div>
-        <div class="block lg:hidden" v-for="tour in featuredTours" :key="tour.id">
-          <TrustyTourCard :tour="tour" @click="navigateTo(`/tours/${tour.id}`)" />
-        </div>
-      </template>
+      <div class="block lg:hidden" v-for="tour in tours" :key="tour.id">
+        <TrustyTourCard :tour="tour" @click="navigateTo(`/tours/${tour.id}`)" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import TrustyTourCard from '@/components/ui/TrustyTourCard.vue';
 import TrustyFilter from '@/components/ui/TrustyFilter.vue';
 import type { Tour, TourFilters } from '@/types/tours';
@@ -63,7 +51,6 @@ import { useToursStore } from '@/store/toursStore';
 import ArrowSlideIcon from '@/components/icons/ArrowSlideIcon.vue';
 import { useSwiper } from '@/.nuxt/imports';
 import type { SwiperContainer } from 'swiper/element';
-import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
 
 const areasStore = useAreasStore();
 const toursStore = useToursStore();
@@ -100,11 +87,7 @@ const swiper = useSwiper(swiperEl, {
   },
 });
 
-const featuredTours = computed(() => {
-  return tours.value?.filter((tour) => tour.featured) || [];
-});
-
-const handleSearch = async (values: TourFilters) => {
+const handleSearch = async (values: any) => {
   toursStore.updateToursFilter(values);
   navigateTo('/tours');
 };
@@ -121,28 +104,8 @@ const getTours = async () => {
   }
 };
 
-const initSwiper = () => {
-  if (!swiperEl.value || !nextBtn.value || !prevBtn.value) {
-    console.warn('Swiper elements not found');
-    return;
-  }
-
-  const swiperInstance = swiperEl.value as unknown as HTMLElement & { swiper?: any };
-
-  if (swiperInstance?.swiper) {
-    swiperInstance.swiper.params.navigation.nextEl = nextBtn.value;
-    swiperInstance.swiper.params.navigation.prevEl = prevBtn.value;
-    swiperInstance.swiper.navigation.init();
-  } else {
-    console.warn('Swiper instance not found');
-  }
-};
-
 onMounted(async () => {
   await getTours();
-  nextTick(() => {
-    initSwiper();
-  });
 });
 </script>
 

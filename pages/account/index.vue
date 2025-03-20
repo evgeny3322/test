@@ -10,7 +10,7 @@
             v-for="(item, index) in navItems"
             :key="index"
             class="font-medium text-14 lg:text-18 title px-6 py-3 cursor-pointer text-nowrap lg:text-wrap"
-            :class="{ 'rounded-main-sm bg-[#FFFFFF0D]': activeNavIndex === index }"
+            :class="{ 'rounded-2xl bg-[#FFFFFF0D]': activeNavIndex === index }"
           >
             {{ item.name }}
           </p>
@@ -30,7 +30,7 @@
           </div>
           <template v-if="activeNavIndex === 1">
             <div class="col-span-12 lg:col-span-4 flex flex-col gap-y-3 lg:gap-y-7 justify-between">
-              <div class="bg-[#151515] p-6 rounded-main-sm h-full">
+              <div class="bg-[#151515] p-6 rounded-2xl h-full">
                 <p class="title text-14 lg:text-18 font-medium mb-3">Information</p>
                 <span class="text-grey-light-4 text-12 lg:text-14"
                   >At least 8 characters, at least one capital and small letter, number and special
@@ -38,66 +38,7 @@
                   special character.</span
                 >
               </div>
-              <div class="rounded-main-sm">
-                <ClientOnly>
-                  <swiper-container
-                    :style="{
-                      '--swiper-navigation-color': '#fff',
-                      '--swiper-navigation-size': '20px',
-                      '--swiper-pagination-color': '#fff',
-                      '--swiper-pagination-bullet-size': '8px',
-                      '--swiper-pagination-bullet-width': '8px',
-                      '--swiper-pagination-bullet-height': '8px',
-                      '--swiper-pagination-bullet-inactive-color': '#fff',
-                      '--swiper-pagination-bullet-opacity': '1',
-                    }"
-                    grab-cursor
-                    :pagination="true"
-                    :navigation="true"
-                    :autoplay="{
-                      delay: 5000,
-                      disableOnInteraction: false,
-                    }"
-                  >
-                    <swiper-slide
-                      class="overflow-hidden rounded-[14px]"
-                      v-for="slide in slides"
-                      :key="slide.src"
-                    >
-                      <div class="relative">
-                        <NuxtImg
-                          class="!rounded-[14px] max-h-[114px] lg:max-h-[347px] w-full object-cover"
-                          alt="slide"
-                          :src="slide.src"
-                        />
-                        <div class="absolute top-0 h-full w-full bg-[#00000033] z-10"></div>
-                        <div
-                          class="absolute top-0 h-full w-full px-8 py-2 lg:p-5 z-11 flex flex-col justify-between"
-                        >
-                          <div>
-                            <p class="font-medium text-20 lg:text-26 leading-30 lg:mb-[6px]">
-                              {{ slide.title }}
-                            </p>
-                            <span class="font-medium text-12 lg:text-18 leading-24">{{
-                              slide.price
-                            }}</span>
-                          </div>
-                          <div class="mb-auto lg:mb-[14px]">
-                            <template class="hidden lg:block">
-                              <span class="text-grey-light-7 line-clamp-2">{{ slide.desc }}</span>
-                            </template>
-                            <div class="flex flex-row lg:mt-4 gap-x-[6px]">
-                              <trusty-chip v-for="chip in slide.chips"
-                                >{{ chip.value }}
-                              </trusty-chip>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </swiper-slide>
-                  </swiper-container>
-                </ClientOnly>
-              </div>
+              <tours-cards-slider />
             </div>
           </template>
         </div>
@@ -113,6 +54,7 @@
 import { defineAsyncComponent, ref } from 'vue';
 import { SwiperSlide } from 'swiper/vue';
 import TrustyChip from '@/components/ui/TrustyChip.vue';
+import ToursCardsSlider from '@/components/tours/ToursCardsSlider.vue';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'vue-router';
 import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';

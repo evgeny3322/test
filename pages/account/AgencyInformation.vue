@@ -1,11 +1,11 @@
 <template>
   <div
-    class="bg-tertiary-black px-6 py-8 lg:p-8 grid grid-row-28 lg:grid-row-13 grid-cols-12 gap-4 items-end rounded-main-sm"
+    class="bg-tertiary-black px-6 py-8 lg:p-8 grid grid-row-28 lg:grid-row-13 grid-cols-12 gap-4 items-end rounded-2xl"
   >
     <trusty-complete
       class="col-span-12 lg:col-span-2"
       variant="outlined"
-      selectClass="p-[22px] h-[64px]"
+      selectClass="p-[22px] h-[64px] rounded-2xl"
       :options="options"
       v-model="agency.title"
     />
@@ -34,7 +34,7 @@
     <trusty-complete
       class="col-span-12 lg:col-span-4"
       variant="outlined"
-      selectClass="p-[22px] h-[64px]"
+      selectClass="p-[22px] h-[64px] rounded-2xl"
       :options="options"
       v-model="agency.country"
       :label="`Country <span style='color:red'>*</span>`"
@@ -42,7 +42,7 @@
     <trusty-complete
       class="col-span-12 lg:col-span-4"
       variant="outlined"
-      selectClass="p-[22px] h-[64px]"
+      selectClass="p-[22px] h-[64px] rounded-2xl"
       :options="options"
       v-model="agency.country"
       :label="`Region/State/Province<span style='color:red'>*</span>`"
@@ -50,7 +50,7 @@
     <trusty-complete
       class="col-span-12 lg:col-span-4"
       variant="outlined"
-      selectClass="p-[22px] h-[64px]"
+      selectClass="p-[22px] h-[64px] rounded-2xl"
       :options="options"
       v-model="agency.country"
       :label="`City<span style='color:red'>*</span>`"

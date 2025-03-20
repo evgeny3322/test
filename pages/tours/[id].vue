@@ -1,6 +1,6 @@
 <template>
   <div class="block-container">
-    <div class="bg-grey-light-1 rounded-main-sm p-5 lg:p-8 grid grid-cols-12">
+    <div class="bg-grey-light-1 rounded-2xl rounded-2xl p-5 lg:p-8 grid grid-cols-12">
       <div class="col-span-12 lg:col-span-8 lg:mr-[30px]">
         <ClientOnly>
           <div class="mb-6 block lg:hidden">
@@ -119,8 +119,8 @@
         <div class="flex flex-row space-x-[6px]">
           <trusty-chip v-if="tour?.area.name">{{ tour?.area?.name }}</trusty-chip>
           <trusty-chip v-if="tour?.duration"
-            >{{ (Number(tour?.duration) / 60).toFixed(2) }} Hrs</trusty-chip
-          >
+            >{{ (Number(tour?.duration) / 60).toFixed(2) }} Hrs
+          </trusty-chip>
         </div>
         <p class="text-36 leading-30 lg:text-64 font-medium lg:leading-56">
           {{ tour?.area?.name }}
@@ -140,16 +140,16 @@
       @addon-unavailable="handleAddonUnavailable"
     />
     <div
-      class="bg-grey-light-1 rounded-main-sm grid grid-cols-12 gap-y-6 lg:gap-x-8 mt-[4.5%] p-5 lg:p-8"
+      class="bg-grey-light-1 rounded-2xl grid grid-cols-12 gap-y-6 lg:gap-x-8 mt-[4.5%] p-5 lg:p-8"
     >
       <div class="col-span-12 lg:col-span-4">
         <p class="text-26 leading-30 lg:text-40 lg:leading-36 font-medium">Additional drive time</p>
       </div>
       <div
-        class="col-span-12 lg:col-span-8 bg-[#181818] rounded-main-sm p-[18px] flex flex-col lg:flex-row lg:justify-between px-6 py-5 gap-y-6"
+        class="col-span-12 lg:col-span-8 bg-[#181818] rounded-2xl p-[18px] flex flex-col lg:flex-row lg:justify-between px-6 py-5 gap-y-6"
       >
         <div
-          class="bg-[#282828] rounded-main-sm flex flex-row justify-between items-center px-6 py-3 lg:py-5 lg:gap-x-20"
+          class="bg-[#282828] rounded-2xl flex flex-row justify-between items-center px-6 py-3 lg:py-5 lg:gap-x-20"
         >
           <span
             @click="descDriveTime"
@@ -171,19 +171,20 @@
       </div>
     </div>
     <div class="border-b-1 border-[#313131] my-[4.5%]"></div>
-    <div class="lg:sticky bottom-[8%] left-0 flex justify-center w-full z-10">
+    <div class="lg:sticky bottom-[20px] left-0 flex justify-center w-full z-10">
       <div
         class="bg-[#FFFFFF] rounded-[12px] w-full max-w-[1170px] xl:max-w-[1612px] p-6 grid grid-cols-12 mt-4 gap-y-2 lg:gap-x-5"
       >
         <div class="flex flex-col gap-y-[6px] col-span-12 lg:col-span-2">
           <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Select date</span>
           <VueDatePicker
-            v-model="tourDate"
+            v-model="displayDate"
             :enable-time-picker="false"
             :auto-apply="true"
             :format="'dd.MM.yyyy'"
             :hide-input-icon="true"
             :clearable="false"
+            min-date="today"
           />
         </div>
         <div class="border-b-1 border-[#F2F2F2] col-span-12 lg:hidden"></div>
@@ -258,9 +259,10 @@ import TrustyChip from '@/components/ui/TrustyChip.vue';
 import { useToursStore } from '@/store/toursStore';
 import { useRoute } from 'vue-router';
 import { Addon, Segment, Tour } from '@/types/tours';
-// @ts-ignore
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
+import { storeToRefs } from 'pinia';
+import { navigateTo } from 'nuxt/app';
 
 const toursStore = useToursStore();
 
@@ -274,14 +276,13 @@ const tour = ref<Tour | null>(null);
 
 const nextBtn = ref<HTMLElement | null>(null);
 const prevBtn = ref<HTMLElement | null>(null);
-const driveTime = ref<number>(1);
+const driveTime = ref<number>(0);
 const modules = [FreeMode, Navigation, Thumbs];
 const participants = ref(1);
-const tourDate = ref(new Date());
+const tourDate = ref<string | null | Date>(new Date().toISOString());
 const hourDiscount = ref(0);
 
 const selectedAddons = ref<{ [key: number]: Addon }>({});
-
 const handleAddonSelected = (addon: Addon, segmentIndex: number, segment: Segment) => {
   selectedAddons.value[segmentIndex] = {
     ...addon,
@@ -299,6 +300,12 @@ const handleAddonRemoved = (segmentId: number) => {
 const onSlideChange = (swiper: any) => {
   activeIndex.value = swiper.activeIndex;
 };
+const displayDate = computed({
+  get: () => (tourDate.value ? new Date(tourDate.value) : null),
+  set: (val) => {
+    tourDate.value = val ? val.toISOString() : null;
+  },
+});
 
 const incDriveTime = () => {
   if (driveTime.value < 24) driveTime.value++;
@@ -309,6 +316,8 @@ const descDriveTime = () => {
 };
 
 const calculateDriveTimePrice = computed(() => {
+  if (driveTime.value < 1) return 0;
+
   const transportationAddons = Object.values(selectedAddons.value).filter(
     (addon) => addon.segmentType === 'Transportation'
   );
@@ -485,7 +494,15 @@ const pricePerParticipant = computed(() => {
 });
 
 const bookTour = () => {
-  console.log('Booking tour...');
+  toursStore.updateCustomTour({
+    tour_id: Number(route.params.id),
+    date: tourDate.value,
+    participants: participants.value,
+    total_duration: totalDuration.value * 60,
+    total_price: totalPrice.value,
+    addons: Object.values(selectedAddons.value),
+  });
+  navigateTo('/payment');
 };
 
 const setThumbsSwiper = (swiper: any) => {
@@ -583,6 +600,7 @@ onMounted(() => {
   text-align: center;
   z-index: 10;
 }
+
 input[type='date']::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
@@ -611,13 +629,16 @@ input[type='date']::-webkit-calendar-picker-indicator {
   outline: none;
   box-shadow: none;
 }
+
 .dp__menu {
   border-radius: 12px;
 }
+
 .dp__instance_calendar {
   padding: 10px;
   border-radius: 12px;
 }
+
 .dp__active_date {
   background-color: black !important;
   color: white !important;
@@ -628,6 +649,7 @@ input[type='date']::-webkit-calendar-picker-indicator {
   border: 1px solid black !important;
   border-radius: 8px;
 }
+
 .dp__overlay_cell_active {
   background-color: black !important;
   color: white !important;

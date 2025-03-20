@@ -12,6 +12,14 @@ export interface Tour {
   segments: Segment[];
   media: any[];
 }
+export interface CustomTour {
+  addons: Addon[];
+  tour_id: number;
+  date: string | null | Date;
+  participants: number;
+  total_duration: number;
+  total_price: number;
+}
 export interface ToursApiResponse {
   data: Tour[];
   links?: object;

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { toursAPI } from '@/utils/api';
-import { Tour, TourFilters } from '@/types/tours';
+import { Addon, CustomTour, Tour, TourFilters } from '@/types/tours';
 
 export const useToursStore = defineStore('tours', () => {
   const loading = ref(false);
@@ -12,7 +12,11 @@ export const useToursStore = defineStore('tours', () => {
   const generateCacheKey = (filters: TourFilters): string => {
     return JSON.stringify(filters || {});
   };
+  const customTour = ref<CustomTour | null>(null);
 
+  const updateCustomTour = (tour: CustomTour) => {
+    customTour.value = tour;
+  };
   const updateToursFilter = (filters: TourFilters) => {
     toursFilter.value = { ...filters };
   };
@@ -81,6 +85,7 @@ export const useToursStore = defineStore('tours', () => {
 
   return {
     toursFilter,
+    customTour,
     loading,
     error,
     fetchTours,
@@ -88,6 +93,6 @@ export const useToursStore = defineStore('tours', () => {
     getTourById,
     updateToursFilter,
     getHourDiscount,
-    clearCache,
+    updateCustomTour,
   };
 });

@@ -7,7 +7,12 @@
         v-if="type === 'tel'"
         v-bind="props"
         v-model="model"
-        class="field-input"
+        class="field-input-tel"
+        :dropdownOptions="{
+          showDialCodeInSelection: true,
+          showDialCodeInList: true,
+          showFlags: true,
+        }"
         @country-changed="(country: VueTelInputCountryObject) => emit('country-changed', country)"
         :class="[inputClass, { '!border-red-500 border': error }, { '!text-gray-400': disabled }]"
         :placeholder="placeholder"
@@ -99,6 +104,18 @@ const togglePassword = () => {
   outline: none;
   box-shadow: none !important;
 }
+.field-input-tel {
+  max-height: 64px;
+  flex: 1;
+  width: 100%;
+  color: #ffffff;
+  padding: 19px 8px;
+  border: 1px solid #ffffff4a !important;
+  border-radius: 16px;
+  background: transparent;
+  outline: none;
+  box-shadow: none !important;
+}
 
 .toggle-password {
   position: absolute;
@@ -119,5 +136,13 @@ const togglePassword = () => {
 
 .vue-tel-input .vti__dropdown .vti__dropdown-list {
   background-color: #262626 !important;
+}
+
+.vti__country-code {
+  color: #ffffff !important;
+  margin-right: 5px;
+}
+.highlighted {
+  background: #ffffff99 !important;
 }
 </style>
