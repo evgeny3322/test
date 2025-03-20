@@ -1,6 +1,7 @@
 <template>
   <div
     class="mt-9 bg-secondary-black p-6 rounded-[12px] flex flex-col lg:flex-row space-y-4 lg:space-x-6 lg:space-y-0 lg:justify-between lg:items-end"
+    :class="{ 'opacity-80': disabled }"
   >
     <div v-for="(filter, index) in filterConfigs" :key="index" class="flex flex-col w-full">
       <span
@@ -17,11 +18,16 @@
         @change="handleChange(filter.name, $event)"
         select-class="p-[13px] h-[50px]"
         :id="`filter-${filter.name}`"
+        :disabled="disabled"
       />
     </div>
 
-    <trusty-button v-if="showButton" @click="handleSubmit" class="text-nowrap">
-      {{ buttonText }}
+    <trusty-button v-if="showButton" @click="handleSubmit" class="text-nowrap" :disabled="disabled">
+      <div v-if="disabled" class="flex items-center justify-center">
+        <PreloaderAnimIcon class="size-5 mr-2" theme="black" />
+        <span>{{ buttonText }}</span>
+      </div>
+      <span v-else>{{ buttonText }}</span>
     </trusty-button>
   </div>
 </template>
@@ -29,6 +35,7 @@
 <script setup lang="ts">
 import TrustyComplete from '@/components/ui/TrustyComplete.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
+import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
 import { ref, onMounted, watch } from 'vue';
 import { useAreasStore } from '@/store/areasStore';
 import { useToursStore } from '@/store/toursStore';
@@ -54,9 +61,28 @@ const toursStore = useToursStore();
 const { toursFilter } = storeToRefs(toursStore);
 const areas = ref<any[]>([]);
 
-const showLabels = ref(true);
-const showButton = ref(true);
-const buttonText = ref('Search');
+const props = defineProps({
+  showLabels: {
+    type: Boolean,
+    default: true,
+  },
+  showButton: {
+    type: Boolean,
+    default: true,
+  },
+  buttonText: {
+    type: String,
+    default: 'Search',
+  },
+  initialValues: {
+    type: Object,
+    default: () => ({}),
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 const values = ref<FilterValue>({
   area_id: null,
@@ -170,6 +196,8 @@ const handleChange = <T extends keyof FilterValue>(name: T, value: FilterValue[T
 };
 
 const handleSubmit = () => {
+  if (props.disabled) return;
+
   const formattedValues = {
     area_id: values.value.area_id,
     max_participants: values.value.max_participants,

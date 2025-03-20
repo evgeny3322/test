@@ -7,10 +7,11 @@
         selectClass,
         variantClass,
         { '!border-red-500 border': error },
+        { 'opacity-70 cursor-not-allowed': disabled },
       ]"
-      @click="toggleDropdown"
+      @click="!disabled && toggleDropdown()"
     >
-      <p class="w-full text-white">
+      <p class="w-full text-white" :class="{ 'text-grey-light-4': disabled }">
         {{ selectedLabel || placeholder }}
       </p>
       <arrow-down-outlined-icon
@@ -19,7 +20,7 @@
       />
     </div>
     <ul
-      v-if="isOpen"
+      v-if="isOpen && !disabled"
       class="absolute p-[13px] left-0 mt-2 w-full bg-[#323232] border-none rounded-md shadow-md z-10 overflow-hidden space-y-[10px] overflow-y-scroll max-h-[200px]"
       :class="ulClass"
     >
@@ -56,6 +57,7 @@ const props = defineProps<{
   ulClass?: string;
   variant?: 'default' | 'outlined';
   id?: string;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits(['change']);

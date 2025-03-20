@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { toursAPI } from '@/utils/api';
 import { Tour, TourFilters } from '@/types/tours';
 
@@ -20,9 +20,14 @@ export const useToursStore = defineStore('tours', () => {
       return response.data.data;
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Tour loading error';
+      return [];
     } finally {
       loading.value = false;
     }
+  };
+
+  const getFeaturedTours = async () => {
+    return await fetchTours({ featured: 1 });
   };
 
   const getTourById = async (id: number) => {
@@ -38,6 +43,7 @@ export const useToursStore = defineStore('tours', () => {
       loading.value = false;
     }
   };
+
   const getHourDiscount = async () => {
     loading.value = true;
     error.value = null;
@@ -57,6 +63,7 @@ export const useToursStore = defineStore('tours', () => {
     loading,
     error,
     fetchTours,
+    getFeaturedTours,
     getTourById,
     updateToursFilter,
     getHourDiscount,

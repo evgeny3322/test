@@ -70,4 +70,5 @@ export interface TourFilters {
   duration?: string;
   min_cost?: number;
   max_cost?: number;
+  featured?: number;
 }

@@ -13,14 +13,12 @@
       </p>
     </div>
     <div class="flex flex-row items-center gap-x-3 lg:gap-x-[22px]">
-      <!-- Authenticated section -->
       <template v-if="isAuthenticated">
         <trusty-button class="!py-2" @click="handleUserAccount">
           <p class="whitespace-nowrap font-semibold text-14">My Account</p>
         </trusty-button>
       </template>
 
-      <!-- Unauthenticated section -->
       <template v-else>
         <p
           class="hidden lg:block font-semibold cursor-pointer text-14"
@@ -91,7 +89,6 @@
           </p>
           <LanguageSwitcher />
           <div class="mt-auto flex flex-col w-full gap-3">
-            <!-- Authenticated section (mobile) -->
             <template v-if="isAuthenticated">
               <trusty-button
                 @click="handleUserAccount"
@@ -101,7 +98,6 @@
               </trusty-button>
             </template>
 
-            <!-- Unauthenticated section (mobile) -->
             <template v-else>
               <trusty-button
                 @click="
@@ -130,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick, computed } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
 import { useRouter } from 'nuxt/app';
 import BurgerIcon from '@/components/icons/BurgerIcon.vue';
@@ -150,22 +146,27 @@ interface NavItem {
 
 const navItems = ref<NavItem[]>([
   { name: 'ALL Tours', path: '/tours' },
-  { name: 'Best tours', path: '/' },
+  { name: 'Best tours', path: '/best-tours' },
   { name: 'Contact Us', path: '#footer' },
 ]);
 
-const activeNav = ref<string>('Best tours');
+const activeNav = ref<string | null>(null);
 
 const updateActiveNav = (path: string) => {
+  if (path === '/') {
+    activeNav.value = null;
+    return;
+  }
+
   const currentNavItem = navItems.value.find((item) => {
-    if (path === '/' && item.path === '/') return true;
-    return path !== '/' && item.path !== '/' && path.startsWith(item.path);
+    if (item.path.startsWith('#')) return false;
+    return path.startsWith(item.path);
   });
 
   if (currentNavItem) {
     activeNav.value = currentNavItem.name;
-  } else if (path === '/') {
-    activeNav.value = 'Best tours';
+  } else {
+    activeNav.value = null;
   }
 };
 
@@ -185,10 +186,11 @@ watch(
 );
 
 const handleNavigation = (item: NavItem) => {
-  activeNav.value = item.name;
-
   if (item.path.startsWith('#')) {
     scrollToElement(item.path);
+    if (router.currentRoute.value.path !== '/') {
+      activeNav.value = item.name;
+    }
   } else {
     router.push(item.path);
   }
@@ -204,14 +206,7 @@ const scrollToElement = (selector: string) => {
 };
 
 const handleMobileNavigation = (item: NavItem) => {
-  activeNav.value = item.name;
-
-  if (item.path.startsWith('#')) {
-    scrollToElement(item.path);
-  } else {
-    router.push(item.path);
-  }
-
+  handleNavigation(item);
   showMobileMenu.value = false;
 };
 
@@ -221,7 +216,7 @@ const toggleMobileMenu = () => {
 
 const goToHome = () => {
   router.push('/');
-  activeNav.value = 'Best tours';
+  activeNav.value = null;
 };
 
 const handleUserAccount = () => {
