@@ -19,7 +19,9 @@
         autocomplete="off"
       >
         <!-- Error message -->
-        <p v-if="registrationError" class="text-red-500 text-sm text-center">{{ registrationError }}</p>
+        <p v-if="registrationError" class="text-red-500 text-sm text-center">
+          {{ registrationError }}
+        </p>
 
         <!-- password -->
         <div class="relative">
@@ -194,14 +196,14 @@ const agencyData = reactive({
 
 const passwords = reactive({
   password: '',
-  password_confirmation: ''
+  password_confirmation: '',
 });
 
 const passwordsError = ref(null) as Ref<yup.ValidationError | null>;
-const agencyErrors:any = reactive({});
+const agencyErrors: any = reactive({});
 const officePhoneCode = ref('');
 const accountType = ref('private');
-const registrationError:any = ref('');
+const registrationError: any = ref('');
 
 // Computed property to check if we can proceed
 const canProceed = computed(() => {
@@ -310,7 +312,7 @@ const handleSubmit = async () => {
       data = {
         ...data,
         ...agencyValidate,
-        countryCode: officePhoneCode.value
+        countryCode: officePhoneCode.value,
       };
     } else {
       return;
@@ -328,7 +330,8 @@ const handleSubmit = async () => {
       router.push('/account');
     } else {
       if (typeof response !== 'boolean') {
-        registrationError.value = response?.data?.message || 'Registration failed. Please try again.';
+        registrationError.value =
+          response?.data?.message || 'Registration failed. Please try again.';
       }
     }
   } catch (error: any) {

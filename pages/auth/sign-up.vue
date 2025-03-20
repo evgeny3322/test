@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useAuthStore } from '@/store/authStore'; // Pinia Store
+import { useAuthStore } from '@/store/authStore';
 import TrustyField from '@/components/ui/TrustyField.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
 import { useRouter } from 'vue-router';
@@ -108,8 +108,16 @@ const changeModel = (fieldName: string) => {
 };
 
 const signUpValidateRules = yup.object({
-  name: yup.string().required('First name is required').max(255).min(2, 'First name must be at least 2 characters'),
-  last_name: yup.string().required('Last name is required').max(255).min(2, 'Last name must be at least 2 characters'),
+  name: yup
+    .string()
+    .required('First name is required')
+    .max(255)
+    .min(2, 'First name must be at least 2 characters'),
+  last_name: yup
+    .string()
+    .required('Last name is required')
+    .max(255)
+    .min(2, 'Last name must be at least 2 characters'),
   email: yup
     .string()
     .email('Please enter a valid email address')
@@ -129,7 +137,6 @@ const handleSubmit = async () => {
   errorResponse.value = '';
   signUpValidatedErrors.value = {};
 
-  // Validate the form
   const signUpValidated = await signUpValidateRules
     .validate(
       {

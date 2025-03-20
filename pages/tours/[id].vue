@@ -117,8 +117,10 @@
       </div>
       <div class="col-span-12 lg:col-span-4 space-y-6">
         <div class="flex flex-row space-x-[6px]">
-          <trusty-chip>{{ tour?.area?.name }}</trusty-chip>
-          <trusty-chip>{{ tour?.duration }} Hrs</trusty-chip>
+          <trusty-chip v-if="tour?.area.name">{{ tour?.area?.name }}</trusty-chip>
+          <trusty-chip v-if="tour?.duration"
+            >{{ (Number(tour?.duration) / 60).toFixed(2) }} Hrs</trusty-chip
+          >
         </div>
         <p class="text-36 leading-30 lg:text-64 font-medium lg:leading-56">
           {{ tour?.area?.name }}
@@ -175,16 +177,13 @@
       >
         <div class="flex flex-col gap-y-[6px] col-span-12 lg:col-span-2">
           <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Select date</span>
-          <!--          <p class="text-18 lg:text-26 leading-30 text-main-black font-semibold title">-->
-          <!--            {{ tourDate }}-->
-          <!--          </p>-->
-
-          <!--          TODO переделать датапикер когда в дизайне будет-->
-          <input
+          <VueDatePicker
             v-model="tourDate"
-            type="date"
-            class="text-main-black title font-semibold text-18 lg:text-26 leading-30 cursor-pointer"
-            lang="en"
+            :enable-time-picker="false"
+            :auto-apply="true"
+            :format="'dd.MM.yyyy'"
+            :hide-input-icon="true"
+            :clearable="false"
           />
         </div>
         <div class="border-b-1 border-[#F2F2F2] col-span-12 lg:hidden"></div>
@@ -259,6 +258,9 @@ import TrustyChip from '@/components/ui/TrustyChip.vue';
 import { useToursStore } from '@/store/toursStore';
 import { useRoute } from 'vue-router';
 import { Addon, Segment, Tour } from '@/types/tours';
+// @ts-ignore
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
 const toursStore = useToursStore();
 
@@ -275,7 +277,7 @@ const prevBtn = ref<HTMLElement | null>(null);
 const driveTime = ref<number>(1);
 const modules = [FreeMode, Navigation, Thumbs];
 const participants = ref(1);
-const tourDate = ref<string | null>(null);
+const tourDate = ref(new Date());
 const hourDiscount = ref(0);
 
 const selectedAddons = ref<{ [key: number]: Addon }>({});
@@ -377,7 +379,6 @@ const handleAddonUnavailable = (segmentId: number, addonId: number) => {
 
 const totalDuration = computed(() => {
   const baseDurationMinutes = Number(tour.value?.duration) || 0;
-  const baseDuration = baseDurationMinutes / 60;
   let additionalMinutes = 0;
 
   console.log(`Base tour duration: ${baseDurationMinutes} min`);
@@ -386,7 +387,10 @@ const totalDuration = computed(() => {
     if (!selectedAddon) continue;
 
     const segment = tour.value?.segments?.find((seg) => seg.id === Number(key));
-    if (!segment) continue;
+    if (!segment) {
+      console.log(`Segment not found for addon key: ${key}`);
+      continue;
+    }
 
     const addonDurationMinutes = Number(selectedAddon.duration) || 0;
     const segmentDurationMinutes = Number(segment.duration) || 0;
@@ -395,6 +399,8 @@ const totalDuration = computed(() => {
       const extraTime = addonDurationMinutes - segmentDurationMinutes;
       additionalMinutes += extraTime;
       console.log(`Adding extra time for segment ${key}: +${extraTime} min`);
+    } else {
+      console.log(`No extra time added for segment ${key}`);
     }
   }
 
@@ -402,7 +408,6 @@ const totalDuration = computed(() => {
   const totalHours = (totalMinutes / 60).toFixed(2);
 
   console.log(`Total tour duration: ${totalMinutes} min (${totalHours} h)`);
-
   return Number(totalHours);
 });
 
@@ -581,5 +586,51 @@ onMounted(() => {
 input[type='date']::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
+}
+
+.date-picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date-label {
+  font-size: 14px;
+  color: gray;
+}
+
+.dp__input {
+  font-size: 26px;
+  font-weight: 600;
+  font-family: 'Involve', sans-serif;
+  color: black;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  outline: none;
+  box-shadow: none;
+}
+.dp__menu {
+  border-radius: 12px;
+}
+.dp__instance_calendar {
+  padding: 10px;
+  border-radius: 12px;
+}
+.dp__active_date {
+  background-color: black !important;
+  color: white !important;
+  border-radius: 8px;
+}
+
+.dp__today {
+  border: 1px solid black !important;
+  border-radius: 8px;
+}
+.dp__overlay_cell_active {
+  background-color: black !important;
+  color: white !important;
+  border-radius: 8px;
 }
 </style>

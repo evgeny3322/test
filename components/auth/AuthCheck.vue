@@ -1,7 +1,5 @@
 <template>
-  <!-- If authenticated condition is true, show the default slot -->
   <slot v-if="shouldShowAuthContent"></slot>
-  <!-- If not authenticated, show the unauthenticated slot if provided -->
   <slot v-else name="unauthenticated"></slot>
 </template>
 
@@ -12,8 +10,8 @@ import { useAuthStore } from '@/store/authStore';
 const props = defineProps({
   authenticated: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
 
 const authStore = useAuthStore();

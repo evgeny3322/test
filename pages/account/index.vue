@@ -16,11 +16,18 @@
           </p>
         </div>
         <div class="lg:mt-[340px] lg:mb-0 my-8 h-full flex flex-col justify-between">
-          <p
-            class="lg:px-[13px] mb-6 lg:mb-0 text-grey-light-4 font-medium title text-14 lg:text-18 cursor-pointer"
-          >
-            Log Out
-          </p>
+          <div class="relative flex items-baseline">
+            <p
+              @click="handleLogout"
+              class="lg:px-[13px] mb-6 lg:mb-0 text-grey-light-4 font-medium title text-14 lg:text-18 cursor-pointer hover:text-white transition-colors"
+              :class="{ 'opacity-0': isLoggingOut }"
+            >
+              Log Out
+            </p>
+            <div v-if="isLoggingOut" class="absolute inset-0 flex items-center">
+              <PreloaderAnimIcon class="size-5 lg:ml-[13px]" theme="white" />
+            </div>
+          </div>
           <template v-if="activeNavIndex === 1">
             <div class="col-span-12 lg:col-span-4 flex flex-col gap-y-3 lg:gap-y-7 justify-between">
               <div class="bg-[#151515] p-6 rounded-main-sm h-full">
@@ -80,9 +87,9 @@
                               <span class="text-grey-light-7 line-clamp-2">{{ slide.desc }}</span>
                             </template>
                             <div class="flex flex-row lg:mt-4 gap-x-[6px]">
-                              <trusty-chip v-for="chip in slide.chips">{{
-                                chip.value
-                              }}</trusty-chip>
+                              <trusty-chip v-for="chip in slide.chips"
+                                >{{ chip.value }}
+                              </trusty-chip>
                             </div>
                           </div>
                         </div>
@@ -106,6 +113,13 @@
 import { defineAsyncComponent, ref } from 'vue';
 import { SwiperSlide } from 'swiper/vue';
 import TrustyChip from '@/components/ui/TrustyChip.vue';
+import { useAuthStore } from '@/store/authStore';
+import { useRouter } from 'vue-router';
+import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
+
+const router = useRouter();
+const authStore = useAuthStore();
+const isLoggingOut = ref(false);
 
 interface NavItem {
   name: string;
@@ -170,6 +184,19 @@ const navItems = ref<NavItem[]>([
 
 const setActiveItem = (index: number) => {
   activeNavIndex.value = index;
+};
+
+const handleLogout = async () => {
+  if (isLoggingOut.value) return;
+
+  try {
+    isLoggingOut.value = true;
+    await authStore.logout();
+    router.push('/');
+  } catch (err) {
+    console.error('Error logout', err);
+    isLoggingOut.value = false;
+  }
 };
 </script>
 

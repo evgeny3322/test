@@ -1,12 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { useRuntimeConfig } from 'nuxt/app';
-import {
-  AuthResponse,
-  EmailVerificationData,
-  LoginData,
-  LogoutResponse,
-  RegistrationData,
-} from '@/types/user';
+import { AuthResponse, LoginData, LogoutResponse, RegistrationData } from '@/types/user';
 import { TourApiResponse, TourFilters, ToursApiResponse } from '@/types/tours';
 import { sendVerificationCodeInterface } from '@/types/auth';
 import { Area, AreasResponse } from '@/types/areas';
@@ -51,37 +45,6 @@ export const createApiClient = (): AxiosInstance => {
 
   return instance;
 };
-export const createApiClientTest = (): AxiosInstance => {
-  const config = useRuntimeConfig() as unknown as AppRuntimeConfig;
-  const baseURL =  "https://server.fenero.keenetic.link/api/v1";
-
-  const instance = axios.create({
-    baseURL,
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
-
-  if (process.client) {
-    const token = localStorage.getItem(AUTH_TOKEN_KEY);
-    if (token) {
-      instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
-  }
-
-  instance.interceptors.request.use((config) => {
-    if (process.client) {
-      const token = localStorage.getItem(AUTH_TOKEN_KEY);
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
-    }
-    return config;
-  });
-
-  return instance;
-};
 
 // API для аутентификации
 export const authAPI = {
@@ -98,9 +61,9 @@ export const authAPI = {
   },
 
   sendVerificationCode(
-    data: sendVerificationCodeInterface,
+    data: sendVerificationCodeInterface
   ): Promise<AxiosResponse<ResponseInterface>> {
-    return createApiClientTest().post('/auth/send_code', data);
+    return createApiClient().post('/auth/send_code', data);
   },
 
   acceptVerificationCode(data: {

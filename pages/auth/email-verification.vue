@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
-import { useAuthStore } from '@/store/authStore'; // Pinia Store
+import { useAuthStore } from '@/store/authStore';
 import TrustyField from '@/components/ui/TrustyField.vue';
 import ArrowDownOutlinedIcon from '@/components/icons/ArrowDownOutlinedIcon.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
@@ -123,7 +123,7 @@ const acceptCode = async () => {
           console.log(response);
           authStore.updateRegisterInfo({ hash: response.data.data.hash, step: 3 });
         }
-        // router.push('/auth/finalize-registration');
+        router.push('/auth/finalize-registration');
       })
       .catch((error: any) => {
         if ([400, 404].includes(error?.status)) {

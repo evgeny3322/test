@@ -33,8 +33,15 @@
         <p class="text-white/60 cursor-pointer hover:text-white duration-200">Recover password</p>
 
         <!-- Submit Button -->
-        <TrustyButton title="Sign in" size="large" :disabled="authStore.loading">
-          <PreloaderAnimIcon class="size-6" theme="black" v-if="authStore.loading" />
+        <TrustyButton
+          title="Sign in"
+          size="large"
+          :disabled="authStore.loading"
+          class="relative h-[50px] flex justify-center items-center"
+        >
+          <div v-if="authStore.loading" class="absolute inset-0 flex items-center justify-center">
+            <PreloaderAnimIcon class="size-6" theme="black" />
+          </div>
           <p v-else class="text-18 font-medium">Sign in</p>
         </TrustyButton>
 
@@ -54,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { reactive, ref } from 'vue';
 import { useAuthStore } from '@/store/authStore';
 import TrustyField from '@/components/ui/TrustyField.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
@@ -69,7 +76,7 @@ const email = ref('');
 const password = ref('');
 const authErrors = reactive({
   email: false,
-  password: false
+  password: false,
 });
 
 const loginError = ref('');
@@ -79,14 +86,13 @@ const authValidateRules = yup.object({
     .string()
     .email('Please enter a valid email address')
     .required('Email is required')
-    .test(
-      'email-dot',
-      'The email address must contain a dot (.) after the @ symbol',
-      (value) => {
-        return value.includes('.') && value.indexOf('.') > value.indexOf('@');
-      }
-    ),
-  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+    .test('email-dot', 'The email address must contain a dot (.) after the @ symbol', (value) => {
+      return value.includes('.') && value.indexOf('.') > value.indexOf('@');
+    }),
+  password: yup
+    .string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
 });
 
 const validateForm = async () => {
@@ -126,7 +132,6 @@ const handleSubmit = async () => {
     const success = await authStore.login(email.value, password.value);
 
     if (success) {
-      // Redirect to the intended route or the account page
       const redirectTo = authStore.getIntendedRoute();
       router.push(redirectTo);
     } else {

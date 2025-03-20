@@ -104,13 +104,19 @@
             <!-- Show if user is not logged in -->
             <AuthCheck :authenticated="false">
               <trusty-button
-                @click="router.push('/auth/sign-in'); showMobileMenu = false;"
+                @click="
+                  router.push('/auth/sign-in');
+                  showMobileMenu = false;
+                "
                 class="h-[2rem] flex items-center justify-center !bg-thirdary-black !text-white !border !border-fourthary-black"
               >
                 Login
               </trusty-button>
               <trusty-button
-                @click="router.push('/auth/sign-up'); showMobileMenu = false;"
+                @click="
+                  router.push('/auth/sign-up');
+                  showMobileMenu = false;
+                "
                 class="h-[2rem] flex items-center justify-center"
               >
                 Sign up
@@ -136,7 +142,6 @@ import { storeToRefs } from 'pinia';
 const router = useRouter();
 const showMobileMenu = ref(false);
 const authStore = useAuthStore();
-const { isAuthenticated } = storeToRefs(authStore);
 
 interface NavItem {
   name: string;
@@ -167,7 +172,6 @@ const updateActiveNav = (path: string) => {
 onMounted(() => {
   updateActiveNav(router.currentRoute.value.path);
 
-  // Make sure auth store is initialized
   if (!authStore.initialized) {
     authStore.initAuth();
   }
@@ -225,9 +229,4 @@ const handleUserAccount = () => {
   showMobileMenu.value = false;
 };
 
-const handleLogout = async () => {
-  await authStore.logout();
-  router.push('/');
-  showMobileMenu.value = false;
-};
 </script>

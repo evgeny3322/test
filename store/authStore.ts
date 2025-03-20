@@ -25,7 +25,6 @@ export const useAuthStore = defineStore('auth', () => {
   const initialized = ref(false);
   const intendedRoute = ref<string | null>(null);
 
-  // Login function
   const login = async (email: string, password: string) => {
     loading.value = true;
     error.value = false;
@@ -49,7 +48,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Register function (final step)
   const register = async (data: any) => {
     loading.value = true;
     error.value = false;
@@ -89,7 +87,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Send verification code for registration
   const sendCode = async (
     data: sendVerificationCodeInterface
   ): Promise<AxiosResponse<ResponseInterface>> => {
@@ -106,7 +103,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Logout function
   const logout = async () => {
     loading.value = true;
 
@@ -122,7 +118,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Helper functions for auth state management
   const setToken = (newToken: string) => {
     token.value = newToken;
     if (process.client) {
@@ -148,7 +143,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Store the route the user was trying to access before being redirected to login
   const setIntendedRoute = (route: string) => {
     intendedRoute.value = route;
     if (process.client) {
@@ -156,7 +150,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Get the intended route and clear it
   const getIntendedRoute = () => {
     const route = intendedRoute.value;
     intendedRoute.value = null;
@@ -185,17 +178,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Initialize auth state from localStorage
   const initAuth = () => {
     if (process.client) {
-      // Load auth token
       const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
       if (savedToken) {
         token.value = savedToken;
         isAuthenticated.value = true;
       }
 
-      // Load user data
       const savedUser = localStorage.getItem(USER_DATA_KEY);
       if (savedUser) {
         try {
@@ -206,13 +196,11 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
 
-      // Load intended route
       const savedIntendedRoute = localStorage.getItem(INTENDED_ROUTE_KEY);
       if (savedIntendedRoute) {
         intendedRoute.value = savedIntendedRoute;
       }
 
-      // Load registration info
       let registerInfoSession = sessionStorage.getItem(REGISTER_INFO_SESSION);
       if (registerInfoSession) {
         try {
@@ -224,8 +212,8 @@ export const useAuthStore = defineStore('auth', () => {
             .catch((error) => {
               registerInfo.value = null;
             });
-        } catch (e) {
-          console.error('Failed to parse register info', e);
+        } catch (err) {
+          console.error('Failed to parse register info', err);
           registerInfo.value = null;
         }
       }
@@ -234,7 +222,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-  // Initialize auth state on store creation (client-side only)
   if (process.client) {
     initAuth();
   }
