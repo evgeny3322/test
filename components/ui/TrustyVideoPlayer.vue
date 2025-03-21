@@ -11,10 +11,21 @@
       @ended="onEnded"
       :controls="controls"
       v-if="src"
-      :class="{ 'opacity-50': isMouseOnVideo }"
-      class="h-full object-cover"
+      :class="{
+        'opacity-50':
+          isMouseOnVideo &&
+          (props.src?.split('.').pop() === 'webm' || props.src?.split('.').pop() === 'mp4'),
+      }"
+      class="h-full object-cover w-full"
     />
-    <div v-if="isMouseOnVideo" class="play-button" @click="togglePlay">
+    <div
+      v-if="
+        isMouseOnVideo &&
+        (props.src?.split('.').pop() === 'webm' || props.src?.split('.').pop() === 'mp4')
+      "
+      class="play-button"
+      @click="togglePlay"
+    >
       <svg
         v-if="!isPlaying"
         class="icon bacdrop-opacity-5"

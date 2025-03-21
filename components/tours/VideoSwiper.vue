@@ -10,31 +10,34 @@
         :key="index"
         class="!w-full md:px-[3.25rem] px-5 md:pt-[3.25rem] pt-5 !h-auto"
       >
-        <div v-if="init" class="flex md:flex-row flex-col gap-[1.875rem]">
+        <div v-if="init" class="flex md:flex-row flex-col gap-[1.875rem] max-[1279px]:h-full">
           <TrustyVideoPlayer
             :controls="false"
             :src="tour.media[0]"
-            class="rounded-[0.75rem] xl:min-w-[41.813rem] xl:min-h-[23.563rem] max-w-[44.5rem] max-h-[26.188rem]"
+            class="rounded-[0.75rem] xl:min-w-[41.813rem] xl:min-h-[23.563rem] max-w-[44.5rem] md:max-h-[26.188rem] max-h-[10rem] min-h-[10rem]"
           />
           <div
-            class="flex flex-col max-[1441px]:max-w-[25.75rem] max-[950px]:!max-w-[100%] gap-6 justify-center"
+            class="flex flex-col max-[1441px]:max-w-[25.75rem] w-full max-[950px]:!max-w-[100%] gap-6 justify-center max-[1279px]:h-full"
           >
             <div class="flex flex-wrap gap-[0.375rem]">
-              <trusty-chip>
+              <trusty-chip class="max-h-[1.625rem] flex justify-center items-center">
                 {{ tour?.area?.name }}
               </trusty-chip>
-              <trusty-chip>
+              <trusty-chip class="max-h-[1.625rem] flex justify-center items-center">
                 {{ tour?.duration }}
               </trusty-chip>
-              <trusty-chip>
+              <trusty-chip class="max-h-[1.625rem] flex justify-center items-center">
                 {{ tour?.max_participants }}
               </trusty-chip>
             </div>
-            <p class="text-[3.875rem] leading-[3.488rem]">{{ tour.name }}</p>
+            <p class="md:text-[3.875rem] text-[2.25rem] leading-[3.488rem]">{{ tour.name }}</p>
             <p class="text-grey-large text-base line-clamp-5 text-sm leading-[1.225rem]">
               {{ tour.description }}
             </p>
-            <TrustyButton class="md:max-w-[15.75rem] mt-5" @click="navigateToTour(tour.id)">
+            <TrustyButton
+              class="md:max-w-[12rem] mt-auto font-normal"
+              @click="navigateToTour(tour.id)"
+            >
               View Details
             </TrustyButton>
           </div>

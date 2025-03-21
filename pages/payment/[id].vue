@@ -29,7 +29,7 @@
                   <li class="md:pb-8 pb-6">{{ pay.area }}</li>
                   <li class="text-grey-light-4">Date:</li>
                   <li class="md:pb-8 pb-6">{{ pay.date }}</li>
-                  <li class="text-grey-light-4">Number of participants::</li>
+                  <li class="text-grey-light-4">Number of participants:</li>
                   <li>{{ pay.participants_number }} People</li>
                 </ul>
                 <ul>
@@ -37,7 +37,7 @@
                   <li class="md:pb-8 pb-6">{{ pay.total_duration }} Hours</li>
                   <li class="text-grey-light-4">Total price:</li>
                   <li class="md:pb-8 pb-6">{{ pay.total_price }} Eur</li>
-                  <li class="text-grey-light-4">Transportation::</li>
+                  <li class="text-grey-light-4">Transportation:</li>
                   <li>{{ pay.transportation }}</li>
                 </ul>
                 <ul>
