@@ -47,7 +47,8 @@ export const paymentsAPI = {
       addons: tourData.addons.map(addon => addon.id),
       order: {
         total_sum: tourData.total_price,
-        description: userData.notes || ''
+        description: userData.notes || '',
+        source: "architecto"
       },
       user: {
         name: userData.firstName,
