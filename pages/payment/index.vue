@@ -208,8 +208,6 @@ onMounted(async () => {
           '.p-FieldError': {
             color: '#FA4141',
           },
-
-          // See all supported class names and selector syntax below
         },
       },
       dark: {
@@ -246,8 +244,6 @@ onMounted(async () => {
             color: '#FA4141',
             borderColor: '#FA4141',
           },
-
-          // See all supported class names and selector syntax below
         },
       },
     };

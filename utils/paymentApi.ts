@@ -26,14 +26,14 @@ export interface PaymentStatusResponse extends ResponseInterface {
 
 export const paymentsAPI = {
   /**
-   * Получить публичный ключ Stripe с сервера
+   * Get Stripe public key from server
    */
   getPublicKey(): Promise<AxiosResponse<ResponseInterface>> {
     return createApiClient().post<ResponseInterface>('/orders/public-key');
   },
 
   /**
-   * Создать заказ для неавторизованного пользователя
+   * Create order for guest user
    */
   createGuestOrder(tourData: CustomTour, userData: PaymentUser): Promise<AxiosResponse<ResponseInterface>> {
     const payload = {
@@ -47,8 +47,7 @@ export const paymentsAPI = {
       addons: tourData.addons.map(addon => addon.id),
       order: {
         total_sum: tourData.total_price,
-        description: userData.notes || '',
-        source: "architecto"
+        description: userData.notes || ''
       },
       user: {
         name: userData.firstName,
@@ -63,7 +62,7 @@ export const paymentsAPI = {
   },
 
   /**
-   * Создать заказ для авторизованного пользователя
+   * Create order for authenticated user
    */
   createAuthenticatedOrder(tourData: CustomTour, userData: PaymentUser): Promise<AxiosResponse<ResponseInterface>> {
     const payload = {
@@ -78,7 +77,7 @@ export const paymentsAPI = {
       order: {
         total_sum: tourData.total_price,
         description: userData.notes || '',
-        source: "architecto"
+        source: "architecto"  // Changed to use the value from the example
       }
     };
 
@@ -86,7 +85,7 @@ export const paymentsAPI = {
   },
 
   /**
-   * Создать заказ - общий метод, который выбирает нужный эндпоинт
+   * Create order - general method that chooses the right endpoint
    */
   createOrder(tourData: CustomTour, userData: PaymentUser, isAuthenticated: boolean): Promise<AxiosResponse<ResponseInterface>> {
     return isAuthenticated
@@ -95,7 +94,7 @@ export const paymentsAPI = {
   },
 
   /**
-   * Обработать платеж с токеном Stripe
+   * Process payment with Stripe token
    */
   processPayment(stripeToken: string, orderId: number): Promise<AxiosResponse<ResponseInterface>> {
     return createApiClient().post<ResponseInterface>('/payments/process', {
@@ -105,14 +104,14 @@ export const paymentsAPI = {
   },
 
   /**
-   * Проверить статус платежа
+   * Check payment status
    */
   getPaymentStatus(paymentIntentId: string): Promise<AxiosResponse<PaymentStatusResponse>> {
     return createApiClient().get<PaymentStatusResponse>(`/payments/status/${paymentIntentId}`);
   },
 
   /**
-   * Подтвердить завершение платежа
+   * Confirm payment completion
    */
   confirmPayment(paymentIntentId: string, orderId: number): Promise<AxiosResponse<ResponseInterface>> {
     return createApiClient().post<ResponseInterface>('/payments/confirm', {
@@ -122,7 +121,7 @@ export const paymentsAPI = {
   },
 
   /**
-   * Отменить платеж
+   * Cancel payment
    */
   cancelPayment(paymentIntentId: string, orderId: number): Promise<AxiosResponse<ResponseInterface>> {
     return createApiClient().post<ResponseInterface>('/payments/cancel', {

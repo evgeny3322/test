@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { paymentsAPI } from '@/utils/paymentApi';
-import { paymentService } from '@/utils/paymentService';
+import { stripeService } from '@/utils/stripeService';
 import { PaymentUser, PaymentStatus } from '@/types/payment';
 import { CustomTour } from '@/types/tours';
 
@@ -11,52 +11,44 @@ export const usePaymentStore = defineStore('payment', () => {
   const error = ref<string | null>(null);
   const paymentStatus = ref<PaymentStatus | null>(null);
   const stripeToken = ref<string | null>(null);
-  const orderId = ref<number | null>(null);
+  const orderId:any = ref<number | null>(null);
   const userDetails = ref<PaymentUser | null>(null);
+  const paymentSuccessful = ref(false);
 
   /**
-   * Инициализировать Stripe
+   * Initialize payment process
+   * @param tourData Tour data
+   * @param userData User data
+   * @param isAuthenticated Authentication status
    */
-  const initStripe = async () => {
-    return await paymentService.initStripe();
-  };
-
-  /**
-   * Инициализировать элемент карты Stripe
-   */
-  const initCardElement = async (elementId: string = '#card-element') => {
-    return await paymentService.initCardElement(elementId);
-  };
-
-  /**
-   * Создать заказ для оплаты
-   */
-  const createOrder = async (tourData: CustomTour, user: PaymentUser, isAuthenticated: boolean = false) => {
+  const initializePayment = async (
+    tourData: CustomTour,
+    userData: PaymentUser,
+    isAuthenticated: boolean = false
+  ) => {
     loading.value = true;
     error.value = null;
+    paymentSuccessful.value = false;
 
     try {
-      userDetails.value = user;
-      // Инициализировать Stripe, если ещё не инициализирован
-      await initStripe();
+      userDetails.value = userData;
 
-      // Создать заказ на сервере
-      const result = await paymentService.createOrder(tourData, user, isAuthenticated);
+      // Initialize Stripe
+      await stripeService.initStripe();
 
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to create order');
+      // Create order
+      const orderResult = await stripeService.createOrder(tourData, userData, isAuthenticated);
+
+      if (!orderResult.success) {
+        throw new Error(orderResult.error || 'Failed to create order');
       }
 
-      // Сохранить ID заказа
-      if (result.orderId) {
-        orderId.value = result.orderId;
-        return { success: true, orderId: result.orderId };
-      } else {
-        throw new Error('Order ID not returned from server');
-      }
+      // Save order ID
+      orderId.value = orderResult.orderId;
 
+      return { success: true, orderId: orderId.value };
     } catch (err: any) {
-      error.value = err?.response?.data?.message || err.message || 'Failed to create order';
+      error.value = err?.message || 'Failed to initialize payment';
       return { success: false, error: error.value };
     } finally {
       loading.value = false;
@@ -64,20 +56,69 @@ export const usePaymentStore = defineStore('payment', () => {
   };
 
   /**
-   * Создать токен карты для оплаты
+   * Process payment
+   * @param tourData Tour data
+   * @param userData User data
+   * @param isAuthenticated Authentication status
+   */
+  const processPayment = async (
+    tourData: CustomTour,
+    userData: PaymentUser,
+    isAuthenticated: boolean = false
+  ) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      // Process the full payment flow using the stripe service
+      const result = await stripeService.processPayment(
+        tourData,
+        userData,
+        isAuthenticated
+      );
+
+      if (result.success) {
+        paymentSuccessful.value = true;
+        paymentStatus.value = 'succeeded';
+
+        if (result.orderId) {
+          orderId.value = result.orderId;
+        }
+
+        return {
+          success: true,
+          orderId: orderId.value,
+          paymentResult: result.paymentResult
+        };
+      } else {
+        error.value = result.error || 'Payment processing failed';
+        return { success: false, error: error.value };
+      }
+    } catch (err: any) {
+      console.error('Payment processing error:', err);
+      error.value = err?.message || 'An error occurred during payment processing';
+      return { success: false, error: error.value };
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * Create card token
    */
   const createCardToken = async () => {
     loading.value = true;
     error.value = null;
 
     try {
-      const result = await paymentService.createCardToken();
+      const result = await stripeService.createCardToken();
 
       if (result.success && result.token) {
         stripeToken.value = result.token;
         return { success: true, token: result.token };
       } else {
-        throw new Error(result.error?.message || 'Failed to create card token');
+        error.value = result.error?.message || 'Failed to create card token';
+        return { success: false, error: error.value };
       }
     } catch (err: any) {
       error.value = err.message || 'Failed to create card token';
@@ -88,9 +129,9 @@ export const usePaymentStore = defineStore('payment', () => {
   };
 
   /**
-   * Обработать платеж используя токен карты
+   * Submit payment with token
    */
-  const processPayment = async () => {
+  const submitPaymentWithToken = async () => {
     if (!stripeToken.value || !orderId.value) {
       error.value = 'Cannot process payment: missing token or order ID';
       return { success: false, error: error.value };
@@ -100,9 +141,13 @@ export const usePaymentStore = defineStore('payment', () => {
     error.value = null;
 
     try {
-      const result = await paymentService.submitPaymentWithToken(stripeToken.value, orderId.value);
+      const result = await stripeService.submitPaymentWithToken(
+        stripeToken.value,
+        orderId.value
+      );
 
       if (result.success) {
+        paymentSuccessful.value = true;
         paymentStatus.value = 'succeeded';
         return result;
       } else {
@@ -118,16 +163,62 @@ export const usePaymentStore = defineStore('payment', () => {
   };
 
   /**
-   * Сброс состояния платежа
+   * Check payment status
+   * @param paymentIntentId Payment intent ID
+   */
+  const checkPaymentStatus = async (paymentIntentId: string) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const response = await paymentsAPI.getPaymentStatus(paymentIntentId);
+
+      if (response.data.status === 'success') {
+        const status = response.data.data.status;
+        paymentStatus.value = status;
+
+        if (status === 'succeeded') {
+          paymentSuccessful.value = true;
+        }
+
+        return { success: true, status };
+      } else {
+        error.value = response.data.message || 'Failed to check payment status';
+        return { success: false, error: error.value };
+      }
+    } catch (err: any) {
+      error.value = err?.message || 'Failed to check payment status';
+      return { success: false, error: error.value };
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * Reset payment state
    */
   const resetPayment = () => {
     stripeToken.value = null;
     orderId.value = null;
     paymentStatus.value = null;
     error.value = null;
+    paymentSuccessful.value = false;
 
-    // Очистка ресурсов Stripe
-    paymentService.cleanup();
+    // Clean up Stripe resources
+    stripeService.cleanup();
+  };
+
+  /**
+   * Get current payment state
+   */
+  const getPaymentState = () => {
+    return {
+      isLoading: loading.value,
+      error: error.value,
+      paymentStatus: paymentStatus.value,
+      isSuccessful: paymentSuccessful.value,
+      orderId: orderId.value
+    };
   };
 
   return {
@@ -137,11 +228,13 @@ export const usePaymentStore = defineStore('payment', () => {
     stripeToken,
     orderId,
     userDetails,
-    initStripe,
-    initCardElement,
-    createOrder,
-    createCardToken,
+    paymentSuccessful,
+    initializePayment,
     processPayment,
-    resetPayment
+    createCardToken,
+    submitPaymentWithToken,
+    checkPaymentStatus,
+    resetPayment,
+    getPaymentState
   };
 });

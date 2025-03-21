@@ -27,6 +27,35 @@ export interface PaymentIntent {
   status: PaymentStatus;
 }
 
+export interface StripeError {
+  type: string;
+  code?: string;
+  message: string;
+  param?: string;
+}
+
+export interface StripeTokenResult {
+  token?: {
+    id: string;
+    object: string;
+    card: any;
+    client_ip: string;
+    created: number;
+    livemode: boolean;
+    type: string;
+    used: boolean;
+  };
+  error?: StripeError;
+}
+
+export interface StripeCardElement {
+  mount(element: string | HTMLElement): void;
+  unmount(): void;
+  destroy(): void;
+  on(event: string, handler: (event: any) => void): void;
+  update(options: any): void;
+}
+
 export interface Payment {
   id: number;
   img: string;
@@ -50,12 +79,10 @@ export interface PaymentService {
   img: string;
 }
 
-export interface PaymentStoreState {
-  loading: boolean;
+export interface PaymentState {
+  isLoading: boolean;
   error: string | null;
   paymentStatus: PaymentStatus | null;
-  clientSecret: string | null;
-  paymentIntentId: string | null;
+  isSuccessful: boolean;
   orderId: number | null;
-  userDetails: PaymentUser | null;
 }
