@@ -1,3 +1,5 @@
+# Nuxt Minimal Starter
+
 ## Setup
 
 ````bash

@@ -61,14 +61,14 @@
                 <div class="flex flex-col gap-[0.625rem]">
                   <h3 class="font-normal leading-[1.875rem] text-[1.25rem]">{{ service.title }}</h3>
                   <span class="text-grey-light-6 text-[0.75rem] font-normal leading-[140%]">{{
-                    service.description
-                  }}</span>
+                      service.description
+                    }}</span>
                 </div>
                 <TrustyButton
                   class="min-w-[12.563rem] h-[3.688rem] md:!text-[1.625rem] max-xl:w-full self-center xl:ml-[2.563rem]"
                   type="black"
                   color="black"
-                  >{{ service.price }} EUR</TrustyButton
+                >{{ service.price }} EUR</TrustyButton
                 >
               </div>
             </div>
@@ -113,7 +113,7 @@
               class="bg-grey-light-1 peer-checked:bg-main peer h-6 w-[39px] min-w-[3.5rem] rounded-full after:absolute after:left-[2px] after:top-[2px] md:after:left-[4px] md:after:top-[4px] xl:after:top-[13px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-[160%] peer-checked:after:border-white peer-checked:after:bg-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 md:h-[31px] md:w-[56px] md:after:h-[24px] md:after:w-[24px] md:peer-checked:after:translate-x-[100%]"
             ></div>
             <span class="account_toggler_text text-grey-light-6"
-              >Create Personal Account After Payment, it will facilitate you a lot if you book other
+            >Create Personal Account After Payment, it will facilitate you a lot if you book other
               services, and it requires no further data entry, only 1 click! Please
               <a href="" class="underline text-white">Login</a> if you already have an account</span
             >
