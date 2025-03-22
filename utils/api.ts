@@ -86,6 +86,18 @@ export const authAPI = {
   setPassword(data: any): Promise<AxiosResponse<ResponseInterface>> {
     return createApiClient().post('/auth/set_password', data);
   },
+
+  requestPasswordReset(email: string): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().post('/auth/reset_password_mail', { email });
+  },
+
+  resetPassword(hash: string, password: string): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().post('/auth/reset_password', {
+      hash,
+      password,
+      password_confirmation: password,
+    });
+  },
 };
 
 // API для туров

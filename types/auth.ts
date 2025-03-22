@@ -18,6 +18,15 @@ export interface RegisterInfoInterface {
   hash?: string;
 }
 
+export interface ResetPasswordMailInterface {
+  email: string;
+}
+
+export interface ResetPasswordInterface {
+  hash: string;
+  password: string;
+}
+
 export async function IsRegisterInfoInterface(data: any): Promise<RegisterInfoInterface> {
   let schema: yup.ObjectSchema<RegisterInfoInterface> = yup.object({
     step: yup.number<1 | 2 | 3>().required(),

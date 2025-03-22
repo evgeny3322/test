@@ -12,12 +12,7 @@
         rel="nofollow noopener noreferrer"
         @click="closeWidget"
       >
-        <img
-          src="@/assets/images/whatsapp-logo.png"
-          alt=""
-          width="124"
-          height="29"
-        />
+        <img src="@/assets/images/whatsapp-logo.png" alt="" width="124" height="29" />
         <div class="self-stretch flex-col justify-start items-start gap-0.5 flex">
           <p class="text-white text-lg font-bold leading-[27px]">Get a quick consultation</p>
           <p class="text-white text-sm font-normal leading-[21px]">
@@ -27,13 +22,12 @@
         <div
           class="grow w-full shrink basis-0 px-[31px] py-[13px] bg-black rounded-lg justify-center items-center gap-2 flex border border-transparent duration-300 group-hover:bg-transparent group-hover:border-white"
         >
-          <span class="text-center text-white text-sm font-bold leading-tight duration-300">Write to WhatsApp</span>
+          <span class="text-center text-white text-sm font-bold leading-tight duration-300"
+            >Write to WhatsApp</span
+          >
         </div>
       </a>
-      <WhatsappIcon
-        @click="toggleVisibility"
-        @mouseover="mouseOverHandler"
-      />
+      <WhatsappIcon @click="toggleVisibility" @mouseover="mouseOverHandler" />
     </div>
   </div>
 </template>
@@ -56,7 +50,7 @@ const mouseOverHandler = (): void => {
   }
 };
 const closeWidget = (): void => {
-    isVisible.value = false;
+  isVisible.value = false;
 };
 
 const toggleVisibility = (): void => {

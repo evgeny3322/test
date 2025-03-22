@@ -30,7 +30,12 @@
         <p v-if="loginError" class="text-red-500 text-sm">{{ loginError }}</p>
 
         <!-- Recover Password -->
-        <p class="text-white/60 cursor-pointer hover:text-white duration-200">Recover password</p>
+        <p
+          class="text-white/60 cursor-pointer hover:text-white duration-200"
+          @click="router.push('/auth/forgot-password')"
+        >
+          Recover password
+        </p>
 
         <!-- Submit Button -->
         <TrustyButton

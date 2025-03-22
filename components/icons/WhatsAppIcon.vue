@@ -13,16 +13,8 @@
     />
     <rect x="13.5" y="13.5" width="29" height="29" fill="url(#pattern0)" />
     <defs>
-      <pattern
-        id="pattern0"
-        patternContentUnits="objectBoundingBox"
-        width="1"
-        height="1"
-      >
-        <use
-          xlink:href="#image0_298_2651"
-          transform="translate(0.00697964) scale(0.00120482)"
-        />
+      <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
+        <use xlink:href="#image0_298_2651" transform="translate(0.00697964) scale(0.00120482)" />
       </pattern>
       <image
         id="image0_298_2651"
@@ -33,5 +25,4 @@
     </defs>
   </svg>
 </template>
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>

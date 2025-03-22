@@ -158,6 +158,36 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const requestPasswordReset = async (email: string) => {
+    loading.value = true;
+    error.value = false;
+
+    try {
+      const response = await authAPI.requestPasswordReset(email);
+      return response;
+    } catch (err: any) {
+      error.value = err.response?.data?.message || 'Failed to send reset password email';
+      return err.response;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const resetPassword = async (hash: string, password: string) => {
+    loading.value = true;
+    error.value = false;
+
+    try {
+      const response = await authAPI.resetPassword(hash, password);
+      return response;
+    } catch (err: any) {
+      error.value = err.response?.data?.message || 'Failed to reset password';
+      return err.response;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const setToken = (newToken: string) => {
     token.value = newToken;
     if (process.client) {
@@ -288,5 +318,7 @@ export const useAuthStore = defineStore('auth', () => {
     createAgency,
     getAgencyInfo,
     updateAgency,
+    requestPasswordReset,
+    resetPassword,
   };
 });
