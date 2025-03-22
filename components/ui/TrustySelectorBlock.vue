@@ -36,28 +36,41 @@
         </div>
       </div>
       <div
-        v-for="(card, index) in filteredAddons"
-        :key="card.id"
+        v-for="(addon, index) in addonsWithAvailability"
+        :key="addon.id"
         class="bg-grey-dark p-4 lg:p-5 rounded-2xl grid grid-cols-12 place-items-center cursor-pointer border-1 border-grey-dark gap-x-4"
-        @click="setActiveCard(index)"
-        :class="{ '!bg-[#313131] border-1 border-grey-light-3': activeCardIndex === index }"
+        @click="addon.unavailable ? null : setActiveCard(index)"
+        :class="[
+          activeCardIndex === index ? '!bg-[#313131] border-1 border-grey-light-3' : '',
+          addon.unavailable && '!border-[#A23535]',
+        ]"
       >
-        <div class="col-span-12 lg:col-span-8 flex flex-col lg:flex-row gap-y-4 gap-x-4 w-full">
+        <div
+          :class="{ 'opacity-50': addon.unavailable }"
+          class="col-span-12 lg:col-span-8 flex flex-col lg:flex-row gap-y-4 gap-x-4 w-full"
+        >
           <NuxtImg
             class="w-full h-full lg:max-w-[185px] max-h-[121px] rounded-[10px] object-cover"
-            :src="card.media[0]"
+            :src="addon.media[0]"
           />
           <div class="flex flex-col gap-y-[10px]">
-            <p class="font-medium text-16 lg:text-20 leading-30">{{ card.name }}</p>
-            <span class="text-12 leading-17 text-grey-light-6">{{ card.description }}</span>
+            <p class="font-medium text-16 lg:text-20 leading-30">{{ addon.name }}</p>
+            <span class="text-12 leading-17 text-grey-light-6 line-clamp-4">{{
+              addon.description
+            }}</span>
           </div>
         </div>
-        <div class="col-span-12 lg:col-span-4 w-full px-[10px] mt-[10px] lg:mt-0">
+        <div
+          class="flex justify-center items-center col-span-12 lg:col-span-4 w-full px-[10px] mt-[10px] lg:mt-0 relative h-full"
+        >
           <button
             class="bg-main-black rounded-[99px] py-4 px-6 w-full font-semibold text-18 lg:text-26 leading-30 text-white cursor-pointer"
           >
-            {{ getPriceText(card, index) }}
+            {{ addon.unavailable ? 'unavailable' : getPriceText(addon, index) }}
           </button>
+          <span v-if="addon.unavailable" class="text-[#A13535] absolute bottom-[-8%] right-[20%]"
+            >max {{ addon.max_participants }} participants</span
+          >
         </div>
       </div>
     </div>
@@ -85,34 +98,88 @@ const activeCardIndex = ref<number | null>(null);
 const mandatory = computed(() => {
   return data.value.type.mandatory;
 });
-const filteredAddons = computed(() => {
-  return data.value.addons.filter((addon) => addon.max_participants >= props.participants);
+
+const addonsWithAvailability = computed(() => {
+  return data.value.addons.map((addon) => {
+    const maxParticipants = Number(addon.max_participants) || 0;
+    const currentParticipants = Number(props.participants) || 1;
+
+    return {
+      ...addon,
+      unavailable: maxParticipants > 0 && maxParticipants < currentParticipants,
+    };
+  });
 });
 
-watch(
-  () => props.participants,
-  (newParticipants) => {
-    data.value.addons.forEach((addon, index) => {
-      if (addon.max_participants < newParticipants) {
-        console.log(
-          `Addon ${addon.name} (ID: ${addon.id}) in segment ${data.value.id} is no longer available`
-        );
-        emit('addon-unavailable', data.value.id, addon.id);
+const autoSelectAddon = () => {
+  if (mandatory.value) {
+    const availableAddons = addonsWithAvailability.value.filter((a) => !a.unavailable);
 
-        if (activeCardIndex.value === index) {
-          console.log(`Removing active addon (ID: ${addon.id}) as it's no longer available`);
-          activeCardIndex.value = null;
-        }
-      }
-    });
-
-    if (activeCardIndex.value === null && filteredAddons.value.length > 0) {
-      const cheapestIndex = filteredAddons.value.reduce(
+    if (availableAddons.length > 0) {
+      const cheapestIndex = availableAddons.reduce(
         (minIdx, addon, idx, arr) =>
           calculatePrice(addon) < calculatePrice(arr[minIdx]) ? idx : minIdx,
         0
       );
-      setActiveCard(cheapestIndex);
+
+      const selectedAddonId = availableAddons[cheapestIndex].id;
+      const realIndex = data.value.addons.findIndex((a) => a.id === selectedAddonId);
+      setActiveCard(realIndex);
+    }
+  } else {
+    setActiveCard(null);
+  }
+};
+
+watch(
+  () => props.participants,
+  () => {
+    let shouldRecalculate = false;
+
+    data.value.addons.forEach((addon, index) => {
+      const isUnavailable = addon.max_participants < props.participants;
+
+      if (isUnavailable) {
+        emit('addon-unavailable', data.value.id, addon.id);
+
+        if (activeCardIndex.value === index) {
+          activeCardIndex.value = null;
+          shouldRecalculate = true;
+        }
+      }
+    });
+
+    if (!mandatory.value) {
+      const currentAddon = data.value.addons[activeCardIndex.value ?? -1];
+      const stillValid = currentAddon && currentAddon.max_participants >= props.participants;
+
+      if (!stillValid) {
+        console.log(`🔄 Switching to "No needed" for segment ${data.value.id}`);
+        setActiveCard(null);
+      } else {
+        console.log(`✅ Keeping selected addon for non-mandatory segment ${data.value.id}`);
+      }
+
+      return;
+    }
+
+    const availableAddons = addonsWithAvailability.value.filter((a) => !a.unavailable);
+
+    if (availableAddons.length > 0) {
+      const cheapestIndex = availableAddons.reduce(
+        (minIdx, addon, idx, arr) =>
+          calculatePrice(addon) < calculatePrice(arr[minIdx]) ? idx : minIdx,
+        0
+      );
+
+      const addonId = availableAddons[cheapestIndex].id;
+      const realIndex = data.value.addons.findIndex((a) => a.id === addonId);
+
+      if (activeCardIndex.value !== realIndex) {
+        setActiveCard(realIndex);
+      }
+    } else {
+      setActiveCard(null);
     }
   },
   { deep: true }
@@ -146,7 +213,7 @@ const getPriceText = (card: Addon, index: number) => {
   const currentPrice = calculatePrice(card);
   const selectedPrice =
     activeCardIndex.value !== null
-      ? calculatePrice(filteredAddons.value[activeCardIndex.value])
+      ? calculatePrice(addonsWithAvailability.value[activeCardIndex.value])
       : 0;
 
   if (selectedPrice === 0) return `${currentPrice} EUR`;
@@ -176,14 +243,7 @@ const setActiveCard = (index: number | null) => {
 };
 
 onMounted(() => {
-  if (mandatory.value && filteredAddons.value.length > 0) {
-    const cheapestIndex = filteredAddons.value.reduce(
-      (minIdx, addon, idx, arr) =>
-        calculatePrice(addon) < calculatePrice(arr[minIdx]) ? idx : minIdx,
-      0
-    );
-    setActiveCard(cheapestIndex);
-  }
+  autoSelectAddon();
 });
 </script>
 

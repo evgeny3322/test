@@ -1,6 +1,12 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { useRuntimeConfig } from 'nuxt/app';
-import { AuthResponse, LoginData, LogoutResponse, RegistrationData } from '@/types/user';
+import {
+  AgencyInformation,
+  AuthResponse,
+  LoginData,
+  LogoutResponse,
+  RegistrationData,
+} from '@/types/user';
 import { TourApiResponse, TourFilters, ToursApiResponse } from '@/types/tours';
 import { sendVerificationCodeInterface } from '@/types/auth';
 import { Area, AreasResponse } from '@/types/areas';
@@ -107,4 +113,16 @@ export const areasAPI = {
   },
 };
 
+//API для агентства
+export const agencyAPI = {
+  createAgency(data: AgencyInformation): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().post('/agencies/store', data);
+  },
+  updateAgency(data: AgencyInformation): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().post('/agencies/update', data);
+  },
+  getAgencyInfo(): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().get('/agencies/show');
+  },
+};
 export default createApiClient;

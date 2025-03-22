@@ -24,10 +24,10 @@
                 {{ tour?.area?.name }}
               </trusty-chip>
               <trusty-chip class="max-h-[1.625rem] flex justify-center items-center">
-                {{ tour?.duration }}
+                {{ formatDuration(+tour?.duration) }}
               </trusty-chip>
               <trusty-chip class="max-h-[1.625rem] flex justify-center items-center">
-                {{ tour?.max_participants }}
+                1-{{ tour?.max_participants }} persons
               </trusty-chip>
             </div>
             <p class="md:text-[3.875rem] text-[2.25rem] leading-[3.488rem]">{{ tour.name }}</p>
@@ -67,7 +67,12 @@ const randomIndex = ref(Math.floor(Math.random() * props.tours?.length));
 const randomIndexValue: number = randomIndex.value;
 const videoSlider = ref(null);
 const init = ref(false);
-
+const formatDuration = (minutes?: number): string => {
+  if (!minutes) return '0 Min';
+  const hrs = Math.floor(minutes / 60);
+  const min = minutes % 60;
+  return `${hrs > 0 ? `${hrs} Hrs` : ''} ${min > 0 ? `${min} Min` : ''}`.trim();
+};
 const swiper = useSwiper(videoSlider, {
   loop: true,
   autoplay: {

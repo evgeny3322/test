@@ -101,19 +101,23 @@ const filterConfigs = ref<
   {
     name: 'area_id',
     label: 'Area',
-    options: [],
+    options: [{ value: '', label: 'Whole country' }],
     placeholder: 'Whole country',
   },
   {
     name: 'max_participants',
     label: 'Number of people',
-    options: Array.from({ length: 8 }, (_, i) => ({ value: i + 1, label: `${i + 1} People` })),
+    options: [
+      { value: '', label: 'Any' },
+      ...Array.from({ length: 8 }, (_, i) => ({ value: i + 1, label: `${i + 1} People` })),
+    ],
     placeholder: 'Any',
   },
   {
     name: 'duration',
     label: 'Duration',
     options: [
+      { value: '', label: 'Show all' },
       { value: '02:00', label: '2 hours' },
       { value: '04:00', label: '4 hours' },
       { value: '06:00', label: '6 hours' },
@@ -125,6 +129,7 @@ const filterConfigs = ref<
     name: 'price',
     label: 'Price',
     options: [
+      { value: '', label: 'Show all' },
       { value: { min: 500, max: 1500 }, label: '500-1500 EUR' },
       { value: { min: 1500, max: 2500 }, label: '1500-2500 EUR' },
       { value: { min: 2500, max: 1000000000000 }, label: '2500+ EUR' },
@@ -141,10 +146,14 @@ const fetchAreasData = async () => {
 const updateFilterConfigs = () => {
   const areaFilter = filterConfigs.value.find((f) => f.name === 'area_id');
   if (areaFilter) {
-    areaFilter.options = areas.value.map((area: { id: number; name: string }) => ({
-      value: area.id,
-      label: area.name,
-    }));
+    // Preserve the default "Whole country" option
+    areaFilter.options = [
+      { value: '', label: 'Whole country' },
+      ...areas.value.map((area: { id: number; name: string }) => ({
+        value: area.id,
+        label: area.name,
+      })),
+    ];
   }
 };
 
@@ -157,6 +166,7 @@ const getMatchingPriceRange = (
     const match = priceFilter.options.find(
       (opt) =>
         typeof opt.value === 'object' &&
+        opt.value !== null &&
         (opt.value as PriceRange).min === minCost &&
         (opt.value as PriceRange).max === maxCost
     );

@@ -5,10 +5,10 @@ import {
   sendVerificationCodeInterface,
 } from '@/types/auth';
 import { ref, Ref } from 'vue';
-import { authAPI } from '@/utils/api';
+import { agencyAPI, authAPI } from '@/utils/api';
 import { ResponseInterface } from '@/types/type';
 import { AxiosResponse } from 'axios';
-import { User } from '@/types/user';
+import { AgencyInformation, User } from '@/types/user';
 
 const REGISTER_INFO_SESSION = 'reg-info';
 const AUTH_TOKEN_KEY = 'auth-token';
@@ -24,6 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null);
   const initialized = ref(false);
   const intendedRoute = ref<string | null>(null);
+  const alreadyAgency = ref<boolean>(false);
 
   const login = async (email: string, password: string) => {
     loading.value = true;
@@ -97,6 +98,45 @@ export const useAuthStore = defineStore('auth', () => {
       const response: AxiosResponse<ResponseInterface> = await authAPI.sendVerificationCode(data);
       return response;
     } catch (error: any) {
+      return error;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const createAgency = async (data: AgencyInformation) => {
+    loading.value = true;
+    error.value = false;
+    try {
+      const response = await agencyAPI.createAgency(data);
+      return response;
+    } catch (error: any) {
+      return error;
+    } finally {
+      loading.value = false;
+    }
+  };
+  const updateAgency = async (data: AgencyInformation) => {
+    loading.value = true;
+    error.value = false;
+    try {
+      const response = await agencyAPI.updateAgency(data);
+      return response;
+    } catch (error: any) {
+      return error;
+    } finally {
+      loading.value = false;
+    }
+  };
+  const getAgencyInfo = async () => {
+    loading.value = true;
+    error.value = false;
+    try {
+      const response = await agencyAPI.getAgencyInfo();
+      alreadyAgency.value = true;
+      return response.data;
+    } catch (error: any) {
+      alreadyAgency.value = false;
       return error;
     } finally {
       loading.value = false;
@@ -228,6 +268,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user,
+    alreadyAgency,
     loading,
     error,
     registerInfo,
@@ -244,5 +285,8 @@ export const useAuthStore = defineStore('auth', () => {
     initAuth,
     setIntendedRoute,
     getIntendedRoute,
+    createAgency,
+    getAgencyInfo,
+    updateAgency,
   };
 });

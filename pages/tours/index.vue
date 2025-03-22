@@ -14,7 +14,7 @@
 
     <div
       v-else
-      class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-[1.875rem] items-center justify-between"
+      class="w-full grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[1.875rem] lg:gap-[1.2rem] xl:gap-[1.875rem] 2xl:gap-[2rem] items-center justify-between"
     >
       <template v-if="tours.length > 0">
         <template v-for="(tour, index) in tours" :key="tour.id">

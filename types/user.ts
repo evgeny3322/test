@@ -9,6 +9,7 @@ export interface User {
   email_verified_at?: string | null;
   created_at: string;
   updated_at: string;
+  type: string;
 }
 
 export interface RegistrationData {
@@ -50,4 +51,35 @@ export interface AuthResponse {
 
 export interface LogoutResponse {
   message: string;
+}
+
+export interface AgencyInformation {
+  prefix: string;
+  company_name: string;
+  iata_code: string;
+  alternative_industry_code: string;
+  vat: string;
+  fiscal_code: string;
+  tax_id_code: string;
+  sdi_code: string;
+  country: string;
+  region: string;
+  city: string;
+  cap_zip: string;
+  address: string;
+  internal_number: string;
+  company_main_phone: string;
+  company_main_phone_code: string;
+  company_main_email: string;
+  operations_phone: string;
+  operations_phone_code: string | number;
+  operations_email: string;
+  booking_phone: string;
+  booking_phone_code: string;
+  booking_email: string;
+  administration_phone: string;
+  administration_phone_code: string;
+  administration_email: string;
+  erp: string;
+  notes: string;
 }

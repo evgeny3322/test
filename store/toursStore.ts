@@ -14,7 +14,7 @@ export const useToursStore = defineStore('tours', () => {
   };
   const customTour = ref<CustomTour | null>(null);
 
-  const updateCustomTour = (tour: any) => {
+  const updateCustomTour = (tour: CustomTour) => {
     customTour.value = tour;
   };
   const updateToursFilter = (filters: TourFilters) => {

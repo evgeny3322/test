@@ -81,17 +81,17 @@
               @update:modelValue="changeModel('company_name')"
             />
             <TrustyField
-              v-model="agencyData.invoice_vat"
+              v-model="agencyData.vat"
               label="VAT number*"
               placeholder="VAT number*"
               inputClass="!bg-[#313131] text-18"
-              :error="agencyErrors['invoice_vat']"
-              @update:modelValue="changeModel('invoice_vat')"
+              :error="agencyErrors['vat']"
+              @update:modelValue="changeModel('vat')"
             />
           </div>
           <div class="flex gap-6">
             <TrustyComplete
-              v-model="agencyData.invoice_country"
+              v-model="agencyData.country"
               variant="outlined"
               selectClass="h-[64px] !bg-[#313131] text-18 px-5"
               ulClass="top-full"
@@ -99,59 +99,59 @@
               :options="countries.map((e) => ({ value: e, label: e }))"
               placeholder="Select Country"
               label="Country*"
-              :error="agencyErrors['invoice_country']"
-              @update:modelValue="changeModel('invoice_country')"
+              :error="agencyErrors['country']"
+              @update:modelValue="changeModel('country')"
             />
             <TrustyField
-              v-model="agencyData.invoice_state"
+              v-model="agencyData.region"
               label="Region/State/Province*"
               placeholder="Region/State/Province"
               inputClass="!bg-[#313131] text-18 !w-[15rem]"
-              :error="agencyErrors['invoice_state']"
-              @update:modelValue="changeModel('invoice_state')"
+              :error="agencyErrors['region']"
+              @update:modelValue="changeModel('region')"
             />
           </div>
 
           <TrustyField
-            v-model="agencyData.invoice_city"
+            v-model="agencyData.city"
             label="City*"
             placeholder="City"
             inputClass="!bg-[#313131] text-18 !w-[15rem]"
-            :error="agencyErrors['invoice_city']"
-            @update:modelValue="changeModel('invoice_city')"
+            :error="agencyErrors['city']"
+            @update:modelValue="changeModel('city')"
           />
           <TrustyField
-            v-model="agencyData.invoice_address"
+            v-model="agencyData.address"
             label="Address*"
             placeholder="Address"
             inputClass="!bg-[#313131] text-18 !w-[15rem]"
-            :error="agencyErrors['invoice_address']"
-            @update:modelValue="changeModel('invoice_address')"
+            :error="agencyErrors['address']"
+            @update:modelValue="changeModel('address')"
           />
           <TrustyField
             type="tel"
-            v-model="agencyData.office_phone"
+            v-model="agencyData.company_main_phone"
             label="Company Main Phone*"
             @country-changed="countryChanged"
             inputClass="!bg-[#313131] text-18 !w-[15rem]"
-            :error="agencyErrors['office_phone']"
-            @update:modelValue="changeModel('office_phone')"
+            :error="agencyErrors['company_main_phone']"
+            @update:modelValue="changeModel('company_main_phone')"
           />
           <TrustyField
-            v-model="agencyData.company_email"
+            v-model="agencyData.company_main_email"
             label="Company Main Email*"
             placeholder="Company Main Email"
             inputClass="!bg-[#313131] text-18 !w-[15rem]"
-            :error="agencyErrors['company_email']"
-            @update:modelValue="changeModel('company_email')"
+            :error="agencyErrors['company_main_email']"
+            @update:modelValue="changeModel('company_main_email')"
           />
           <TrustyField
-            v-model="agencyData.invoice_zip"
+            v-model="agencyData.cap_zip"
             label="Postal/ZIP code*"
             placeholder="Postal/ZIP code"
             inputClass="!bg-[#313131] text-18 !w-[15rem]"
-            :error="agencyErrors['invoice_zip']"
-            @update:modelValue="changeModel('invoice_zip')"
+            :error="agencyErrors['cap_zip']"
+            @update:modelValue="changeModel('cap_zip')"
           />
         </div>
 
@@ -184,14 +184,14 @@ const authStore = useAuthStore();
 
 const agencyData = reactive({
   company_name: '',
-  invoice_vat: '',
-  invoice_country: '',
-  invoice_state: '',
-  invoice_city: '',
-  invoice_address: '',
-  office_phone: '',
-  company_email: '',
-  invoice_zip: '',
+  vat: '',
+  country: '',
+  region: '',
+  city: '',
+  address: '',
+  company_main_phone: '',
+  company_main_email: '',
+  cap_zip: '',
 });
 
 const passwords = reactive({
@@ -240,12 +240,12 @@ const validatePasswords = yup.object({
 
 const validateAgency = yup.object({
   company_name: yup.string().required(),
-  invoice_vat: yup.string().required(),
-  invoice_country: yup.string().required(),
-  invoice_state: yup.string().required(),
-  invoice_city: yup.string().required(),
-  invoice_address: yup.string().required(),
-  company_email: yup
+  vat: yup.string().required(),
+  country: yup.string().required(),
+  region: yup.string().required(),
+  city: yup.string().required(),
+  address: yup.string().required(),
+  company_main_email: yup
     .string()
     .email()
     .required()
@@ -256,12 +256,12 @@ const validateAgency = yup.object({
         return value.includes('.');
       }
     ),
-  invoice_zip: yup.string().required(),
-  office_phone: yup.string().required(),
+  cap_zip: yup.string().required(),
+  company_main_phone: yup.string().required(),
 });
 
 type PasswordData = yup.InferType<typeof validatePasswords>;
-type AgencyData = yup.InferType<typeof validateAgency> & { office_phone_code: string };
+type AgencyData = yup.InferType<typeof validateAgency> & { company_main_phone_code: string };
 type CombinedData = PasswordData & Partial<AgencyData>;
 
 const changeModel = (fieldName: string) => {
@@ -312,7 +312,7 @@ const handleSubmit = async () => {
       data = {
         ...data,
         ...agencyValidate,
-        countryCode: officePhoneCode.value,
+        company_main_phone_code: officePhoneCode.value,
       };
     } else {
       return;

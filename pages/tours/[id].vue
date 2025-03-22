@@ -1,6 +1,6 @@
 <template>
   <div class="block-container">
-    <div class="bg-grey-light-1 rounded-2xl rounded-2xl p-5 lg:p-8 grid grid-cols-12">
+    <div class="bg-grey-light-1 rounded-2xl p-5 lg:p-8 grid grid-cols-12">
       <div class="col-span-12 lg:col-span-8 lg:mr-[30px]">
         <ClientOnly>
           <div class="mb-6 block lg:hidden">
@@ -118,16 +118,12 @@
       <div class="col-span-12 lg:col-span-4 space-y-6">
         <div class="flex flex-row space-x-[6px]">
           <trusty-chip v-if="tour?.area.name">{{ tour?.area?.name }}</trusty-chip>
-          <trusty-chip v-if="tour?.duration"
-            >{{ (Number(tour?.duration) / 60).toFixed(2) }} Hrs
-          </trusty-chip>
+          <trusty-chip v-if="tour?.duration">{{ formatDuration(+tour?.duration) }} </trusty-chip>
         </div>
-        <p class="text-36 leading-30 lg:text-64 font-medium lg:leading-56">
-          {{ tour?.area?.name }}
+        <p class="text-36 leading-30 lg:text-64 font-medium lg:leading-59">
+          {{ tour?.name }}
         </p>
-        <span class="text-14 lg:text-16 leading-22 text-grey-light-6">{{
-          tour?.area?.description
-        }}</span>
+        <span class="text-14 lg:text-16 leading-22 text-grey-light-6">{{ tour?.description }}</span>
       </div>
     </div>
     <trusty-selector-block
@@ -140,29 +136,21 @@
       @addon-unavailable="handleAddonUnavailable"
     />
     <div
+      v-if="haveTransferSegments"
       class="bg-grey-light-1 rounded-2xl grid grid-cols-12 gap-y-6 lg:gap-x-8 mt-[4.5%] p-5 lg:p-8"
     >
       <div class="col-span-12 lg:col-span-4">
-        <p class="text-26 leading-30 lg:text-40 lg:leading-36 font-medium">Additional drive time</p>
+        <p class="text-26 leading-30 lg:text-40 lg:leading-36 font-medium">
+          Additional driver time
+        </p>
       </div>
       <div
-        class="col-span-12 lg:col-span-8 bg-[#181818] rounded-2xl p-[18px] flex flex-col lg:flex-row lg:justify-between px-6 py-5 gap-y-6"
+        class="col-span-12 lg:col-span-8 bg-[#181818] rounded-2xl p-[18px] flex flex-col lg:flex-row lg:justify-between px-6 py-5 gap-y-6 gap-x-9"
       >
-        <div
-          class="bg-[#282828] rounded-2xl flex flex-row justify-between items-center px-6 py-3 lg:py-5 lg:gap-x-20"
+        <span class="text-14 lg:text-16 xl:text-20 font-medium"
+          >This is the amount of payment for the additional driver time according to the selected
+          Services</span
         >
-          <span
-            @click="descDriveTime"
-            class="cursor-pointer text-28 lg:text-40 leading-20 select-none"
-            >-</span
-          >
-          <span class="text-20 leading-20">{{ driveTime }}</span>
-          <span
-            @click="incDriveTime"
-            class="cursor-pointer text-28 lg:text-40 leading-20 select-none"
-            >+</span
-          >
-        </div>
         <button
           class="bg-main-black rounded-[99px] py-4 px-6 font-semibold text-18 lg:text-26 leading-30"
         >
@@ -189,20 +177,22 @@
         </div>
         <div class="border-b-1 border-[#F2F2F2] col-span-12 lg:hidden"></div>
         <div class="flex flex-col lg:text-center gap-y-[6px] col-span-12 lg:col-span-2">
-          <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Amount of participants</span>
+          <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3] text-nowrap"
+            >Amount of participants</span
+          >
           <div class="flex flex-row gap-x-6 lg:justify-between lg:gap-x-0 px-4 font-semibold">
             <p
               @click="decreaseParticipants"
-              class="text-18 lg:text-26 leading-30 text-main-black cursor-pointer select-none"
+              class="text-18 lg:text-23 xl:text-26 leading-30 text-main-black cursor-pointer select-none"
             >
               -
             </p>
-            <p class="text-18 lg:text-26 leading-30 text-main-black font-semibold title">
+            <p class="text-18 lg:text-23 xl:text-26 leading-30 text-main-black font-semibold title">
               {{ participants }}
             </p>
             <p
               @click="increaseParticipants"
-              class="text-18 lg:text-26 leading-30 text-main-black cursor-pointer select-none"
+              class="text-18 lg:text-23 xl:text-26 leading-30 text-main-black cursor-pointer select-none"
             >
               +
             </p>
@@ -211,21 +201,23 @@
         <div class="border-b-1 border-[#F2F2F2] col-span-12 lg:hidden"></div>
         <div class="flex flex-col gap-y-[6px] lg:text-center col-span-12 lg:col-span-2">
           <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Total duration</span>
-          <p class="text-18 lg:text-26 leading-30 text-main-black font-semibold title">
+          <p class="text-18 lg:text-23 xl:text-26 leading-30 text-main-black font-semibold title">
             {{ totalDuration }} h
           </p>
         </div>
         <div class="border-b-1 border-[#F2F2F2] col-span-12 lg:hidden"></div>
         <div class="flex flex-col gap-y-[6px] lg:text-center col-span-12 lg:col-span-2">
           <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Total price</span>
-          <p class="text-18 lg:text-26 leading-30 text-main-black !font-semibold">
+          <p class="text-18 lg:text-23 xl:text-26 leading-30 text-main-black !font-semibold">
             {{ totalPrice }} EUR
           </p>
         </div>
         <div class="border-b-1 border-[#F2F2F2] col-span-12 lg:hidden"></div>
         <div class="flex flex-col gap-y-[6px] lg:text-center col-span-12 lg:col-span-2">
           <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Price per participant</span>
-          <p class="text-18 lg:text-26 leading-30 text-main-black font-semibold">
+          <p
+            class="text-18 lg:text-23 xl:text-26 leading-30 text-main-black font-semibold text-nowrap"
+          >
             {{ pricePerParticipant }} EUR/P
           </p>
         </div>
@@ -276,7 +268,6 @@ const tour = ref<Tour | null>(null);
 
 const nextBtn = ref<HTMLElement | null>(null);
 const prevBtn = ref<HTMLElement | null>(null);
-const driveTime = ref<number>(0);
 const modules = [FreeMode, Navigation, Thumbs];
 const participants = ref(1);
 const tourDate = ref<string | null | Date>(new Date().toISOString());
@@ -290,7 +281,12 @@ const handleAddonSelected = (addon: Addon, segmentIndex: number, segment: Segmen
   };
   console.log('Updated selected addons:', selectedAddons.value);
 };
-
+const formatDuration = (minutes?: number): string => {
+  if (!minutes) return '0 Min';
+  const hrs = Math.floor(minutes / 60);
+  const min = minutes % 60;
+  return `${hrs > 0 ? `${hrs} Hrs` : ''} ${min > 0 ? `${min} Min` : ''}`.trim();
+};
 const handleAddonRemoved = (segmentId: number) => {
   if (selectedAddons.value[segmentId]) {
     delete selectedAddons.value[segmentId];
@@ -307,42 +303,55 @@ const displayDate = computed({
   },
 });
 
-const incDriveTime = () => {
-  if (driveTime.value < 24) driveTime.value++;
-};
-
-const descDriveTime = () => {
-  if (driveTime.value > 0) driveTime.value--;
-};
-
 const calculateDriveTimePrice = computed(() => {
-  if (driveTime.value < 1) return 0;
-
   const transportationAddons = Object.values(selectedAddons.value).filter(
     (addon) => addon.segmentType === 'Transportation'
   );
 
-  if (transportationAddons.length === 0) return 0;
+  if (transportationAddons.length === 0 || !tour.value) return 0;
 
   const selectedTransportationAddon = transportationAddons[0];
   const addonPrice = calculatePrice(selectedTransportationAddon);
-  const baseDurationMinutes = Number(tour.value?.duration) || 1;
-  const baseDuration = baseDurationMinutes / 60;
-  const discountPercentage = Number(hourDiscount.value) || 0;
+  const baseDurationMinutes = Number(tour.value.duration) || 1;
+  const baseDurationHours = baseDurationMinutes / 60;
 
-  console.log('Addon Price:', addonPrice);
-  console.log('Base Duration (hours):', baseDuration);
-  console.log('Discount (%):', discountPercentage);
+  const discount = Number(hourDiscount.value) || 0;
 
-  const pricePerHour = addonPrice / baseDuration;
-  const discountedPrice = pricePerHour * (1 - discountPercentage / 100);
+  if (baseDurationHours <= 0) return 0;
 
-  console.log('Price per Hour:', pricePerHour);
-  console.log('Discounted Price:', discountedPrice);
+  const driverHourlyRate = addonPrice / baseDurationHours - discount;
 
-  return Math.max(Number(discountedPrice.toFixed(2)), 0);
+  let sumAdditionalHours = 0;
+
+  for (const [key, selectedAddon] of Object.entries(selectedAddons.value)) {
+    const segment = tour.value.segments.find((seg) => seg.id === Number(key));
+    if (!segment || !selectedAddon) continue;
+
+    const addonDuration = Number(selectedAddon.duration) || 0;
+    const segmentDuration = Number(segment.duration) || 0;
+
+    if (addonDuration > segmentDuration) {
+      const extraMinutes = addonDuration - segmentDuration;
+      const extraHours = extraMinutes / 60;
+      sumAdditionalHours += extraHours;
+    }
+  }
+
+  const totalCost = driverHourlyRate * sumAdditionalHours;
+
+  console.log(`Addon Price: ${addonPrice}`);
+  console.log(`Base Duration (h): ${baseDurationHours}`);
+  console.log(`Driver Hour Discount: ${discount}`);
+  console.log(`Hourly Rate: ${driverHourlyRate}`);
+  console.log(`Sum Additional Hours: ${sumAdditionalHours}`);
+  console.log(`Total Driver Time Cost: ${totalCost}`);
+
+  return Math.max(Number(totalCost.toFixed(2)), 0);
 });
 
+const haveTransferSegments = computed(() => {
+  return tour?.value?.segments.some((segment) => segment.type.name === 'Transportation');
+});
 const decreaseParticipants = () => {
   if (participants.value > 1) participants.value--;
 };
@@ -459,28 +468,11 @@ const totalPrice = computed(() => {
 
   const additionalDriverCost = calculateDriveTimePrice.value;
 
-  const baseDurationMinutes = Number(tour.value?.duration) || 0;
-  const totalDurationMinutes = Number(totalDuration.value) * 60;
-  const additionalMinutes = totalDurationMinutes - baseDurationMinutes;
+  total += additionalDriverCost;
 
-  console.log(`Base Duration: ${baseDurationMinutes} min`);
-  console.log(`Total Duration: ${totalDurationMinutes} min`);
-  console.log(`Additional Minutes from Addons: ${additionalMinutes} min`);
-
-  if (additionalMinutes > 0) {
-    const additionalHours = additionalMinutes / 60;
-    total += additionalHours * additionalDriverCost;
-    console.log(
-      `Added extra tour duration cost: ${additionalHours}h * ${additionalDriverCost} EUR`
-    );
-  }
-
-  if (driveTime.value > 0) {
-    total += driveTime.value * additionalDriverCost;
-    console.log(`Added drive time cost: ${driveTime.value}h * ${additionalDriverCost} EUR`);
-  }
-
+  console.log(`Additional Driver Cost (from calculation): ${additionalDriverCost} EUR`);
   console.log(`Total price for tour: ${total.toFixed(2)} EUR`);
+
   return Number(total.toFixed(2));
 });
 
@@ -618,7 +610,7 @@ input[type='date']::-webkit-calendar-picker-indicator {
 }
 
 .dp__input {
-  font-size: 26px;
+  font-size: 18px;
   font-weight: 600;
   font-family: 'Involve', sans-serif;
   color: black;
@@ -654,5 +646,18 @@ input[type='date']::-webkit-calendar-picker-indicator {
   background-color: black !important;
   color: white !important;
   border-radius: 8px;
+}
+
+@media screen {
+  @media (min-width: 1024px) {
+    .dp__input {
+      font-size: 23px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .dp__input {
+      font-size: 26px;
+    }
+  }
 }
 </style>

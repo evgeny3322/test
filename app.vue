@@ -4,11 +4,13 @@
       <NuxtPage />
     </NuxtLayout>
   </div>
+  <WhatsAppWidget />
 </template>
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { computed, watch } from 'vue';
+import WhatsAppWidget from '@/components/layout/WhatsAppWidget.vue';
 
 const route = useRoute();
 

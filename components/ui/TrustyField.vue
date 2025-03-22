@@ -23,7 +23,11 @@
         v-bind="props"
         v-model="model"
         class="field-input"
-        :class="[inputClass, { '!border-red-500 border': error }, { '!text-gray-400': disabled }]"
+        :class="[
+          inputClass,
+          { '!border-red-500 border': error },
+          { '!text-gray-400 cursor-not-allowed': disabled },
+        ]"
         :type="inputType"
         :placeholder="placeholder"
       />

@@ -23,7 +23,7 @@
 
     <div v-else class="flex flex-col gap-y-6 lg:flex-row lg:gap-y-0 lg:gap-x-[2.6%] mt-[3.5%]">
       <div v-if="featuredTours.length === 0" class="text-center w-full py-12">
-        <p class="text-xl text-gray-300">No featured tours found matching your criteria.</p>
+        <p class="text-xl text-gray-300">No featured tours found.</p>
       </div>
 
       <div v-else class="lg:flex w-full relative hidden lg:block">
@@ -90,17 +90,12 @@ const handleSearch = async (values: any) => {
   navigateTo('/tours');
 };
 
-const getTours = async () => {
+const getFeaturedTours = async () => {
   loading.value = true;
   error.value = null;
 
   try {
-    const filters = {
-      ...(toursFilter.value || {}),
-      featured: 1,
-    };
-
-    tours.value = await toursStore.fetchTours(filters);
+    tours.value = await toursStore.fetchTours({ featured: 1 });
 
     await nextTick();
     initSwiper();
@@ -133,6 +128,7 @@ const initSwiper = () => {
       disableOnInteraction: false,
     },
     breakpoints: {
+      1280: { slidesPerView: 4, spaceBetween: 30 },
       1024: { slidesPerView: 3, spaceBetween: 30 },
       768: { slidesPerView: 2, spaceBetween: 30 },
       375: { slidesPerView: 1, spaceBetween: 30 },
@@ -157,7 +153,7 @@ const initSwiper = () => {
 };
 
 onMounted(async () => {
-  await getTours();
+  await getFeaturedTours();
   setTimeout(() => {
     if (featuredTours.value.length > 0 && swiperEl.value && !swiperEl.value.swiper) {
       initSwiper();

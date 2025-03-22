@@ -203,8 +203,8 @@ const fetchTourData = async () => {
   }
 };
 
-const stripe = ref<Stripe | null>(null);
-const elements = ref<StripeElements | null>(null);
+const stripe: any = ref<Stripe | null>(null);
+const elements: any = ref<StripeElements | null>(null);
 console.log('customTour', customTour.value);
 onMounted(async () => {
   fetchTourData();
@@ -300,22 +300,14 @@ onMounted(async () => {
     });
     paymentElement.mount('#payment-element');
     console.log(elements.value);
-    // function createToken() {
-    //     (document.getElementById("pay-btn")as HTMLInputElement).disabled = true;
-    //     stripe.value?.createToken(elements.value.getElement(paymentElement)).then(function(result) {
-
-    //         if(typeof result.error != 'undefined') {
-    //             (document.getElementById("pay-btn")as HTMLInputElement).disabled = false;
-    //             alert(result.error.message);
-    //         }
-
-    //         /* creating token success */
-    //         if(typeof result.token != 'undefined') {
-    //             (document.getElementById("stripe-token-id")as HTMLInputElement).value = result.token.id;
-    //             (document.getElementById('checkout-form')as HTMLInputElement).submit();
-    //         }
-    //     });
-    // }
+    const { paymentIntent, error } = await stripe.value.confirmPayment(elements);
+    if (error) {
+      // Display error.message in your UI.
+    } else {
+      console.log(paymentIntent);
+      // The payment has succeeded
+      // Display a success message
+    }
   }
 });
 function createOrder() {
