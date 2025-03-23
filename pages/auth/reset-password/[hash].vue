@@ -62,20 +62,6 @@
             <p v-else class="text-18 font-medium">Reset Password</p>
           </TrustyButton>
         </div>
-
-        <div v-else class="flex flex-col items-center text-center">
-          <p class="text-white text-14 md:text-18 mb-6">
-            Your password has been successfully reset!
-          </p>
-
-          <TrustyButton
-            title="Sign In"
-            size="large"
-            @click="router.push('/auth/sign-in?password_reset=success')"
-          >
-            <p class="text-18 font-medium">Sign In</p>
-          </TrustyButton>
-        </div>
       </form>
     </div>
   </div>

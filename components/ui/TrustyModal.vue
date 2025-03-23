@@ -3,7 +3,7 @@
     <Transition name="modal-fade">
       <div
         v-if="modelValue"
-        class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+        class="fixed inset-0 bg-opacity-30 backdrop-blur-sm z-50 flex items-center justify-center"
         @click="closeOnBackdrop && close()"
       >
         <div class="relative" :class="[containerClass]" @click.stop>

@@ -35,7 +35,6 @@
         </div>
 
         <template v-if="!sent">
-          <!-- Email -->
           <TrustyField
             v-model="email"
             label="Email Address"
@@ -45,12 +44,10 @@
             @update:modelValue="clearErrors"
           />
 
-          <!-- Error message -->
           <p v-if="resetError || emailError" class="text-red-500 text-sm">
             {{ emailError || resetError }}
           </p>
 
-          <!-- Submit Button -->
           <TrustyButton
             title="Send Reset Link"
             size="large"

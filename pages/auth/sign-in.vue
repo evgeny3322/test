@@ -8,7 +8,6 @@
         @submit.prevent="handleSubmit"
         class="bg-[#262626] p-8 w-[552px] flex flex-col gap-8 rounded-2xl"
       >
-        <!-- Email -->
         <TrustyField
           v-model="email"
           label="E-mail Address"
@@ -16,7 +15,6 @@
           inputClass="!bg-[#313131] text-18"
           :error="!!authErrors.email"
         />
-        <!-- Password -->
         <TrustyField
           type="password"
           v-model="password"
@@ -26,10 +24,8 @@
           :error="!!authErrors.password"
         />
 
-        <!-- Error message -->
         <p v-if="loginError" class="text-red-500 text-sm">{{ loginError }}</p>
 
-        <!-- Recover Password -->
         <p
           class="text-white/60 cursor-pointer hover:text-white duration-200"
           @click="router.push('/auth/forgot-password')"
@@ -37,7 +33,6 @@
           Recover password
         </p>
 
-        <!-- Submit Button -->
         <TrustyButton
           title="Sign in"
           size="large"
@@ -50,7 +45,6 @@
           <p v-else class="text-18 font-medium">Sign in</p>
         </TrustyButton>
 
-        <!-- Register link -->
         <p class="text-center text-white/60">
           Don't have an account?
           <span

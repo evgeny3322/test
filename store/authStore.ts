@@ -78,8 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = false;
 
     try {
-      const response = await authAPI.setPassword(data);
-      return response;
+      return await authAPI.setPassword(data);
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to set password';
       return false;
@@ -95,8 +94,7 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = false;
 
     try {
-      const response: AxiosResponse<ResponseInterface> = await authAPI.sendVerificationCode(data);
-      return response;
+      return await authAPI.sendVerificationCode(data);
     } catch (error: any) {
       return error;
     } finally {
@@ -108,8 +106,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true;
     error.value = false;
     try {
-      const response = await agencyAPI.createAgency(data);
-      return response;
+      return await agencyAPI.createAgency(data);
     } catch (error: any) {
       return error;
     } finally {
@@ -120,8 +117,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true;
     error.value = false;
     try {
-      const response = await agencyAPI.updateAgency(data);
-      return response;
+      return await agencyAPI.updateAgency(data);
     } catch (error: any) {
       return error;
     } finally {
@@ -163,8 +159,7 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = false;
 
     try {
-      const response = await authAPI.requestPasswordReset(email);
-      return response;
+      return await authAPI.requestPasswordReset(email);
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to send reset password email';
       return err.response;
@@ -177,12 +172,22 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true;
     error.value = false;
 
+    if (!hash) {
+      error.value = 'Missing password reset token';
+      loading.value = false;
+      return { data: { status: 'error', message: 'Missing password reset token' } };
+    }
+
     try {
-      const response = await authAPI.resetPassword(hash, password);
-      return response;
+      return await authAPI.resetPassword(hash, password);
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to reset password';
-      return err.response;
+      return {
+        data: {
+          status: 'error',
+          message: err.response?.data?.message || 'Failed to reset password',
+        },
+      };
     } finally {
       loading.value = false;
     }

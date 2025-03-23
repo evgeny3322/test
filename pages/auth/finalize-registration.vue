@@ -156,9 +156,14 @@
         </div>
 
         <!-- Submit Button -->
-        <TrustyButton title="Complete Registration" size="large" :disabled="authStore.loading">
+        <TrustyButton
+          class="flex justify-center items-center"
+          title="Next"
+          size="large"
+          :disabled="authStore.loading"
+        >
           <PreloaderAnimIcon class="size-6" theme="black" v-if="authStore.loading" />
-          <p v-else class="text-18 font-medium">Complete Registration</p>
+          <p v-else class="text-18 font-medium">Next</p>
         </TrustyButton>
       </form>
     </div>

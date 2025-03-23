@@ -1368,7 +1368,6 @@ const updateAgency = async () => {
 const showAgencyInfo = async () => {
   try {
     const response = await authStore.getAgencyInfo();
-    console.log(response);
     if (response.status === 'success') {
       agency.value = response.data;
     }
