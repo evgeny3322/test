@@ -1,27 +1,34 @@
 import { defineNuxtRouteMiddleware, navigateTo } from 'nuxt/app';
+import type { RouteLocationNormalized } from 'vue-router';
 
-export default defineNuxtRouteMiddleware((to, from) => {
-  if (to.path.startsWith('/auth/reset-password/')) {
-    const hash = to.params.hash;
-    if (hash) {
-      return navigateTo(`/password/reset/${hash}`);
+export default defineNuxtRouteMiddleware(
+  (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+    if (to.path.startsWith('/password/reset/')) {
+      const pathParts = to.path.split('/');
+      const hash = pathParts[pathParts.length - 1];
+
+      if (hash) {
+        return navigateTo(`/auth/reset-password/${hash}`);
+      }
     }
-  }
 
-  if (process.client) {
-    const isPasswordResetUrl =
-      window.location.href.includes('/password/reset/') ||
-      window.location.pathname.startsWith('/password/reset/');
+    if (process.client) {
+      const currentUrl = window.location.href;
+      const currentPath = window.location.pathname;
 
-    if (isPasswordResetUrl) {
-      const path = window.location.pathname;
-      const parts = path.split('/');
-      if (parts.length >= 3) {
-        const hash = parts[parts.length - 1];
-        if (!to.path.startsWith('/password/reset/')) {
-          return navigateTo(`/password/reset/${hash}`);
+      const isPasswordResetUrl =
+        currentUrl.includes('/password/reset/') || currentPath.startsWith('/password/reset/');
+
+      if (isPasswordResetUrl) {
+        const parts = currentPath.split('/');
+        if (parts.length >= 3) {
+          const hash = parts[parts.length - 1];
+
+          if (!to.path.startsWith('/auth/reset-password/')) {
+            return navigateTo(`/auth/reset-password/${hash}`);
+          }
         }
       }
     }
   }
-});
+);

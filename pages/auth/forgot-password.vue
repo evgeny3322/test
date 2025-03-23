@@ -60,7 +60,7 @@
             <div v-if="authStore.loading" class="absolute inset-0 flex items-center justify-center">
               <PreloaderAnimIcon class="size-6" theme="black" />
             </div>
-            <p v-else class="text-18 font-medium">Send Reset Link</p>
+            <p v-else class="text-18 font-medium">Send</p>
           </TrustyButton>
         </template>
 
@@ -86,7 +86,6 @@ import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
 import ArrowDownOutlinedIcon from '@/components/icons/ArrowDownOutlinedIcon.vue';
 import { useRouter } from 'vue-router';
 import * as yup from 'yup';
-
 const router = useRouter();
 const authStore = useAuthStore();
 

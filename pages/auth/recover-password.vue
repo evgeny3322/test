@@ -49,7 +49,7 @@
           </p>
 
           <TrustyButton
-            title="Send Reset Link"
+            title="Send"
             size="large"
             :disabled="authStore.loading"
             class="relative h-[50px] flex justify-center items-center"
