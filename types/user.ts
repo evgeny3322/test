@@ -10,6 +10,16 @@ export interface User {
   created_at: string;
   updated_at: string;
   type: string;
+  country?: string | null;
+  reset_password_hash?: string | null;
+}
+
+export interface updatedUser {
+  name: string | null;
+  last_name: string | null;
+  phone: string | null;
+  email: string | null;
+  country?: string | null;
 }
 
 export interface RegistrationData {

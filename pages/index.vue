@@ -26,7 +26,7 @@
         <p class="text-xl text-gray-300">No featured tours found.</p>
       </div>
 
-      <div v-else class="lg:flex w-full relative hidden lg:block">
+      <div v-else class="lg:flex w-full relative hidden">
         <template v-if="featuredTours.length > 4">
           <button class="swiper-button-prev-custom" ref="prevBtn">
             <arrow-slide-icon class="rotate-180" />
@@ -44,7 +44,7 @@
       </div>
 
       <div v-if="featuredTours.length > 0" class="block lg:hidden w-full">
-        <div v-for="tour in featuredTours" :key="tour.id" class="mb-6">
+        <div v-for="tour in tours" :key="tour.id" class="mb-6">
           <TrustyTourCard :tour="tour" @click="navigateTo(`/tours/${tour.id}`)" />
         </div>
       </div>
@@ -82,7 +82,7 @@ const prevBtn = ref<HTMLElement | null>(null);
 const nextBtn = ref<HTMLElement | null>(null);
 
 const featuredTours = computed(() => {
-  return tours.value?.filter((tour) => tour.featured === 1) || [];
+  return tours.value || [];
 });
 
 const handleSearch = async (values: any) => {

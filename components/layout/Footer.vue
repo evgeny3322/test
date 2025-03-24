@@ -67,7 +67,6 @@ import MasterCardIcon from '@/components/icons/MasterCardIcon.vue';
 import ExpressIcon from '@/components/icons/ExpressIcon.vue';
 import DiscoverIcon from '@/components/icons/DiscoverIcon.vue';
 import { markRaw, ref } from 'vue';
-import { useDevice } from '@/.nuxt/imports';
 
 const navItems = ref<string[]>(['Home', 'Best tours']);
 

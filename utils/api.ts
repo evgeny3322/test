@@ -6,6 +6,7 @@ import {
   LoginData,
   LogoutResponse,
   RegistrationData,
+  updatedUser,
 } from '@/types/user';
 import { TourApiResponse, TourFilters, ToursApiResponse } from '@/types/tours';
 import { sendVerificationCodeInterface } from '@/types/auth';
@@ -135,6 +136,16 @@ export const agencyAPI = {
   },
   getAgencyInfo(): Promise<AxiosResponse<ResponseInterface>> {
     return createApiClient().get('/agencies/show');
+  },
+};
+
+//API для пользователя
+export const userAPI = {
+  updateUser(userData: updatedUser): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().patch('/users/update', userData);
+  },
+  fetchUser(): Promise<AxiosResponse<ResponseInterface>> {
+    return createApiClient().get('/users/showIm');
   },
 };
 export default createApiClient;

@@ -7,7 +7,7 @@
       <a
         class="w-full mt-[37px] px-4 py-6 bg-[#22c55e] rounded-tl-xl rounded-tr-xl rounded-bl-xl flex-col justify-start items-start gap-4 inline-flex min-w-max duration-300 group absolute right-0 bottom-[110%]"
         :class="{ '!hidden': !isVisible }"
-        href="https://wa.me/<номер>"
+        href="https://wa.me/+79503163605"
         target="_blank"
         rel="nofollow noopener noreferrer"
         @click="closeWidget"

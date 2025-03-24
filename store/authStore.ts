@@ -5,10 +5,10 @@ import {
   sendVerificationCodeInterface,
 } from '@/types/auth';
 import { ref, Ref } from 'vue';
-import { agencyAPI, authAPI } from '@/utils/api';
+import { agencyAPI, authAPI, userAPI } from '@/utils/api';
 import { ResponseInterface } from '@/types/type';
 import { AxiosResponse } from 'axios';
-import { AgencyInformation, User } from '@/types/user';
+import { AgencyInformation, updatedUser, User } from '@/types/user';
 
 const REGISTER_INFO_SESSION = 'reg-info';
 const AUTH_TOKEN_KEY = 'auth-token';
@@ -207,6 +207,32 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const updateUserInfo = async (userData: updatedUser) => {
+    loading.value = true;
+    error.value = false;
+    try {
+      return await userAPI.updateUser(userData);
+    } catch (err: any) {
+      error.value = err.response?.data?.message || 'Failed to update user';
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const getUserInfo = async () => {
+    loading.value = true;
+    error.value = false;
+    try {
+      const res = await userAPI.fetchUser();
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(res.data.data));
+      user.value = res.data.data;
+    } catch (err: any) {
+      error.value = err.response?.data?.message || 'Failed to update user';
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const clearAuth = () => {
     token.value = null;
     user.value = null;
@@ -325,5 +351,7 @@ export const useAuthStore = defineStore('auth', () => {
     updateAgency,
     requestPasswordReset,
     resetPassword,
+    updateUserInfo,
+    getUserInfo,
   };
 });

@@ -45,7 +45,7 @@
                     ? tour.description.slice(0, 50) + '...'
                     : tour.description
                 }}</span>
-                <div class="flex flex-row mt-4 gap-x-[6px]">
+                <div class="flex flex-wrap mt-4 gap-x-[6px] gap-y-1">
                   <trusty-chip>{{ tour?.area.name }}</trusty-chip>
                   <trusty-chip>{{ Math.floor(Number(tour.duration) / 60) }} Hrs</trusty-chip>
                   <trusty-chip>1-{{ tour.max_participants }} persons</trusty-chip>

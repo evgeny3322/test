@@ -2,7 +2,7 @@
   <div
     class="my-[41px] md:my-[62px] flex flex-col md:gap-[62px] min-h-[calc(100vh-88px-41px)] md:min-h-auto justify-between"
   >
-    <h1 class="text-40 font-medium text-center text-white">Creat a new password</h1>
+    <h1 class="text-40 font-medium text-center text-white">Create a new password</h1>
     <div class="flex justify-center">
       <form
         @submit.prevent="handleSubmit"
@@ -30,6 +30,7 @@
             </div>
           </div>
 
+          <!-- Password Confirmation -->
           <div class="relative mb-4">
             <TrustyField
               type="password"
@@ -48,22 +49,42 @@
             </div>
           </div>
 
+          <!-- Error message -->
           <p v-if="resetError" class="text-red-500 text-sm">{{ resetError }}</p>
 
+          <!-- Submit Button -->
           <TrustyButton
             title="Reset Password"
             size="large"
             :disabled="authStore.loading"
-            class="relative h-[50px] flex justify-center items-center mt-4"
+            class="relative h-[50px] flex justify-center items-center mt-4 w-full"
           >
             <div v-if="authStore.loading" class="absolute inset-0 flex items-center justify-center">
               <PreloaderAnimIcon class="size-6" theme="black" />
             </div>
-            <p v-else class="text-18 font-medium">Reset Password</p>
+            <p v-else class="text-18 font-medium">Save password</p>
           </TrustyButton>
         </div>
       </form>
     </div>
+
+    <TrustyModal
+      v-model="showSuccessModal"
+      :show-close-button="false"
+      :show-default-footer="true"
+      action-button-text="Close"
+      @confirm="redirectToSignIn"
+    >
+      <template #header>
+        <h2 class="text-[32px] font-medium text-center text-white">
+          Password changed successfully
+        </h2>
+      </template>
+
+      <div class="flex flex-col items-center py-4">
+        <successfully-icon />
+      </div>
+    </TrustyModal>
   </div>
 </template>
 
@@ -72,9 +93,11 @@ import { ref, Ref, onMounted } from 'vue';
 import { useAuthStore } from '@/store/authStore';
 import TrustyField from '@/components/ui/TrustyField.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
+import TrustyModal from '@/components/ui/TrustyModal.vue';
 import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
 import { useRouter, useRoute } from 'vue-router';
 import * as yup from 'yup';
+import SuccessfullyIcon from '@/components/icons/SuccessfullyIcon.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -86,6 +109,7 @@ const passwordConfirmation = ref('');
 const resetError = ref('');
 const resetSuccess = ref(false);
 const passwordsError = ref(null) as Ref<yup.ValidationError | null>;
+const showSuccessModal = ref(false);
 
 const validatePasswords = yup.object({
   password: yup
@@ -122,6 +146,7 @@ const handleSubmit = async () => {
 
     if (response?.data?.status === 'success') {
       resetSuccess.value = true;
+      showSuccessModal.value = true;
     } else {
       resetError.value = response?.data?.message || 'Password reset failed. Please try again.';
     }
@@ -129,6 +154,10 @@ const handleSubmit = async () => {
     resetError.value = 'Something went wrong. Please try again later.';
     console.error('Password reset error:', error);
   }
+};
+
+const redirectToSignIn = () => {
+  router.push('/auth/sign-in?password_reset=success');
 };
 
 onMounted(() => {

@@ -16,7 +16,7 @@
           </template>
         </div>
 
-        <div class="lg:mt-[340px] lg:mb-0 my-8 h-full flex flex-col justify-between">
+        <div class="lg:mt-[19rem] lg:mb-0 my-8 h-full flex flex-col justify-between">
           <div class="relative flex items-baseline">
             <p
               @click="handleLogout"
@@ -119,10 +119,17 @@ const availableNavItems = computed(() => navItems.value.filter((i) => i.access))
 
 const setActiveItem = (item: NavItem) => {
   activeNavItem.value = item;
+  localStorage.setItem('activeAccTab', item.name);
 };
 
 onMounted(() => {
-  activeNavItem.value = availableNavItems.value[1] ?? null;
+  const savedTab = localStorage.getItem('activeAccTab');
+  if (savedTab) {
+    activeNavItem.value =
+      availableNavItems.value.find((item) => item.name === savedTab) ?? availableNavItems.value[0];
+  } else {
+    activeNavItem.value = availableNavItems.value[0] ?? null;
+  }
 });
 </script>
 

@@ -4,6 +4,7 @@
     <div class="input-wrapper">
       <!-- :disable="disabled" -->
       <vue-tel-input
+        :key="props.ready"
         v-if="type === 'tel'"
         v-bind="props"
         v-model="model"
@@ -16,6 +17,8 @@
         @country-changed="(country: VueTelInputCountryObject) => emit('country-changed', country)"
         :class="[inputClass, { '!border-red-500 border': error }, { '!text-gray-400': disabled }]"
         :placeholder="placeholder"
+        :defaultCountry="defaultCountry"
+        :autoDefaultCountry="!defaultCountry"
       />
       <!-- :disabled="disabled" -->
       <input
@@ -45,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits, defineModel, watch } from 'vue';
+import { ref, computed, defineProps, defineEmits, defineModel, watch, onMounted } from 'vue';
 //@ts-ignore
 import { VueTelInput } from 'vue-tel-input';
 import 'vue-tel-input/vue-tel-input.css';
@@ -62,6 +65,8 @@ const props = defineProps<{
   placeholder?: string;
   inputClass?: string;
   error?: boolean;
+  defaultCountry?: string | undefined | null;
+  ready?: boolean;
 }>();
 
 const emit = defineEmits(['country-changed']);

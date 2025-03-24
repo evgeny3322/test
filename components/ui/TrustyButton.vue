@@ -3,12 +3,16 @@
     :class="`btn btn-${props.variant} btn-${props.size} btn-${props.color}`"
     :disabled="props.disabled"
     :title="props.title"
+    class="flex justify-center"
   >
-    <slot></slot>
+    <PreloaderAnimIcon class="w-7 h-6" v-if="loading" theme="black" />
+    <slot v-else></slot>
   </button>
 </template>
 
 <script setup lang="ts">
+import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
+
 const props = defineProps({
   variant: {
     type: String,
@@ -30,6 +34,10 @@ const props = defineProps({
     validator: (value: string) => ['light', 'dark', 'black', 'white'].includes(value),
   },
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+  loading: {
     type: Boolean,
     default: false,
   },
