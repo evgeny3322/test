@@ -1,0 +1,94 @@
+@import 'tailwindcss';
+@config '../../tailwind.config.js';
+
+@font-face {
+  font-family: 'Involve';
+  font-weight: 500;
+  font-display: swap;
+  src: url('../fonts/Involve.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-display: swap;
+  font-weight: 400;
+  src: url('../fonts/Inter-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter Medium';
+  font-display: swap;
+  font-weight: 500;
+  src: url('../fonts/Inter-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-weight: 600;
+  font-family: 'Inter SemiBold';
+  font-display: swap;
+  src: url('../fonts/Inter-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-weight: 700;
+  font-family: 'Inter Bold';
+  font-display: swap;
+  src: url('../fonts/Inter-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-weight: 800;
+  font-family: 'Inter ExtraBold';
+  font-display: swap;
+  src: url('../fonts/Inter-ExtraBold.ttf') format('truetype');
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  @apply !text-white transition-colors delay-0 duration-[5000s] ease-in-out;
+}
+body {
+  @apply m-0 box-border font-['Inter'] font-normal antialiased bg-secondary-black text-[#FFFFFF];
+}
+
+html,
+body {
+  @apply relative h-full !top-0;
+}
+
+#__nuxt {
+  @apply mx-auto w-full;
+}
+
+body > .skiptranslate,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+#languageSwitcherElement {
+  @apply !hidden;
+}
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
+  background-color: unset !important;
+  box-shadow: none !important;
+}
+
+@layer components {
+  .title {
+    @apply font-['Involve'] text-white font-medium;
+  }
+  .text {
+    @apply text-[1.125rem] leading-[1.75rem] font-semibold text-[#FFFFFF] lg:text-[1.25rem];
+  }
+  .description {
+    @apply text-[0.875rem] leading-[1.25rem] text-[#737373] lg:text-[1rem] lg:leading-[1.5rem];
+  }
+  .block-container {
+    @apply flex-grow px-[8%] py-[4.3%];
+  }
+  .main-container {
+    @apply mx-auto w-full max-w-[1170px] xl:max-w-[1920px];
+  }
+}

@@ -71,7 +71,7 @@
           />
         </div>
         <div v-if="accountType == 'request_for_agency'" class="flex flex-col gap-6">
-          <div class="flex gap-6">
+          <div class="flex-col md:flex-row flex gap-6">
             <TrustyField
               v-model="agencyData.company_name"
               label="Company name*"
@@ -89,7 +89,7 @@
               @update:modelValue="changeModel('vat')"
             />
           </div>
-          <div class="flex gap-6">
+          <div class="flex-col md:flex-row flex gap-6">
             <TrustyComplete
               v-model="agencyData.country"
               variant="outlined"
@@ -267,7 +267,8 @@ const validateAgency = yup.object({
 
 type PasswordData = yup.InferType<typeof validatePasswords>;
 type AgencyData = yup.InferType<typeof validateAgency> & { company_main_phone_code: string };
-type CombinedData = PasswordData & Partial<AgencyData>;
+type CombinedData = PasswordData &
+  Partial<AgencyData> & { type: string; hash: string | undefined; email: string | undefined };
 
 const changeModel = (fieldName: string) => {
   agencyErrors[fieldName] = false;
@@ -291,7 +292,7 @@ const handleSubmit = async () => {
   if (!passwordsValidate) return;
 
   // Prepare data for API
-  let data: any = {
+  let data: CombinedData = {
     password: passwords.password,
     password_confirmation: passwords.password_confirmation,
     type: accountType.value,

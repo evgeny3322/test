@@ -40,7 +40,7 @@
         class="toggle-password"
         @click="togglePassword"
       >
-        <eye-icon class="w-[24px]" v-if="!showPassword" />
+        <eye-icon class="w-[24px]" v-if="showPassword" />
         <eye-closed-icon class="w-[24px]" v-else />
       </button>
     </div>

@@ -14,9 +14,8 @@
     </div>
     <div class="flex justify-center sticky">
       <form @submit.prevent="{}" class="bg-[#262626] p-6 w-[552px] flex flex-col gap-8 rounded-2xl">
-        <!-- TODO: replace mail@gmail.com -->
         <p class="text-white text-14 md:text-18">
-          We sent a confirmation email to the email mail@gmail.com, it will be delivered soon,
+          We sent a confirmation email to the email {{ registerInfo?.email || '' }}, it will be delivered soon,
           please check your inbox and spam folder, if you didn't receive a confirmation email,
           please double check your address, you could change it on previous step.
         </p>
@@ -40,8 +39,8 @@
         </div>
 
         <!-- Submit Button -->
-        <TrustyButton title="Next" size="large">
-          <p class="text-18 font-medium" @click="acceptCode">Next</p>
+        <TrustyButton title="Next" size="large" @click="acceptCode">
+          <p class="text-18 font-medium">Next</p>
         </TrustyButton>
       </form>
     </div>
