@@ -23,6 +23,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      appUrl: process.env.VITE_APP_URL,
       apiUrl: process.env.VITE_APP_API_URL,
       stripeKey: process.env.VITE_APP_STRIPE_KEY,
     },

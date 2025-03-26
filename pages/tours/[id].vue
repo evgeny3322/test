@@ -205,7 +205,7 @@
         <trusty-button
           color="black"
           @click="bookTour"
-          class="select-none mt-2 lg:mt-0 col-span-12 lg:col-span-2"
+          class="select-none mt-2 lg:mt-0 col-span-12 lg:col-span-2 items-center"
         >
           Book Now
         </trusty-button>

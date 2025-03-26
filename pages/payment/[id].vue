@@ -2,12 +2,9 @@
   <div class="flex flex-row justify-between items-center w-full py-6 md:px-[9.5%]">
     <div class="flex w-full flex-col bg-grey-light-1 md:p-8 p-6 rounded-[1rem]">
       <div class="flex w-full">
-        <h1 class="max-w-[16.563rem] font-normal text-[2.5rem] leading-[90%]">
-          Thanks for your Request!
-        </h1>
+        <h1 class="max-w-[16.563rem] font-normal text-[2.5rem] leading-[90%]">{{ title }}</h1>
       </div>
       <hr class="my-8 border-under-line" />
-      <hr class="mb-8 md:block hidden border-under-line" />
       <div class="w-full flex flex-col gap-8">
         <div
           v-for="pay in payment"
@@ -84,7 +81,7 @@
             model-value=""
             placeholder="44 44 44 44"
           />
-          <trusty-button class="w-full !font-semibold h-[4rem] bg-grey-light-1 rounded-[1rem]">
+          <trusty-button class="w-full !font-semibold h-[4rem] bg-grey-light-1 rounded-[1rem] items-center">
             <span>Confirm account creation</span>
           </trusty-button>
         </div>
@@ -101,7 +98,16 @@
 import TrustyAccordion from '@/components/payment/Accordion.vue';
 import TrustyButton from '@/components/ui/TrustyButton.vue';
 import TrustyField from '@/components/ui/TrustyField.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeMount } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';
+import { useRuntimeConfig } from 'nuxt/app';
+
+const config = useRuntimeConfig();
+const route = useRoute()
+const router = useRouter()
+
+const title = ref<string>('');
 
 const payment = [
   {
@@ -134,35 +140,28 @@ const payment = [
       },
     ],
   },
-  {
-    id: 1,
-    img: 'https://png.pngtree.com/thumb_back/fh260/background/20210316/pngtree-vertical-version-of-cherry-blossom-photography-romantic-pink-image_586839.jpg',
-    title: 'Tour Chianti',
-    area: 'Florence',
-    date: '29/02/2024 21:49',
-    participants_number: '2',
-    total_duration: '2',
-    total_price: '1000',
-    currency: 'some currency',
-    transportation: 'Mercedes “S Class”',
-    services: [
-      {
-        id: 1,
-        title: 'S class',
-        description:
-          'The words of the Romantic poet Lord Byron, written more than two centuries ago, still worthily represent one of the most beautiful more than two centuries ago, still worthily represent one of the most beautiful',
-        price: 800,
-        img: 'https://png.pngtree.com/thumb_back/fh260/background/20210316/pngtree-vertical-version-of-cherry-blossom-photography-romantic-pink-image_586839.jpg',
-      },
-      {
-        id: 2,
-        title: 'Light lunch',
-        description:
-          'The words of the Romantic poet Lord Byron, written more than two centuries ago, still worthily represent one of the most beautiful more than two centuries ago, still worthily represent one of the most beautiful',
-        price: 200,
-        img: 'https://png.pngtree.com/thumb_back/fh260/background/20210316/pngtree-vertical-version-of-cherry-blossom-photography-romantic-pink-image_586839.jpg',
-      },
-    ],
-  },
 ];
+
+onBeforeMount(() => {
+  switch (route.params.id) {
+    case 'success':
+      title.value = 'Thanks for your Request!';
+      const { order_id, payment_code } = route.query;
+      router.replace({ query: {} });
+      axios
+        .post(
+          `${config.public.apiUrl}/orders/payment/update`,
+          { order_id, payment_code },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+          }
+        );
+      break;
+    case 'failure':
+      title.value = 'Something went wrong.';
+  }
+})
 </script>
