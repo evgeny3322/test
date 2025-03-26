@@ -3,7 +3,7 @@
     :class="`btn btn-${props.variant} btn-${props.size} btn-${props.color}`"
     :disabled="props.disabled"
     :title="props.title"
-    class="flex justify-center"
+    class="flex justify-center items-center"
   >
     <PreloaderAnimIcon class="w-7 h-6" v-if="loading" theme="black" />
     <slot v-else></slot>

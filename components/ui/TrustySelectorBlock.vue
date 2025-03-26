@@ -84,6 +84,7 @@ import { Addon, Segment } from '@/types/tours';
 const props = defineProps<{
   data: Segment;
   participants: number;
+  driverHourRate: number;
 }>();
 
 const emit = defineEmits<{
@@ -185,28 +186,32 @@ watch(
   { deep: true }
 );
 
-const calculatePrice = (addon: Addon) => {
+const calculatePrice = (addon: Addon): number => {
   if (!addon || !addon.price || !Array.isArray(addon.price)) {
     console.warn(`Invalid cost data for addon: ${addon?.name || 'Unknown addon'}`);
     return 0;
   }
 
   if (props.participants > addon.max_participants) {
-    console.warn(
-      `Too many participants (${props.participants}) for addon: ${addon.name} (max: ${addon.max_participants})`
-    );
+    console.warn(`Too many participants (${props.participants}) for addon: ${addon.name}`);
     return 0;
   }
 
   const priceIndex = props.participants - 1;
-  const baseCost = priceIndex < addon.price.length ? addon.price[priceIndex] : addon.price.at(-1);
+  const baseCost =
+    priceIndex < addon.price.length ? addon.price[priceIndex] : (addon.price.at(-1) ?? 0);
+  const basePrice = (baseCost || 0) * props.participants;
 
-  if (baseCost === undefined) {
-    console.warn(`No base cost found for ${props.participants} participants`);
-    return 0;
+  const addonDuration = Number(addon.duration) || 0;
+  const segmentDuration = Number(props.data.duration) || 0;
+  const additionalTime = addonDuration - segmentDuration;
+
+  if (additionalTime > 0) {
+    const extraCost = (additionalTime / 60) * props.driverHourRate;
+    return Math.round(basePrice + extraCost);
   }
 
-  return Math.round(baseCost * props.participants);
+  return Math.round(basePrice);
 };
 
 const getPriceText = (card: Addon, index: number) => {

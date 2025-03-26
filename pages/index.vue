@@ -158,7 +158,7 @@ onMounted(async () => {
     if (featuredTours.value.length > 0 && swiperEl.value && !swiperEl.value.swiper) {
       initSwiper();
     }
-  }, 1000);
+  }, 100);
 });
 </script>
 

@@ -21,7 +21,7 @@
         ></path>
       </svg>
     </div>
-    <div v-if="isShow" class="duration-300">
+    <div v-show="isShow" class="duration-300">
       <slot></slot>
     </div>
   </div>

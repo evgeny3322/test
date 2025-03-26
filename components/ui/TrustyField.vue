@@ -106,7 +106,7 @@ const togglePassword = () => {
   flex: 1;
   width: 100%;
   color: #ffffff;
-  padding: 19px 22px;
+  padding: 19px 50px 19px 22px;
   border: 1px solid #ffffff4a !important;
   border-radius: 16px;
   background: transparent;

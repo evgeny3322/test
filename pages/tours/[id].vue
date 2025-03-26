@@ -134,36 +134,14 @@
       @addon-selected="handleAddonSelected"
       @addon-removed="handleAddonRemoved"
       @addon-unavailable="handleAddonUnavailable"
+      :driver-hour-rate="driverHourlyRate"
     />
-    <div
-      v-if="haveTransferSegments"
-      class="bg-grey-light-1 rounded-2xl grid grid-cols-12 gap-y-6 lg:gap-x-8 mt-[4.5%] p-5 lg:p-8"
-    >
-      <div class="col-span-12 lg:col-span-4">
-        <p class="text-26 leading-30 lg:text-40 lg:leading-36 font-medium">
-          Additional driver time
-        </p>
-      </div>
-      <div
-        class="col-span-12 lg:col-span-8 bg-[#181818] rounded-2xl p-[18px] flex flex-col lg:flex-row lg:justify-between px-6 py-5 gap-y-6 gap-x-9"
-      >
-        <span class="text-14 lg:text-16 xl:text-20 font-medium"
-          >This is the amount of payment for the additional driver time according to the selected
-          Services</span
-        >
-        <button
-          class="bg-main-black rounded-[99px] py-4 px-6 font-semibold text-18 lg:text-26 leading-30"
-        >
-          <span class="px-8 text-nowrap">{{ calculateDriveTimePrice }} EUR</span>
-        </button>
-      </div>
-    </div>
     <div class="border-b-1 border-[#313131] my-[4.5%]"></div>
     <div class="lg:sticky bottom-[20px] left-0 flex justify-center w-full z-10">
       <div
         class="bg-[#FFFFFF] rounded-[12px] w-full max-w-[1170px] xl:max-w-[1612px] p-6 grid grid-cols-12 mt-4 gap-y-2 lg:gap-x-5"
       >
-        <div class="flex flex-col gap-y-[6px] col-span-12 lg:col-span-2">
+        <div class="flex flex-col gap-y-[6px] col-span-12 lg:col-span-2" :translate="'no'">
           <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Select date</span>
           <VueDatePicker
             v-model="displayDate"
@@ -201,8 +179,11 @@
         <div class="border-b-1 border-[#F2F2F2] col-span-12 lg:hidden"></div>
         <div class="flex flex-col gap-y-[6px] lg:text-center col-span-12 lg:col-span-2">
           <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Total duration</span>
-          <p class="text-18 lg:text-23 xl:text-26 leading-30 text-main-black font-semibold title">
-            {{ totalDuration }} h
+          <p
+            class="text-18 lg:text-23 xl:text-26 leading-30 text-main-black font-semibold title"
+            :translate="'no'"
+          >
+            {{ formattedTotalDuration }}
           </p>
         </div>
         <div class="border-b-1 border-[#F2F2F2] col-span-12 lg:hidden"></div>
@@ -224,7 +205,7 @@
         <trusty-button
           color="black"
           @click="bookTour"
-          class="select-none mt-2 lg:mt-0 col-span-12 lg:col-span-2"
+          class="select-none mt-2 lg:mt-0 col-span-12 lg:col-span-2 items-center"
         >
           Book Now
         </trusty-button>
@@ -274,6 +255,17 @@ const tourDate = ref<string | null | Date>(new Date().toISOString());
 const hourDiscount = ref(0);
 
 const selectedAddons = ref<{ [key: number]: Addon }>({});
+
+const driverHourlyRate = computed(() => {
+  const transportAddon = Object.values(selectedAddons.value).find(
+    (a) => a.segmentType === 'Transportation'
+  );
+  const transportPrice = transportAddon ? calculatePrice(transportAddon) : 0;
+  const baseTourHours = (Number(tour.value?.duration) || 1) / 60;
+
+  return baseTourHours > 0 ? transportPrice / baseTourHours - hourDiscount.value : 0;
+});
+
 const handleAddonSelected = (addon: Addon, segmentIndex: number, segment: Segment) => {
   selectedAddons.value[segmentIndex] = {
     ...addon,
@@ -303,55 +295,17 @@ const displayDate = computed({
   },
 });
 
-const calculateDriveTimePrice = computed(() => {
-  const transportationAddons = Object.values(selectedAddons.value).filter(
-    (addon) => addon.segmentType === 'Transportation'
-  );
+const formattedTotalDuration = computed(() => {
+  const hours = Math.floor(totalDuration.value);
+  const minutes = Math.round((totalDuration.value - hours) * 60);
 
-  if (transportationAddons.length === 0 || !tour.value) return 0;
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
 
-  const selectedTransportationAddon = transportationAddons[0];
-  const addonPrice = calculatePrice(selectedTransportationAddon);
-  const baseDurationMinutes = Number(tour.value.duration) || 1;
-  const baseDurationHours = baseDurationMinutes / 60;
-
-  const discount = Number(hourDiscount.value) || 0;
-
-  if (baseDurationHours <= 0) return 0;
-
-  const driverHourlyRate = addonPrice / baseDurationHours - discount;
-
-  let sumAdditionalHours = 0;
-
-  for (const [key, selectedAddon] of Object.entries(selectedAddons.value)) {
-    const segment = tour.value.segments.find((seg) => seg.id === Number(key));
-    if (!segment || !selectedAddon) continue;
-
-    const addonDuration = Number(selectedAddon.duration) || 0;
-    const segmentDuration = Number(segment.duration) || 0;
-
-    if (addonDuration > segmentDuration) {
-      const extraMinutes = addonDuration - segmentDuration;
-      const extraHours = extraMinutes / 60;
-      sumAdditionalHours += extraHours;
-    }
-  }
-
-  const totalCost = driverHourlyRate * sumAdditionalHours;
-
-  console.log(`Addon Price: ${addonPrice}`);
-  console.log(`Base Duration (h): ${baseDurationHours}`);
-  console.log(`Driver Hour Discount: ${discount}`);
-  console.log(`Hourly Rate: ${driverHourlyRate}`);
-  console.log(`Sum Additional Hours: ${sumAdditionalHours}`);
-  console.log(`Total Driver Time Cost: ${totalCost}`);
-
-  return Math.max(Number(totalCost.toFixed(2)), 0);
+  return parts.join(' ') || '0m';
 });
 
-const haveTransferSegments = computed(() => {
-  return tour?.value?.segments.some((segment) => segment.type.name === 'Transportation');
-});
 const decreaseParticipants = () => {
   if (participants.value > 1) participants.value--;
 };
@@ -399,80 +353,110 @@ const totalDuration = computed(() => {
   const baseDurationMinutes = Number(tour.value?.duration) || 0;
   let additionalMinutes = 0;
 
-  console.log(`Base tour duration: ${baseDurationMinutes} min`);
+  console.log(`\n[Duration] --- Calculating total tour duration ---`);
+  console.log(`[Duration] Base tour duration: ${baseDurationMinutes} min`);
 
   for (const [key, selectedAddon] of Object.entries(selectedAddons.value)) {
     if (!selectedAddon) continue;
 
     const segment = tour.value?.segments?.find((seg) => seg.id === Number(key));
     if (!segment) {
-      console.log(`Segment not found for addon key: ${key}`);
+      console.warn(`[Duration] → Segment not found for addon key: ${key}`);
       continue;
     }
 
     const addonDurationMinutes = Number(selectedAddon.duration) || 0;
-    const segmentDurationMinutes = Number(segment.duration) || 0;
+    const segmentDurationMinutes = Number(segment.duration ?? 60);
+
+    console.log(`\n[Duration] Segment ${key} → "${selectedAddon.name}"`);
+    console.log(`[Duration] → Segment base duration: ${segmentDurationMinutes} min`);
+    console.log(`[Duration] → Addon duration: ${addonDurationMinutes} min`);
 
     if (addonDurationMinutes > segmentDurationMinutes) {
       const extraTime = addonDurationMinutes - segmentDurationMinutes;
       additionalMinutes += extraTime;
-      console.log(`Adding extra time for segment ${key}: +${extraTime} min`);
+      console.log(`[Duration] → Additional time added: ${extraTime} min`);
     } else {
-      console.log(`No extra time added for segment ${key}`);
+      console.log(`[Duration] → No additional time needed.`);
     }
   }
 
   const totalMinutes = baseDurationMinutes + additionalMinutes;
   const totalHours = (totalMinutes / 60).toFixed(2);
 
-  console.log(`Total tour duration: ${totalMinutes} min (${totalHours} h)`);
+  console.log(`\n[Duration] Total tour time: ${totalMinutes} min (${totalHours} h)`);
+
   return Number(totalHours);
 });
 
-const calculatePrice = (addon: Addon) => {
-  console.log(`Calculating price for addon: ${addon.name}`);
-
-  if (!addon.price || !Array.isArray(addon.price)) {
-    console.warn(`Invalid price for addon: ${addon.name}`);
+const calculatePrice = (addon: Addon): number => {
+  if (!addon || !addon.price || !Array.isArray(addon.price)) {
+    console.warn(`[Price] Invalid price data for addon: ${addon?.name || 'Unknown addon'}`);
     return 0;
   }
 
   if (participants.value > addon.max_participants) {
-    console.warn(
-      `Participants (${participants.value}) exceed max allowed for this addon (${addon.max_participants})`
+    console.warn(`[Price] Group size (${participants.value}) exceeds max for addon: ${addon.name}`);
+    return 0;
+  }
+
+  console.log(`\n[Price] --- Calculating addon: "${addon.name}" ---`);
+
+  const priceIndex = participants.value - 1;
+  const baseCost = addon.price[priceIndex] ?? addon.price.at(-1) ?? 0;
+  const basePrice = baseCost * participants.value;
+
+  console.log(`[Price] → Price from backend (per participant): ${baseCost} EUR`);
+  console.log(`[Price] → Group size: ${participants.value}`);
+  console.log(`[Price] → Base total: ${basePrice.toFixed(2)} EUR`);
+
+  const segment = tour.value?.segments.find((seg) => seg.addons.some((a) => a.id === addon.id));
+
+  if (!segment) {
+    console.warn(`[Price] → Segment not found for addon "${addon.name}", using base price only.`);
+    return basePrice;
+  }
+
+  const addonDuration: number = Number(addon.duration) || 0;
+  const segmentDuration: number = Number(segment.duration ?? 60);
+  const additionalTime: number = addonDuration - segmentDuration;
+
+  if (additionalTime > 0) {
+    const additionalHours: number = additionalTime / 60;
+
+    const transportAddon = Object.values(selectedAddons.value).find(
+      (a) => a.segmentType === 'Transportation'
     );
-    return 0;
+    const isSelf = transportAddon?.id === addon.id;
+    const transportPrice: number = transportAddon && !isSelf ? calculatePrice(transportAddon) : 0;
+    const baseTourHours: number = (Number(tour.value?.duration) || 1) / 60;
+
+    const hourlyRate: number =
+      baseTourHours > 0 ? transportPrice / baseTourHours - hourDiscount.value : 0;
+
+    const extraCost: number = additionalHours * hourlyRate;
+
+    console.log(`[Price] → Addon duration: ${addonDuration} min`);
+    console.log(`[Price] → Segment base duration: ${segmentDuration} min`);
+    console.log(
+      `[Price] → Additional time: ${additionalTime} min (${additionalHours.toFixed(2)}h)`
+    );
+    console.log(`[Price] → Driver hourly rate: ${hourlyRate.toFixed(2)} EUR`);
+    console.log(`[Price] → Extra cost for overtime: ${extraCost.toFixed(2)} EUR`);
+    console.log(`[Price] → Final total price: ${(basePrice + extraCost).toFixed(2)} EUR`);
+
+    return basePrice + extraCost;
   }
 
-  const baseCost = addon.price[participants.value - 1] ?? addon.price[0];
-
-  if (baseCost === undefined) {
-    console.warn(`No valid base cost found for ${participants.value} participants`);
-    return 0;
-  }
-
-  const price = baseCost * participants.value;
-  console.log(`Base cost: ${baseCost}, Participants: ${participants.value}, Total price: ${price}`);
-
-  return price;
+  console.log(`[Price] → No additional time. Final price: ${basePrice.toFixed(2)} EUR`);
+  return basePrice;
 };
 
 const totalPrice = computed(() => {
   let total = 0;
-  console.log('Calculating total price...');
-
   for (const addon of Object.values(selectedAddons.value)) {
-    if (!addon) continue;
     total += calculatePrice(addon);
   }
-
-  const additionalDriverCost = calculateDriveTimePrice.value;
-
-  total += additionalDriverCost;
-
-  console.log(`Additional Driver Cost (from calculation): ${additionalDriverCost} EUR`);
-  console.log(`Total price for tour: ${total.toFixed(2)} EUR`);
-
   return Number(total.toFixed(2));
 });
 

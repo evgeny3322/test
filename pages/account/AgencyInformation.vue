@@ -6,7 +6,7 @@
       :disabled="disabledForm"
       class="col-span-12 lg:col-span-2"
       variant="outlined"
-      selectClass="p-[22px] h-[64px] rounded-2xl"
+      selectClass="p-[22px] h-[64px] !rounded-2xl"
       :options="options"
       v-model="agency.prefix"
     />
@@ -64,7 +64,7 @@
       :disabled="disabledForm"
       class="col-span-12 lg:col-span-4"
       variant="outlined"
-      selectClass="p-[22px] h-[64px] rounded-2xl"
+      selectClass="p-[22px] h-[64px] !rounded-2xl"
       :options="countries"
       v-model="agency.country"
       :label="`Country <span style='color:red'>*</span>`"
@@ -201,7 +201,7 @@ import { countries } from '@/constants/countries';
 
 const authStore = useAuthStore();
 const { user, loading } = storeToRefs(authStore);
-const first_name = ref(user?.value?.first_name || '');
+const first_name = ref(user?.value?.name || '');
 const last_name = ref(user?.value?.last_name || '');
 const email = ref(user?.value?.email || '');
 const disabledForm = ref<boolean>(true);

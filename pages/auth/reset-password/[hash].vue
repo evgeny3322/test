@@ -74,11 +74,11 @@
       :show-default-footer="true"
       action-button-text="Close"
       @confirm="redirectToSignIn"
+      :close-on-backdrop="true"
+      @close="redirectToSignIn"
     >
       <template #header>
-        <h2 class="text-[32px] font-medium text-center text-white">
-          Password changed successfully
-        </h2>
+        <h2 class="text-[32px] font-bold text-center text-white">Password changed successfully</h2>
       </template>
 
       <div class="flex flex-col items-center py-4">
