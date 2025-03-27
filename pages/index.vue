@@ -161,13 +161,6 @@ onMounted(async () => {
   }, 100);
 });
 
-onMounted(() => {
-  console.log('Component mounted');
-});
-
-onUpdated(() => {
-  console.log('Component updated');
-});
 </script>
 
 <style scoped>
