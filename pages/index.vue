@@ -160,7 +160,6 @@ onMounted(async () => {
     }
   }, 100);
 });
-
 </script>
 
 <style scoped>

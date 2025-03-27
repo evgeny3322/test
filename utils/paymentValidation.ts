@@ -17,7 +17,9 @@ export const userFormSchema = yup.object({
   country: yup.string().required('Country is required'),
 });
 
-export const validatePaymentForm = async (formData: any): Promise<{
+export const validatePaymentForm = async (
+  formData: any
+): Promise<{
   isValid: boolean;
   errors: PaymentValidationErrors;
 }> => {
@@ -42,52 +44,28 @@ export const formatCreditCardError = (error: any): string => {
   if (!error) return '';
 
   const errorMessages: Record<string, string> = {
-    card_error: 'There was an issue with your credit card. Please check your card details and try again.',
+    card_error:
+      'There was an issue with your credit card. Please check your card details and try again.',
     validation_error: 'Please check your payment information and try again.',
     rate_limit_error: 'Too many requests. Please try again later.',
     invalid_request_error: 'The payment request was invalid. Please try again.',
     authentication_error: 'Authentication with the payment service failed.',
     api_error: 'Payment service is temporarily unavailable. Please try again later.',
     expired_card: 'Your card has expired. Please use a different card.',
-    incorrect_cvc: 'Your card\'s security code is incorrect. Please check the code.',
+    incorrect_cvc: "Your card's security code is incorrect. Please check the code.",
     insufficient_funds: 'Your card has insufficient funds. Please use a different payment method.',
     payment_intent_authentication_failure: 'Authentication for this payment failed.',
-    'incorrect-zip': 'Your card\'s zip code failed validation. Please check the zip code.',
+    'incorrect-zip': "Your card's zip code failed validation. Please check the zip code.",
     'card-declined': 'Your card was declined. Please use a different card or contact your bank.',
   };
 
-  // Handle Stripe specific errors
   if (error.type && errorMessages[error.type]) {
     return errorMessages[error.type];
   }
 
-  // Handle decline codes
   if (error.decline_code && errorMessages[error.decline_code]) {
     return errorMessages[error.decline_code];
   }
 
   return error.message || 'An error occurred while processing your payment. Please try again.';
-};
-
-export const validateCardNumber = (cardNumber: string): boolean => {
-  // Basic Luhn algorithm check
-  const digits = cardNumber.replace(/\D/g, '');
-  if (digits.length < 13 || digits.length > 19) return false;
-
-  let sum = 0;
-  let double = false;
-
-  for (let i = digits.length - 1; i >= 0; i--) {
-    let digit = parseInt(digits.charAt(i));
-
-    if (double) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
-    }
-
-    sum += digit;
-    double = !double;
-  }
-
-  return sum % 10 === 0;
 };

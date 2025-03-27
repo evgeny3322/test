@@ -25,7 +25,7 @@
           v-for="tour in tours"
           :key="tour.id"
         >
-          <div class="relative h-full">
+          <div @click="navigateTo(`/tours/${tour.id}`)" class="relative h-full cursor-pointer">
             <NuxtImg
               class="!rounded-[14px] h-full w-full object-cover"
               alt="tour"
@@ -36,8 +36,10 @@
             <div class="absolute top-0 h-full w-full bg-[#00000033] z-10"></div>
             <div class="absolute top-0 h-full w-full p-5 z-11 flex flex-col justify-between">
               <div>
-                <p class="font-medium text-26 leading-30 mb-[6px]">{{ tour.name }}</p>
-                <!--                <span class="font-medium text-18 leading-24">{{ slide.price }}</span>-->
+                <p class="font-medium text-26 leading-30 mb-[6px] line-clamp-3">{{ tour.name }}</p>
+                <p class="text-lg font-medium mb-4">
+                  from {{ tour?.min_cost && +tour?.min_cost?.toFixed() }} € per person
+                </p>
               </div>
               <div class="mb-[14px]">
                 <span class="text-grey-light-7">{{
@@ -69,6 +71,7 @@ import 'swiper/css/navigation';
 import { Tour } from '@/types/tours';
 import { onMounted, ref } from 'vue';
 import { useToursStore } from '@/store/toursStore';
+import { navigateTo } from 'nuxt/app';
 
 const tours = ref<Tour[]>([]);
 

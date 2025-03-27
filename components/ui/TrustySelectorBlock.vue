@@ -1,12 +1,15 @@
 <template>
   <div
-    class="bg-grey-light-1 p-5 lg:p-8 grid grid-cols-12 mt-[4.5%] lg:gap-x-16 rounded-2xl relative overflow-hidden"
+    class="bg-grey-light-1 p-5 lg:p-8 grid grid-cols-12 mt-[2.5rem] lg:mt-[3.80rem] lg:gap-x-16 rounded-2xl relative overflow-hidden"
   >
-    <NuxtImg
-      v-if="activeCardIndex !== null"
-      :src="data.addons[activeCardIndex].media[0]"
-      class="absolute h-full w-full -z-10 object-cover"
-    />
+    <transition name="fade">
+      <NuxtImg
+        v-if="activeCardIndex !== null"
+        :key="data.addons[activeCardIndex].media[0]"
+        :src="data.addons[activeCardIndex].media[0]"
+        class="absolute h-full w-full -z-10 object-cover"
+      />
+    </transition>
     <div
       v-if="activeCardIndex !== null"
       class="absolute w-full h-full bg-[#00000099] backdrop-blur-[5px] -z-9"
@@ -47,11 +50,20 @@
       >
         <div
           :class="{ 'opacity-50': addon.unavailable }"
-          class="col-span-12 lg:col-span-8 flex flex-col lg:flex-row gap-y-4 gap-x-4 w-full"
+          class="col-span-12 lg:col-span-8 flex flex-col lg:flex-row gap-y-4 gap-x-4 w-full h-full"
         >
+          <div
+            v-if="!imageLoaded"
+            class="w-full h-full lg:max-w-[185px] max-h-[121px] rounded-[10px]"
+          >
+            <trusty-skeleton class="w-[242px] h-[121px] lg:w-[185px] lg:h-[109px]" />
+          </div>
           <NuxtImg
+            v-show="imageLoaded"
             class="w-full h-full lg:max-w-[185px] max-h-[121px] rounded-[10px] object-cover"
             :src="addon.media[0]"
+            @load="imageLoaded = true"
+            @error="imageLoaded = true"
           />
           <div class="flex flex-col gap-y-[10px]">
             <p class="font-medium text-16 lg:text-20 leading-30">{{ addon.name }}</p>
@@ -80,6 +92,7 @@
 <script setup lang="ts">
 import { ref, computed, toRefs, defineEmits, onMounted, watch } from 'vue';
 import { Addon, Segment } from '@/types/tours';
+import TrustySkeleton from '@/components/ui/TrustySkeleton.vue';
 
 const props = defineProps<{
   data: Segment;
@@ -95,7 +108,7 @@ const emit = defineEmits<{
 
 const { data } = toRefs(props);
 const activeCardIndex = ref<number | null>(null);
-
+const imageLoaded = ref<boolean>(false);
 const mandatory = computed(() => {
   return data.value.type.mandatory;
 });
@@ -252,4 +265,17 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease-in;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+</style>

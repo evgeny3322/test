@@ -1,12 +1,13 @@
 <template>
   <trusty-filter
     class="w-full px-[8.5%] mb-8"
-    :showLabels="false"
     :disabled="loading"
     :initial-values="initialFilterValues"
     @submit="handleSearch"
   />
-  <div class="w-full flex flex-col gap-[7.5rem] items-center justify-between py-6 px-[5.5%]">
+  <div
+    class="w-full flex flex-col gap-[7.5rem] items-center justify-between py-[2.5rem] lg:py-[3.80rem] px-[5.5%]"
+  >
     <div v-if="loading" class="w-full text-center py-8">
       <PreloaderAnimIcon class="mx-auto" theme="white" />
       <p class="mt-4 text-gray-300">Loading tours...</p>

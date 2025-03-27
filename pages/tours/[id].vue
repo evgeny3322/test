@@ -1,6 +1,7 @@
 <template>
-  <div class="block-container">
-    <div class="bg-grey-light-1 rounded-2xl p-5 lg:p-8 grid grid-cols-12">
+  <trusty-preloader v-if="loading" title="Loading tour..." />
+  <div v-if="!loading" class="block-container">
+    <div v-if="tour" class="bg-grey-light-1 rounded-2xl p-5 lg:p-8 grid grid-cols-12">
       <div class="col-span-12 lg:col-span-8 lg:mr-[30px]">
         <ClientOnly>
           <div class="mb-6 block lg:hidden">
@@ -37,11 +38,20 @@
                   v-if="slide.videoUrl"
                   :src="slide.videoUrl"
                 />
+                <div
+                  v-if="!imageLoaded"
+                  class="w-full h-full lg:max-w-[185px] max-h-[121px] rounded-[10px]"
+                >
+                  <trusty-skeleton class="w-full h-[121px] lg:w-[185px] lg:h-[109px]" />
+                </div>
                 <NuxtImg
+                  v-show="imageLoaded"
                   v-if="!slide.videoUrl"
                   class="!rounded-[14px] object-cover"
                   alt="slide"
                   :src="slide"
+                  @load="imageLoaded = true"
+                  @error="imageLoaded = true"
                 />
               </swiper-slide>
             </swiper-container>
@@ -71,7 +81,21 @@
                 :key="slide.id"
               >
                 <video-player v-if="slide.videoUrl" :src="slide.videoUrl" />
-                <NuxtImg v-if="!slide.videoUrl" class="!rounded-[14px]" alt="slide" :src="slide" />
+                <div
+                  v-if="!imageLoaded"
+                  class="w-full h-full max-w-[969px] max-h-[390px] rounded-[10px]"
+                >
+                  <trusty-skeleton class="w-[969px] h-[390px]" />
+                </div>
+                <NuxtImg
+                  v-show="imageLoaded"
+                  v-if="!slide.videoUrl"
+                  class="!rounded-[14px]"
+                  alt="slide"
+                  :src="slide"
+                  @load="imageLoaded = true"
+                  @error="imageLoaded = true"
+                />
               </SwiperSlide>
             </Swiper>
 
@@ -104,10 +128,19 @@
                   class="overflow-hidden !rounded-[14px] cursor-pointer"
                 >
                   <div class="bg-[#00000080] absolute top-0 left-0 w-full h-full"></div>
+                  <div
+                    v-if="!imageLoaded"
+                    class="w-full h-full max-w-[190px] max-h-[90px] rounded-[10px]"
+                  >
+                    <trusty-skeleton class="w-[190px] h-[90px]" />
+                  </div>
                   <NuxtImg
+                    v-show="imageLoaded"
                     class="!rounded-[14px] w-full object-cover h-[90px]"
                     alt="slide"
                     :src="slide"
+                    @load="imageLoaded = true"
+                    @error="imageLoaded = true"
                   />
                 </SwiperSlide>
               </Swiper>
@@ -136,10 +169,11 @@
       @addon-unavailable="handleAddonUnavailable"
       :driver-hour-rate="driverHourlyRate"
     />
-    <div class="border-b-1 border-[#313131] my-[4.5%]"></div>
+    <div class="border-b-1 border-[#313131] my-[2.5rem] lg:my-[3.80rem]"></div>
     <div class="lg:sticky bottom-[20px] left-0 flex justify-center w-full z-10">
       <div
-        class="bg-[#FFFFFF] rounded-[12px] w-full max-w-[1170px] xl:max-w-[1612px] p-6 grid grid-cols-12 mt-4 gap-y-2 lg:gap-x-5"
+        v-if="tour"
+        class="bg-[#FFFFFF] rounded-[12px] w-full max-w-[1170px] xl:max-w-[1612px] p-6 grid grid-cols-12 gap-y-2 lg:gap-x-5"
       >
         <div class="flex flex-col gap-y-[6px] col-span-12 lg:col-span-2" :translate="'no'">
           <span class="text-12 lg:text-13 leading-24 text-[#B3B3B3]">Select date</span>
@@ -236,6 +270,8 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import { storeToRefs } from 'pinia';
 import { navigateTo } from 'nuxt/app';
+import TrustySkeleton from '@/components/ui/TrustySkeleton.vue';
+import TrustyPreloader from '@/components/ui/TrustyPreloader.vue';
 
 const toursStore = useToursStore();
 
@@ -246,7 +282,8 @@ const thumbsSwiperRef = ref<SwiperType | null>(null);
 const activeIndex = ref(0);
 
 const tour = ref<Tour | null>(null);
-
+const imageLoaded = ref<boolean>(false);
+const loading = ref<boolean>(false);
 const nextBtn = ref<HTMLElement | null>(null);
 const prevBtn = ref<HTMLElement | null>(null);
 const modules = [FreeMode, Navigation, Thumbs];
@@ -485,18 +522,20 @@ const setThumbsSwiper = (swiper: any) => {
   thumbsSwiperRef.value = swiper;
 };
 
-const handleGetTour = async () => {
+const getTour = async () => {
+  loading.value = true;
   const tourId = Number(route.params.id);
   tour.value = (await toursStore.getTourById(tourId)) || tour.value;
+  loading.value = false;
 };
 
-const handleGetDiscount = async () => {
+const getDiscount = async () => {
   hourDiscount.value = (await toursStore.getHourDiscount()) || hourDiscount.value;
 };
 
 onMounted(() => {
-  handleGetTour();
-  handleGetDiscount();
+  getTour();
+  getDiscount();
   if (thumbsSwiperRef.value && thumbsSwiperRef.value.params.navigation) {
     thumbsSwiperRef.value.params.navigation = {
       nextEl: nextBtn.value,

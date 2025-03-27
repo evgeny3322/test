@@ -33,7 +33,9 @@
               <h2 class="text-[1.75rem] font-normal leading-[110%] pb-[1.375rem]">
                 {{ tourData?.name }}
               </h2>
-              <div class="flex md:flex-row flex-col md:gap-[3.75rem] gap-6 font-normal text-[1.125rem]">
+              <div
+                class="flex md:flex-row flex-col md:gap-[3.75rem] gap-6 font-normal text-[1.125rem]"
+              >
                 <!-- Column 1 -->
                 <ul>
                   <li class="text-grey-light-4 mb-1">Area:</li>
@@ -43,7 +45,10 @@
                     {{ formatDate(customTour?.date) }}
                   </li>
                   <li class="text-grey-light-4 mb-1">Number of participants:</li>
-                  <li>{{ customTour?.participants }} {{ customTour?.participants === 1 ? 'Person' : 'People' }}</li>
+                  <li>
+                    {{ customTour?.participants }}
+                    {{ customTour?.participants === 1 ? 'Person' : 'People' }}
+                  </li>
                 </ul>
 
                 <!-- Column 2 -->
@@ -59,7 +64,9 @@
                 <!-- Column 3 -->
                 <ul>
                   <li class="text-grey-light-4 mb-1">List of services:</li>
-                  <li v-for="service in customTour?.addons" :key="service.id">{{ service.name }}</li>
+                  <li v-for="service in customTour?.addons" :key="service.id">
+                    {{ service.name }}
+                  </li>
                 </ul>
               </div>
             </div>
@@ -154,9 +161,10 @@
               class="bg-grey-light-1 peer-checked:bg-main peer h-6 w-[39px] min-w-[3.5rem] rounded-full after:absolute after:left-[2px] after:top-[2px] md:after:left-[4px] md:after:top-[4px] xl:after:top-[13px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-[160%] peer-checked:after:border-white peer-checked:after:bg-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 md:h-[31px] md:w-[56px] md:after:h-[24px] md:after:w-[24px] md:peer-checked:after:translate-x-[100%]"
             ></div>
             <span class="account_toggler_text text-grey-light-6">
-              Create Personal Account After Payment, it will facilitate you a lot if you book other services,
-              and it requires no further data entry, only 1 click! Please
-              <a href="/auth/sign-in" class="underline text-white">Login</a> if you already have an account
+              Create Personal Account After Payment, it will facilitate you a lot if you book other
+              services, and it requires no further data entry, only 1 click! Please
+              <a href="/auth/sign-in" class="underline text-white">Login</a> if you already have an
+              account
             </span>
           </label>
 
@@ -170,7 +178,9 @@
             {{ paymentError }}
           </div>
 
-          <div class="next_step_button_wrapper mt-[40px] flex xl:h-[4rem] mt-[30px] gap-6 justify-center items-center xl:flex-row flex-col">
+          <div
+            class="next_step_button_wrapper mt-[40px] flex xl:h-[4rem] mt-[30px] gap-6 justify-center items-center xl:flex-row flex-col"
+          >
             <!-- Notes Textarea -->
             <textarea
               ref="textareaRef"
@@ -200,7 +210,9 @@
       </div>
 
       <!-- Payment Timer -->
-      <div class="inline-flex gap-1 flex-wrap xl:text-[1.125rem] text-[0.75rem] pt-8 justify-center items-center text-grey-light-6">
+      <div
+        class="inline-flex gap-1 flex-wrap xl:text-[1.125rem] text-[0.75rem] pt-8 justify-center items-center text-grey-light-6"
+      >
         <span>This offer will expire within the next </span>
         <Timer
           v-if="stripe"
@@ -229,14 +241,15 @@
     </template>
     <div class="text-center py-4 px-6">
       <p class="text-white text-18 mb-4">
-        Your payment session has expired. Please restart the booking process to ensure the latest pricing and availability.
+        Your payment session has expired. Please restart the booking process to ensure the latest
+        pricing and availability.
       </p>
     </div>
   </TrustyModal>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount, watch, computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { loadStripe } from '@stripe/stripe-js';
 import TrustyAccordion from '@/components/payment/Accordion.vue';
@@ -251,20 +264,17 @@ import { storeToRefs } from 'pinia';
 import dayjs from 'dayjs';
 import { useRuntimeConfig } from 'nuxt/app';
 import { PaymentService } from '@/utils/paymentService';
-import { validatePaymentForm, formatCreditCardError } from '@/utils/paymentValidation';
-import type { PaymentValidationErrors, PaymentResponse, PaymentError } from '@/types/payment';
+import { formatCreditCardError, validatePaymentForm } from '@/utils/paymentValidation';
+import type { PaymentResponse, PaymentValidationErrors } from '@/types/payment';
 
-// Composables
 const router = useRouter();
 const config = useRuntimeConfig();
 const toursStore = useToursStore();
 const authStore = useAuthStore();
 
-// Store references
-const { customTour }:any = storeToRefs(toursStore);
+const { customTour }: any = storeToRefs(toursStore);
 const { isAuthenticated, token } = storeToRefs(authStore);
 
-// State
 const isLoading = ref(true);
 const isProcessingPayment = ref(false);
 const tourData = ref<any>(null);
@@ -277,7 +287,6 @@ const paymentError = ref<string>('');
 const showTimerExpiredModal = ref<boolean>(false);
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
-// Form data
 const formData = reactive({
   firstName: '',
   lastName: '',
@@ -290,24 +299,24 @@ const formData = reactive({
   createAccount: false,
 });
 
-// Validation errors
-const validationErrors:any = reactive<PaymentValidationErrors>({});
+const validationErrors: any = reactive<PaymentValidationErrors>({});
 
-// Create payment service
 const paymentService = new PaymentService(
   //@ts-ignore
   config.public.apiUrl,
   token.value
 );
 
-// Computed properties
 const isPaymentFormValid = computed(() => {
-  return !isAuthenticated.value ?
-    formData.firstName && formData.lastName && formData.email && formData.phone && formData.country :
-    true;
+  return !isAuthenticated.value
+    ? formData.firstName &&
+        formData.lastName &&
+        formData.email &&
+        formData.phone &&
+        formData.country
+    : true;
 });
 
-// Methods
 const handleCountryChanged = (event: any) => {
   formData.country = event.name;
   formData.dialCode = event.dialCode;
@@ -328,7 +337,9 @@ const formatDuration = (minutes?: number) => {
   if (!minutes) return 'N/A';
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return hours > 0 ? `${hours} hour${hours > 1 ? 's' : ''}${mins > 0 ? ` ${mins} min` : ''}` : `${mins} min`;
+  return hours > 0
+    ? `${hours} hour${hours > 1 ? 's' : ''}${mins > 0 ? ` ${mins} min` : ''}`
+    : `${mins} min`;
 };
 
 const calculateServicePrice = (service: any) => {
@@ -339,7 +350,6 @@ const calculateServicePrice = (service: any) => {
   const participants = customTour.value.participants || 1;
   const priceIndex = Math.min(participants - 1, service.price.length - 1);
 
-  // Return integer price
   return Math.round(service.price[priceIndex] || 0);
 };
 
@@ -348,11 +358,9 @@ const calculatePricePerPerson = () => {
     return 0;
   }
 
-  // Return integer price per person
   return Math.round(customTour.value.total_price / customTour.value.participants);
 };
 
-// Calculate the total price as an integer
 const calculateTotalPrice = () => {
   let total = 0;
 
@@ -367,18 +375,15 @@ const calculateTotalPrice = () => {
     }
   }
 
-  // Ensure we return an integer
   return Math.round(total);
 };
 
-// Update the custom tour data
 const updateCustomTourData = () => {
   const totalPrice = calculateTotalPrice();
 
   if (customTour.value) {
     console.log(`Updating total price from ${customTour.value.total_price} to ${totalPrice}`);
 
-    // Update with integer values
     toursStore.updateCustomTour({
       ...customTour.value,
       total_price: totalPrice, // Ensure this is an integer
@@ -396,10 +401,7 @@ const fetchTourData = async () => {
 
 const createOrder = async () => {
   try {
-    const response = await paymentService.createOrder(
-      customTour.value,
-      isAuthenticated.value
-    );
+    const response = await paymentService.createOrder(customTour.value, isAuthenticated.value);
 
     return response;
   } catch (error) {
@@ -495,7 +497,6 @@ const initStripe = async (paymentResponse: PaymentResponse) => {
         submitButton.disabled = !event.complete;
       }
     });
-
   } catch (error) {
     console.error('Error initializing Stripe:', error);
     paymentError.value = 'Failed to initialize payment system. Please try again.';
@@ -509,7 +510,6 @@ const handleSubmit = async (event: Event) => {
     return;
   }
 
-  // Validate form for non-authenticated users
   if (!isAuthenticated.value) {
     const { isValid, errors } = await validatePaymentForm(formData);
 
@@ -519,24 +519,22 @@ const handleSubmit = async (event: Event) => {
     }
   }
 
-  // Start payment processing
   try {
     isProcessingPayment.value = true;
     paymentError.value = '';
 
     if (!stripe.value || !elements.value) {
-      paymentError.value = 'Payment system is not initialized. Please refresh the page and try again.';
+      paymentError.value =
+        'Payment system is not initialized. Please refresh the page and try again.';
       return;
     }
 
-    // Prepare query parameters for redirect
     const queryParams = new URLSearchParams({
       order_id: orderId.value || '',
       payment_code: paymentCode.value || '',
       notes: formData.notes || '',
     });
 
-    // Add user data for non-authenticated users
     if (!isAuthenticated.value) {
       queryParams.append('firstName', formData.firstName);
       queryParams.append('lastName', formData.lastName);
@@ -548,7 +546,6 @@ const handleSubmit = async (event: Event) => {
       queryParams.append('createAccount', formData.createAccount.toString());
     }
 
-    // Confirm payment with Stripe
     const { error, paymentIntent } = await stripe.value.confirmPayment({
       elements: elements.value,
       confirmParams: {
@@ -557,14 +554,12 @@ const handleSubmit = async (event: Event) => {
       redirect: 'if_required',
     });
 
-    // Handle payment errors
     if (error) {
       paymentError.value = formatCreditCardError(error);
       isProcessingPayment.value = false;
       return;
     }
 
-    // Handle different payment intent statuses
     if (paymentIntent) {
       switch (paymentIntent.status) {
         case 'succeeded':
@@ -597,7 +592,6 @@ const redirectToHomePage = () => {
   router.push('/');
 };
 
-// Lifecycle hooks
 onMounted(async () => {
   if (!customTour.value) {
     router.push('/');
@@ -609,13 +603,11 @@ onMounted(async () => {
 
     await fetchTourData();
 
-    // Ensure the total_price is an integer before creating the order
     updateCustomTourData();
 
     const paymentResponse = await createOrder();
     await initStripe(paymentResponse);
 
-    // Fill form data for authenticated users
     if (isAuthenticated.value && authStore.user) {
       formData.firstName = authStore.user.name || '';
       formData.lastName = authStore.user.last_name || '';
@@ -631,19 +623,20 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  // Cleanup if needed
   if (elements.value) {
     elements.value = null;
   }
 });
 
-// Auto-adjust textarea height
-watch(() => formData.notes, (newValue) => {
-  if (textareaRef.value) {
-    textareaRef.value.style.height = 'auto';
-    textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
+watch(
+  () => formData.notes,
+  (newValue) => {
+    if (textareaRef.value) {
+      textareaRef.value.style.height = 'auto';
+      textareaRef.value.style.height = `${textareaRef.value.scrollHeight}px`;
+    }
   }
-});
+);
 </script>
 
 <style scoped>
@@ -651,7 +644,6 @@ watch(() => formData.notes, (newValue) => {
   height: 4rem;
 }
 
-/* Payment Element Styles */
 :deep(.StripeElement) {
   width: 100%;
   padding: 16px;
@@ -666,6 +658,6 @@ watch(() => formData.notes, (newValue) => {
 }
 
 :deep(.StripeElement--invalid) {
-  border-color: #FA4141;
+  border-color: #fa4141;
 }
 </style>

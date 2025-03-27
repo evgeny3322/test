@@ -33,7 +33,9 @@
               <h2 class="text-[1.75rem] font-normal leading-[110%] pb-[1.375rem]">
                 {{ tourData?.name }}
               </h2>
-              <div class="flex md:flex-row flex-col md:gap-[3.75rem] gap-6 font-normal text-[1.125rem]">
+              <div
+                class="flex md:flex-row flex-col md:gap-[3.75rem] gap-6 font-normal text-[1.125rem]"
+              >
                 <ul>
                   <li class="text-grey-light-4 mb-1">Area:</li>
                   <li class="md:pb-8 pb-6">{{ tourData?.area?.name }}</li>
@@ -42,7 +44,10 @@
                     {{ formatDate(customTour?.date) }}
                   </li>
                   <li class="text-grey-light-4 mb-1">Number of participants:</li>
-                  <li>{{ customTour?.participants }} {{ customTour?.participants === 1 ? 'Person' : 'People' }}</li>
+                  <li>
+                    {{ customTour?.participants }}
+                    {{ customTour?.participants === 1 ? 'Person' : 'People' }}
+                  </li>
                 </ul>
 
                 <ul>
@@ -56,7 +61,9 @@
 
                 <ul>
                   <li class="text-grey-light-4 mb-1">List of services:</li>
-                  <li v-for="service in customTour?.addons" :key="service.id">{{ service.name }}</li>
+                  <li v-for="service in customTour?.addons" :key="service.id">
+                    {{ service.name }}
+                  </li>
                 </ul>
               </div>
             </div>
@@ -76,69 +83,67 @@
             and manage your bookings in the future.
           </span>
 
-          <form @submit.prevent="confirmAccountCreation" class="bg-grey-dark p-6 rounded-2xl mt-2">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <form
+            @submit.prevent="confirmAccountCreation"
+            class="flex flex-col w-full bg-grey-dark rounded-[1rem]"
+          >
+            <div class="flex xl:flex-row flex-col w-full gap-4 p-[1.125rem]">
               <TrustyField
+                class="w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
                 v-model="accountData.firstName"
-                label="First Name"
-                placeholder="First Name"
-                inputClass="!bg-[#313131] text-18"
+                placeholder="First name"
                 :error="!!validationErrors.firstName"
               />
               <TrustyField
+                class="w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
                 v-model="accountData.lastName"
-                label="Last Name"
-                placeholder="Last Name"
-                inputClass="!bg-[#313131] text-18"
+                placeholder="Last name"
                 :error="!!validationErrors.lastName"
               />
               <TrustyField
+                class="w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
                 v-model="accountData.email"
-                label="Email Address"
-                placeholder="Email Address"
-                inputClass="!bg-[#313131] text-18"
+                placeholder="example@gmail.com"
                 :error="!!validationErrors.email"
               />
+            </div>
+            <div class="flex xl:flex-row flex-col w-full gap-4 px-[1.125rem] pb-[1.125rem]">
               <TrustyField
-                type="tel"
-                v-model="accountData.phone"
-                label="Mobile Phone Number"
-                @country-changed="(c) => handleCountryChanged(c)"
-                :default-country="accountData.iso2"
-                inputClass="!bg-[#313131] text-18"
-                :error="!!validationErrors.phone"
-              />
-              <TrustyField
+                class="xl:w-1/2 w-full h-[4rem] bg-grey-light-1 rounded-[1rem]"
                 v-model="accountData.country"
-                label="Country"
                 placeholder="Country"
-                inputClass="!bg-[#313131] text-18"
                 :error="!!validationErrors.country"
               />
+              <TrustyField
+                class="xl:w-1/2 w-full !*:h-[4rem] bg-grey-light-1 rounded-[1rem]"
+                type="tel"
+                v-model="accountData.phone"
+                @country-changed="handleCountryChanged"
+                :default-country="accountData.iso2"
+                placeholder="44 44 44 44"
+                :error="!!validationErrors.phone"
+              />
+              <TrustyButton
+                type="submit"
+                class="w-full !font-semibold h-[4rem] bg-grey-light-1 rounded-[1rem] items-center xl:w-[87.7%]"
+                :loading="isProcessingAccount"
+              >
+                <span>Confirm account creation</span>
+              </TrustyButton>
             </div>
 
-            <div v-if="accountCreationError" class="text-red-500 text-sm mb-4">
+            <div
+              v-if="accountCreationError"
+              class="text-red-500 text-sm px-[1.125rem] pb-[1.125rem]"
+            >
               {{ accountCreationError }}
             </div>
-
-            <TrustyButton
-              type="submit"
-              color="black"
-              class="w-full md:w-auto px-8"
-              :loading="isProcessingAccount"
-            >
-              Confirm Account Creation
-            </TrustyButton>
           </form>
         </div>
       </div>
 
       <div class="flex flex-col md:flex-row gap-4 mt-8">
-        <TrustyButton
-          @click="router.push('/')"
-          color="black"
-          class="w-full md:w-auto px-8"
-        >
+        <TrustyButton @click="router.push('/')" color="black" class="w-full md:w-auto px-8">
           Return to Home
         </TrustyButton>
 
@@ -178,19 +183,15 @@ import dayjs from 'dayjs';
 import { useRuntimeConfig } from 'nuxt/app';
 import { PaymentService } from '@/utils/paymentService';
 import * as yup from 'yup';
-import axios from 'axios';
 
-// Composables
 const route = useRoute();
 const router = useRouter();
 const config = useRuntimeConfig();
 const toursStore = useToursStore();
 const authStore = useAuthStore();
 
-// Store references
-const { customTour }:any = storeToRefs(toursStore);
+const { customTour }: any = storeToRefs(toursStore);
 
-// Route params and query
 const paymentStatus = route.params.id as string;
 const orderData = {
   order_id: route.query.order_id as string,
@@ -198,28 +199,25 @@ const orderData = {
   notes: route.query.notes as string,
 };
 
-// State
 const isLoading = ref(true);
 const isProcessingAccount = ref(false);
 const tourData = ref<any>(null);
 const accountCreationError = ref('');
 const validationErrors = reactive<Record<string, boolean>>({});
-const shouldShowAccountCreation = computed(() =>
-  isSuccess.value && route.query.createAccount === 'true' && !authStore.isAuthenticated
+const shouldShowAccountCreation = computed(
+  () => isSuccess.value && route.query.createAccount === 'true' && !authStore.isAuthenticated
 );
 
-// Account data form
 const accountData = reactive({
-  firstName: route.query.firstName as string || '',
-  lastName: route.query.lastName as string || '',
-  email: route.query.email as string || '',
-  phone: route.query.phone as string || '',
-  dialCode: route.query.dialCode as string || '',
-  iso2: route.query.iso2 as string || '',
-  country: route.query.country as string || '',
+  firstName: (route.query.firstName as string) || '',
+  lastName: (route.query.lastName as string) || '',
+  email: (route.query.email as string) || '',
+  phone: (route.query.phone as string) || '',
+  dialCode: (route.query.dialCode as string) || '',
+  iso2: (route.query.iso2 as string) || '',
+  country: (route.query.country as string) || '',
 });
 
-// Computed properties
 const isSuccess = computed(() => paymentStatus === 'success');
 
 const pageTitle = computed(() => {
@@ -244,11 +242,10 @@ const statusMessage = computed(() => {
     case 'failure':
       return 'We were unable to process your payment. Please check your payment details and try again, or contact our support team for assistance.';
     default:
-      return 'We\'re checking the status of your order.';
+      return "We're checking the status of your order.";
   }
 });
 
-// Methods
 const formatDate = (date: string | Date | null) => {
   return date ? dayjs(date).format('DD/MM/YYYY HH:mm') : 'N/A';
 };
@@ -257,7 +254,9 @@ const formatDuration = (minutes?: number) => {
   if (!minutes) return 'N/A';
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return hours > 0 ? `${hours} hour${hours > 1 ? 's' : ''}${mins > 0 ? ` ${mins} min` : ''}` : `${mins} min`;
+  return hours > 0
+    ? `${hours} hour${hours > 1 ? 's' : ''}${mins > 0 ? ` ${mins} min` : ''}`
+    : `${mins} min`;
 };
 
 const getTransportationName = () => {
@@ -265,8 +264,9 @@ const getTransportationName = () => {
     return 'N/A';
   }
 
-  const transportAddon = customTour.value.addons.find((addon: any) =>
-    addon.segmentType === 'Transportation');
+  const transportAddon = customTour.value.addons.find(
+    (addon: any) => addon.segmentType === 'Transportation'
+  );
 
   return transportAddon?.name || 'N/A';
 };
@@ -319,12 +319,10 @@ const validateAccountData = async () => {
     return true;
   } catch (err) {
     if (err instanceof yup.ValidationError) {
-      // Reset all validation errors
-      Object.keys(validationErrors).forEach(key => {
+      Object.keys(validationErrors).forEach((key) => {
         validationErrors[key] = false;
       });
 
-      // Set new validation errors
       err.inner.forEach((error) => {
         if (error.path) {
           validationErrors[error.path] = true;
@@ -341,14 +339,12 @@ const confirmAccountCreation = async () => {
 
   accountCreationError.value = '';
 
-  // Validate account data
   const isValid = await validateAccountData();
   if (!isValid) return;
 
   try {
     isProcessingAccount.value = true;
 
-    // Store user information for registration
     const userData = {
       name: accountData.firstName,
       last_name: accountData.lastName,
@@ -357,36 +353,32 @@ const confirmAccountCreation = async () => {
       country_code: accountData.dialCode,
     };
 
-    // Save registration info to auth store for the verification process
     authStore.updateRegisterInfo({
       step: 1,
       ...userData,
     });
 
-    // If we have order data, also save the user to the backend
-    if (orderData.order_id) {
-      //@ts-ignore
-      const paymentService = new PaymentService(config.public.apiUrl);
+    const response = await authStore.sendCode(userData);
 
-      await paymentService.storeUserInfo(orderData, {
-        firstName: accountData.firstName,
-        lastName: accountData.lastName,
-        email: accountData.email,
-        phone: accountData.phone,
-        dialCode: accountData.dialCode,
-        iso2: accountData.iso2,
-        country: accountData.country,
-        createAccount: true,
+    console.log('Verification code response:', response);
+
+    if (response.status === 200 || response.status === 208) {
+      authStore.updateRegisterInfo({
+        step: 2,
+        ...userData,
       });
+
+      router.push('/auth/email-verification');
+    } else if (
+      response.status === 422 ||
+      (response.data?.message && response.data.message.toLowerCase().includes('already'))
+    ) {
+      console.log('User already exists - sending password reset link');
+    } else {
+      throw new Error(response.data?.message || 'Failed to send verification code');
     }
-
-    // Send verification code
-    await authStore.sendCode(userData);
-
-    // Navigate to email verification page
-    router.push('/auth/email-verification');
   } catch (error: any) {
-    console.error('Error creating account:', error);
+    console.error('Error in account creation flow:', error);
     accountCreationError.value = error?.message || 'Failed to create account. Please try again.';
   } finally {
     isProcessingAccount.value = false;
@@ -397,7 +389,6 @@ const retryPayment = () => {
   router.push('/payment');
 };
 
-// Lifecycle hooks
 onMounted(async () => {
   if (!customTour.value) {
     router.push('/');
@@ -407,11 +398,7 @@ onMounted(async () => {
   try {
     isLoading.value = true;
 
-    // Parallel operations
-    await Promise.all([
-      fetchTourData(),
-      updatePaymentStatus()
-    ]);
+    await Promise.all([fetchTourData(), updatePaymentStatus()]);
   } catch (error) {
     console.error('Error initializing payment result page:', error);
   } finally {
@@ -419,7 +406,3 @@ onMounted(async () => {
   }
 });
 </script>
-
-<style scoped>
-/* Add any needed styles here */
-</style>
