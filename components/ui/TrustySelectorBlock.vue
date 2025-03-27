@@ -93,6 +93,7 @@
 import { ref, computed, toRefs, defineEmits, onMounted, watch } from 'vue';
 import { Addon, Segment } from '@/types/tours';
 import TrustySkeleton from '@/components/ui/TrustySkeleton.vue';
+import { PriceCalculationService } from '@/utils/priceCalculationService';
 
 const props = defineProps<{
   data: Segment;
@@ -109,6 +110,8 @@ const emit = defineEmits<{
 const { data } = toRefs(props);
 const activeCardIndex = ref<number | null>(null);
 const imageLoaded = ref<boolean>(false);
+const priceService = PriceCalculationService;
+
 const mandatory = computed(() => {
   return data.value.type.mandatory;
 });
@@ -213,38 +216,41 @@ const calculatePrice = (addon: Addon): number => {
   const priceIndex = props.participants - 1;
   const baseCost =
     priceIndex < addon.price.length ? addon.price[priceIndex] : (addon.price.at(-1) ?? 0);
-  const basePrice = (baseCost || 0) * props.participants;
+  const basePrice = priceService.roundPrice((baseCost || 0) * props.participants);
 
   const addonDuration = Number(addon.duration) || 0;
   const segmentDuration = Number(props.data.duration) || 0;
   const additionalTime = addonDuration - segmentDuration;
 
   if (additionalTime > 0) {
-    const extraCost = (additionalTime / 60) * props.driverHourRate;
-    return Math.round(basePrice + extraCost);
+    const extraCost = priceService.roundPrice((additionalTime / 60) * props.driverHourRate);
+    return priceService.roundPrice(basePrice + extraCost);
   }
 
-  return Math.round(basePrice);
+  return basePrice;
 };
 
 const getPriceText = (card: Addon, index: number) => {
   const currentPrice = calculatePrice(card);
+  const formattedPrice = priceService.formatPrice(currentPrice);
+
   const selectedPrice =
     activeCardIndex.value !== null
       ? calculatePrice(addonsWithAvailability.value[activeCardIndex.value])
       : 0;
 
-  if (selectedPrice === 0) return `${currentPrice} EUR`;
+  if (selectedPrice === 0) return `${formattedPrice} EUR`;
 
   const priceDifference = currentPrice - selectedPrice;
 
   if (priceDifference === 0) {
-    return `${currentPrice} EUR`;
+    return `${formattedPrice} EUR`;
   }
 
   const sign = priceDifference < 0 ? '-' : '+';
-  console.log(`Price difference: ${priceDifference}`);
-  return `${sign} ${Math.abs(priceDifference)} EUR`;
+  const formattedDifference = priceService.formatPrice(Math.abs(priceDifference));
+
+  return `${sign} ${formattedDifference} EUR`;
 };
 
 const setActiveCard = (index: number | null) => {

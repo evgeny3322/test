@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { OrderData, PaymentResponse } from '@/types/payment';
+import { PriceCalculationService } from './priceCalculationService';
 
 export class PaymentService {
   private readonly apiUrl: string;
@@ -13,24 +14,32 @@ export class PaymentService {
   async createOrder(tourData: any, isAuthenticated: boolean): Promise<PaymentResponse> {
     const endpoint = `${this.apiUrl}/orders/${isAuthenticated ? 'auth' : 'guest'}/order/store`;
 
-    const totalPrice = Math.round(tourData?.total_price || 0);
+    const totalPrice = PriceCalculationService.roundPrice(tourData?.total_price || 0);
+
+    const totalPriceInteger = Math.round(totalPrice);
+
+    console.log('Price conversion:', {
+      original: tourData?.total_price,
+      rounded: totalPrice,
+      asInteger: totalPriceInteger,
+    });
 
     const payload = {
       assembled_tours: {
         tour_id: tourData?.tour_id,
         date: tourData?.date?.slice(0, 19),
-        participants: tourData?.participants,
-        total_duration: tourData?.total_duration,
-        total_price: totalPrice, // Ensure integer
+        participants: Number(tourData?.participants),
+        total_duration: Math.round(Number(tourData?.total_duration)),
+        total_price: totalPriceInteger,
       },
       addons: tourData?.addons.map((addon: any) => addon?.id),
       order: {
-        total_sum: totalPrice, // Ensure integer
-        description: tourData?.description,
+        total_sum: totalPriceInteger,
+        description: tourData?.description || '',
       },
     };
 
-    console.log('Sending order payload:', JSON.stringify(payload));
+    console.log('Sending order payload:', JSON.stringify(payload, null, 2));
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',

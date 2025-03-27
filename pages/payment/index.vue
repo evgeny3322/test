@@ -386,7 +386,7 @@ const updateCustomTourData = () => {
 
     toursStore.updateCustomTour({
       ...customTour.value,
-      total_price: totalPrice, // Ensure this is an integer
+      total_price: totalPrice,
     });
   }
 };
@@ -410,10 +410,7 @@ const createOrder = async () => {
   }
 };
 
-// Use this configuration in pages/payment/index.vue
-// Modify the initStripe function to use this updated configuration
-
-const initStripe = async (paymentResponse:any) => {
+const initStripe = async (paymentResponse: PaymentResponse) => {
   try {
     //@ts-ignore
     stripe.value = await loadStripe(config.public.stripeKey);
@@ -427,7 +424,7 @@ const initStripe = async (paymentResponse:any) => {
     orderId.value = paymentResponse.data.order.id;
     paymentCode.value = paymentResponse.data.payment.id;
 
-    // Configure Stripe elements with fixed styling
+    // Configure Stripe elements
     elements.value = stripe.value.elements({
       clientSecret: paymentIntentSecret.value,
       appearance: {
@@ -456,11 +453,12 @@ const initStripe = async (paymentResponse:any) => {
             boxShadow: 'none',
             borderColor: '#FFFFFF',
           },
-          // Removed problematic Label styling
           '.Label': {
-            // Removed properties that caused errors
-            // Using display: none instead of display: none !important
-            display: 'none'
+            opacity: '0',
+            visibility: 'hidden',
+            width: '0',
+            height: '0',
+            display: 'none !important',
           },
           '.Input--invalid': {
             boxShadow: 'none',
@@ -493,7 +491,7 @@ const initStripe = async (paymentResponse:any) => {
     paymentElement.mount('#payment-element');
 
     // Handle payment element changes
-    paymentElement.on('change', (event:any) => {
+    paymentElement.on('change', (event: any) => {
       const submitButton = document.querySelector('#submit') as HTMLButtonElement;
       if (submitButton) {
         submitButton.disabled = !event.complete;
@@ -605,7 +603,7 @@ onMounted(async () => {
 
     await fetchTourData();
 
-    updateCustomTourData();
+    // updateCustomTourData();
 
     const paymentResponse = await createOrder();
     await initStripe(paymentResponse);
