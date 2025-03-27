@@ -43,7 +43,7 @@
             <!-- Body -->
             <div class="p-1" :class="[bodyClass]">
               <slot>
-                <p class="text-gray-300">Modal content goes here</p>
+                <!-- Modal content goes here -->
               </slot>
             </div>
 

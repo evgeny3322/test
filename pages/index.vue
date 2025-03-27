@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, nextTick } from 'vue';
+import { computed, onMounted, onUpdated, ref, nextTick } from 'vue';
 import TrustyTourCard from '@/components/ui/TrustyTourCard.vue';
 import TrustyFilter from '@/components/ui/TrustyFilter.vue';
 import PreloaderAnimIcon from '@/components/icons/PreloaderAnimIcon.vue';
@@ -159,6 +159,14 @@ onMounted(async () => {
       initSwiper();
     }
   }, 100);
+});
+
+onMounted(() => {
+  console.log('Component mounted');
+});
+
+onUpdated(() => {
+  console.log('Component updated');
 });
 </script>
 
