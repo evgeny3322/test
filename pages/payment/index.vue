@@ -410,7 +410,10 @@ const createOrder = async () => {
   }
 };
 
-const initStripe = async (paymentResponse: PaymentResponse) => {
+// Use this configuration in pages/payment/index.vue
+// Modify the initStripe function to use this updated configuration
+
+const initStripe = async (paymentResponse:any) => {
   try {
     //@ts-ignore
     stripe.value = await loadStripe(config.public.stripeKey);
@@ -424,7 +427,7 @@ const initStripe = async (paymentResponse: PaymentResponse) => {
     orderId.value = paymentResponse.data.order.id;
     paymentCode.value = paymentResponse.data.payment.id;
 
-    // Configure Stripe elements
+    // Configure Stripe elements with fixed styling
     elements.value = stripe.value.elements({
       clientSecret: paymentIntentSecret.value,
       appearance: {
@@ -453,12 +456,11 @@ const initStripe = async (paymentResponse: PaymentResponse) => {
             boxShadow: 'none',
             borderColor: '#FFFFFF',
           },
+          // Removed problematic Label styling
           '.Label': {
-            opacity: '0',
-            visibility: 'hidden',
-            width: '0',
-            height: '0',
-            display: 'none !important',
+            // Removed properties that caused errors
+            // Using display: none instead of display: none !important
+            display: 'none'
           },
           '.Input--invalid': {
             boxShadow: 'none',
@@ -491,7 +493,7 @@ const initStripe = async (paymentResponse: PaymentResponse) => {
     paymentElement.mount('#payment-element');
 
     // Handle payment element changes
-    paymentElement.on('change', (event: any) => {
+    paymentElement.on('change', (event:any) => {
       const submitButton = document.querySelector('#submit') as HTMLButtonElement;
       if (submitButton) {
         submitButton.disabled = !event.complete;
